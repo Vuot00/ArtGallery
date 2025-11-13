@@ -10,9 +10,8 @@ L'applicazione offre un'esperienza completa che va oltre la semplice vetrina onl
 
 Il sistema si rivolge principalmente a due categorie di utenti:
 
-Artisti: Possono creare la propria galleria virtuale, gestire il proprio portfolio e vendere autonomamente le proprie opere.
-
-Appassionati d'Arte e Collezionisti: Possono scoprire nuovi talenti, esplorare collezioni e acquistare opere.
+ - Artisti: Possono creare la propria galleria virtuale, gestire il proprio portfolio e vendere autonomamente le proprie opere.
+ - Appassionati d'Arte e Collezionisti: Possono scoprire nuovi talenti, esplorare collezioni e acquistare opere.
 
 ## Funzionalità Chiave
 
@@ -51,35 +50,32 @@ La piattaforma implementa le seguenti funzionalità chiave per supportare un eco
 Per realizzare le specifiche del progetto, vengono impiegate le seguenti tecnologie e pattern architetturali, coreografati per rispondere a requisiti complessi di real-time e gestione asincrona.
 
  - Tecnologia / Pattern
-   Ruolo nel Progetto
-   Correlazione alle Specifiche
+    - Ruolo nel Progetto
+    - Correlazione alle Specifiche
 
  - Architettura MVC
-   Pattern architetturale fondamentale
-   Separa la logica di business (Model), l'interfaccia utente (View) e la gestione delle richieste (Controller) per uno sviluppo strutturato e manutenibile.
+    - Pattern architetturale fondamentale
+    - Separa la logica di business (Model), l'interfaccia utente (View) e la gestione delle richieste (Controller) per uno sviluppo strutturato e manutenibile.
 
  - Angular
-   View (Frontend)
-   Costruisce l'interfaccia utente reattiva. Gestisce la visualizzazione dinamica dei dati ricevuti dai WebSockets (offerte) e l'integrazione con i form di pagamento sicuri lato client.
+    - View (Frontend)
+    - Costruisce l'interfaccia utente reattiva. Gestisce la visualizzazione dinamica dei dati ricevuti dai WebSockets (offerte) e l'integrazione con i form di pagamento sicuri lato client.
 
  - JPA e Transazioni
-   Model (Backend)
-   Gestisce la mappatura O/R e l'accesso ai dati. Le transazioni sono critiche per garantire l'integrità dei dati (es. inserimento offerta e aggiornamento prezzo devono essere atomici;
-   l'aggiornamento dello stato dell'ordine via webhook deve essere transazionale).
+    - Model (Backend)
+    - Gestisce la mappatura O/R e l'accesso ai dati. Le transazioni sono critiche per garantire l'integrità dei dati (es. inserimento offerta e aggiornamento prezzo devono essere atomici; l'aggiornamento dello stato dell'ordine via webhook deve essere transazionale).
 
  - WebSockets
-   Real-Time Communication
-   Tecnologia chiave per il Sistema di offerte in tempo reale. Stabilisce una connessione persistente tra server e client, permettendo al server di inviare "push" di dati (nuove offerte) a tutti
-   gli utenti sull'asta senza ricaricare la pagina.
+    - Real-Time Communication
+    - Tecnologia chiave per il Sistema di offerte in tempo reale. Stabilisce una connessione persistente tra server e client, permettendo al server di inviare "push" di dati (nuove offerte) a tutti gli utenti sull'asta senza ricaricare la pagina.
 
  - API Gateway (Stripe/PayPal)
-   Gestione Pagamenti
-   Avvia le transazioni sicure per gli acquisti a prezzo fisso e il saldo delle aste.
+    - Gestione Pagamenti
+    - Avvia le transazioni sicure per gli acquisti a prezzo fisso e il saldo delle aste.
 
  - Webhook
-   Gestione Pagamenti Asincroni
-   Cruciali per l'Integrazione del Gateway. Il server riceve notifiche asincrone (pagamento riuscito/fallito) dal provider esterno per aggiornare lo stato dell'ordine in modo sicuro e affidabile.
-   Servizi Email Transazionali
+    - Gestione Pagamenti Asincroni
+    - Cruciali per l'Integrazione del Gateway. Il server riceve notifiche asincrone (pagamento riuscito/fallito) dal provider esterno per aggiornare lo stato dell'ordine in modo sicuro e affidabile. Servizi Email Transazionali
 
  - Notifiche
-   Utilizzati dalla logica di backend (attivati da eventi) per implementare le Notifiche istantanee via email (es. offerta superata).
+    - Utilizzati dalla logica di backend (attivati da eventi) per implementare le Notifiche istantanee via email (es. offerta superata).
