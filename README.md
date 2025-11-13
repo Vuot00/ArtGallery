@@ -49,27 +49,23 @@ La piattaforma implementa le seguenti funzionalità chiave per supportare un eco
 
 Per realizzare le specifiche del progetto, vengono impiegate le seguenti tecnologie e pattern architetturali, coreografati per rispondere a requisiti complessi di real-time e gestione asincrona.
 
- - Tecnologia / Pattern
-    - Ruolo nel Progetto
-    - Correlazione alle Specifiche
-
  - Architettura MVC
     - Pattern architetturale fondamentale
-    - Separa la logica di business (Model), l'interfaccia utente (View) e la gestione delle richieste (Controller) per uno sviluppo strutturato e manutenibile.
+    - Separa la logica di business, l'interfaccia utente e la gestione delle richieste per uno sviluppo strutturato e manutenibile.
 
  - Angular
-    - View (Frontend)
+    - View
     - Costruisce l'interfaccia utente reattiva. Gestisce la visualizzazione dinamica dei dati ricevuti dai WebSockets (offerte) e l'integrazione con i form di pagamento sicuri lato client.
 
  - JPA e Transazioni
-    - Model (Backend)
+    - Model
     - Gestisce la mappatura O/R e l'accesso ai dati. Le transazioni sono critiche per garantire l'integrità dei dati (es. inserimento offerta e aggiornamento prezzo devono essere atomici; l'aggiornamento dello stato dell'ordine via webhook deve essere transazionale).
 
  - WebSockets
     - Real-Time Communication
     - Tecnologia chiave per il Sistema di offerte in tempo reale. Stabilisce una connessione persistente tra server e client, permettendo al server di inviare "push" di dati (nuove offerte) a tutti gli utenti sull'asta senza ricaricare la pagina.
 
- - API Gateway (Stripe/PayPal)
+ - API Gateway
     - Gestione Pagamenti
     - Avvia le transazioni sicure per gli acquisti a prezzo fisso e il saldo delle aste.
 
