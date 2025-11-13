@@ -36,7 +36,7 @@ La piattaforma implementa le seguenti funzionalità chiave per supportare un eco
  - Sulla Piattaforma: Avvisi in-app (es. badge, pop-up) quando un'offerta viene superata.
  - Via Email: Invio automatico di email quando un'offerta viene superata o quando un'asta a cui l'utente partecipa è in procinto di scadere.
 
-### Integrazione Gateway di Pagamento (es. Stripe/PayPal):
+### Integrazione Gateway di Pagamento:
 
  - Gestione completa del ciclo di vita della transazione.
  - Acquisto immediato per opere a prezzo fisso.
