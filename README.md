@@ -1,6 +1,5 @@
-# ArtGallery - Galleria d'Arte Virtuale Enterprise
-
- Descrizione del Progetto
+# ArtGallery - Galleria d'Arte Virtuale 
+## Descrizione del Progetto
 
 ArtGallery è un'applicazione web enterprise che digitalizza il concetto tradizionale di galleria d'arte. Offre una piattaforma completa per la gestione, l'esposizione e la commercializzazione di opere d'arte, eliminando gli intermediari tradizionali e permettendo agli artisti di raggiungere un pubblico globale.
 
