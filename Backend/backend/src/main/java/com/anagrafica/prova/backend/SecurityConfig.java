@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.springframework.security.config.Customizer.withDefaults; // <-- Import importante!
 
@@ -16,23 +18,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Attiviamo la gestione CORS di Spring Security
+                // attiviamo la gestione CORS
                 .cors(withDefaults())
 
-                // 2. Disabilitiamo CSRF (non serve per le API JSON)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 3. Definiamo le regole di autorizzazione
+                // regole di autorizzazione
                 .authorizeHttpRequests(auth -> auth
-                        // Permettiamo a CHIUNQUE di accedere
-                        // al nostro endpoint di test.
-                        .requestMatchers("/api/test").permitAll()
 
-                        // Per tutte le ALTRE richieste, l'utente
-                        // deve essere autenticato.
+                        .requestMatchers("/api/test", "/api/auth/registrazion").permitAll()
+
+
                         .anyRequest().authenticated()
                 );
 
         return http.build();
+
+
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
