@@ -26,7 +26,7 @@ public class SecurityConfig {
                 // regole di autorizzazione
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/test", "/api/auth/registrazion").permitAll()
+                        .requestMatchers("/api/test", "/api/auth/registrazione").permitAll()
 
 
                         .anyRequest().authenticated()
