@@ -1,0 +1,22 @@
+<h3>Crea un nuovo account</h3>
+
+<form (ngSubmit)="registra()" #formRegistrazione="ngForm">
+
+  <div>
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" [(ngModel)]="datiRegistrazione.nome" required>
+  </div>
+
+  <div>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" [(ngModel)]="datiRegistrazione.email" required>
+  </div>
+
+  <div>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" [(ngModel)]="datiRegistrazione.password" required>
+  </div>
+
+  <button type="submit" [disabled]="!formRegistrazione.form.valid">Registrati</button>
+
+</form>
