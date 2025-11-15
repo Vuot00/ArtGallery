@@ -6,16 +6,12 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-registrazione',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [ CommonModule, FormsModule ],
   templateUrl: './registrazione.component.html',
   styleUrl: './registrazione.component.scss'
 })
 export class RegistrazioneComponent {
 
-  // Diamo un valore predefinito, ma dovra essere  collegato all'HTML
   datiRegistrazione = {
     nome: '',
     email: '',
@@ -23,30 +19,35 @@ export class RegistrazioneComponent {
     tipoUtente: 'COLLEZIONISTA'
   };
 
+  // --- 1. DEFINISCI L'URL DEL TUO BACKEND ---
+  private backendUrl = 'http://localhost:8080';
 
   constructor(private http: HttpClient) { }
 
-
   registra() {
+    // Pulisce gli input
+    this.datiRegistrazione.nome = this.datiRegistrazione.nome.trim();
+    this.datiRegistrazione.email = this.datiRegistrazione.email.trim();
+    this.datiRegistrazione.password = this.datiRegistrazione.password.trim();
+
     console.log('Dati inviati al backend:', this.datiRegistrazione);
 
+    // --- 2. USA L'URL COMPLETO PER LA CHIAMATA ---
     this.http.post(
-      '/api/auth/registrazione', // L'URL del backend
-      this.datiRegistrazione,    // dati da inviare
-      { responseType: 'text' }
+      `${this.backendUrl}/api/auth/registrazione`,
+      this.datiRegistrazione,
+      { responseType: 'text' } // Ci aspettiamo testo ("Utente registrato...")
     )
       .subscribe({
         next: (risposta) => {
-          console.log('Risposta dal server:', risposta);
           alert(risposta);
         },
         error: (errore: HttpErrorResponse) => {
-          console.error('Errore durante la registrazione:', errore);
-
           if (errore.status === 400) {
+            // Errore 400 (es. Email già in uso)
             alert(errore.error);
           } else {
-            // Altri errori (500, 403, 404...)
+            // Altri errori (es. 500, o se il backend è spento)
             alert('Si è verificato un errore di rete: ' + errore.statusText);
           }
         }
