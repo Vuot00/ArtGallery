@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,11 +15,12 @@ import { FormsModule } from '@angular/forms';
 })
 export class RegistrazioneComponent {
 
-
+  // Diamo un valore predefinito, ma dovra essere  collegato all'HTML
   datiRegistrazione = {
     nome: '',
     email: '',
-    password: ''
+    password: '',
+    tipoUtente: 'COLLEZIONISTA'
   };
 
 
@@ -29,19 +30,25 @@ export class RegistrazioneComponent {
   registra() {
     console.log('Dati inviati al backend:', this.datiRegistrazione);
 
-    // 7. Usiamo http.post per chiamare l'API che hai creato nel backend
-    this.http.post('/api/auth/registrazione', this.datiRegistrazione)
+    this.http.post(
+      '/api/auth/registrazione', // L'URL del backend
+      this.datiRegistrazione,    // dati da inviare
+      { responseType: 'text' }
+    )
       .subscribe({
         next: (risposta) => {
-          // Quando il server risponde con successo
           console.log('Risposta dal server:', risposta);
-          alert('Registrazione avvenuta con successo!');
-          // Qui potresti reindirizzare l'utente alla pagina di login
+          alert(risposta);
         },
-        error: (errore) => {
-          // Quando il server dà un errore
+        error: (errore: HttpErrorResponse) => {
           console.error('Errore durante la registrazione:', errore);
-          alert('Si è verificato un errore: ' + errore.message);
+
+          if (errore.status === 400) {
+            alert(errore.error);
+          } else {
+            // Altri errori (500, 403, 404...)
+            alert('Si è verificato un errore di rete: ' + errore.statusText);
+          }
         }
       });
   }
