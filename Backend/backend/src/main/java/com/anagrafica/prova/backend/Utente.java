@@ -1,13 +1,12 @@
 package com.anagrafica.prova.backend;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "utenti")
@@ -24,5 +23,12 @@ public class Utente {
     private String password;
     private String nome;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "utenti_ruoli", // Nome della tabella "ponte"
+            joinColumns = @JoinColumn(name = "utente_id"), // Colonna che si riferisce a Utente
+            inverseJoinColumns = @JoinColumn(name = "role_id") // Colonna che si riferisce a Role
+    )
+    private Set<Role> roles = new HashSet<>();
 
 }
