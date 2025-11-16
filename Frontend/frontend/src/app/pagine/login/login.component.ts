@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
   selector: 'app-login',
   standalone: true,
 
-  // Aggiungi FormsModule agli imports per [(ngModel)]
   imports: [
     CommonModule,
     FormsModule
@@ -26,7 +25,7 @@ export class LoginComponent {
     password: ''
   };
 
-  // 1. URL DEL BACKEND (Modifica la porta se è diversa da 8080)
+  // URL DEL BACKEND
   private backendUrl = 'http://localhost:8080';
 
   // Inietta HttpClient (per le chiamate) e Router (per il redirect)
@@ -37,13 +36,13 @@ export class LoginComponent {
    */
   login() {
 
-    // 2. Pulisce gli input da spazi bianchi all'inizio o alla fine
+    // Pulisce gli input da spazi bianchi all'inizio o alla fine
     this.datiLogin.email = this.datiLogin.email.trim();
     this.datiLogin.password = this.datiLogin.password.trim();
 
     console.log('Tentativo di login con:', this.datiLogin);
 
-    // 3. Esegue la chiamata POST all'URL completo del backend
+    // Esegue la chiamata POST all'URL completo del backend
     this.http.post<any>(`${this.backendUrl}/api/auth/login`, this.datiLogin)
       .subscribe({
 
@@ -62,7 +61,7 @@ export class LoginComponent {
         error: (errore: HttpErrorResponse) => {
           console.error('Errore durante il login:', errore);
 
-          // 4. Gestione Errori Migliorata
+          // Gestione Errori Migliorata
           if (errore.status === 401) {
             // 401 = Unauthorized (credenziali errate)
             alert('Email o password non corretti.');
