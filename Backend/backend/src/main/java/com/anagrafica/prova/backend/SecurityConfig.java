@@ -1,4 +1,4 @@
-package com.anagrafica.prova.backend; // Assicurati che sia il tuo package
+package com.anagrafica.prova.backend;
 
 import com.anagrafica.prova.backend.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-
-// --- 1. IMPORTA QUESTA CLASSE ---
 import org.springframework.security.config.http.SessionCreationPolicy;
-
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,20 +40,19 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable())
 
-                // --- 2. AGGIUNGI QUESTA RIGA FONDAMENTALE ---
-                // Diciamo a Spring di NON usare sessioni (siamo stateless)
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                // ---------------------------------------------
 
                 .authorizeHttpRequests(auth -> auth
                         // Permetti richieste OPTIONS (per CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // Permetti API pubbliche
-                        .requestMatchers("/api/test", "/api/auth/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
 
                         // Richiedi autenticazione per tutto il resto
                         .anyRequest().authenticated()
@@ -91,7 +87,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

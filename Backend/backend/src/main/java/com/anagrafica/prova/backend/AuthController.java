@@ -86,7 +86,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
-        // 4. Esegui l'autenticazione
+        // Esegui l'autenticazione
         // Spring Security usa il nostro CustomUserDetailsService e PasswordEncoder
         // Se email o pass sono errati, lancerà un'eccezione (gestita da Spring)
         Authentication authentication = authenticationManager.authenticate(
@@ -96,7 +96,7 @@ public class AuthController {
                 )
         );
 
-        // 5. Se l'autenticazione ha successo, genera il token
+        // Se l'autenticazione ha successo, genera il token
         String jwt = jwtService.generateToken(authentication);
 
 

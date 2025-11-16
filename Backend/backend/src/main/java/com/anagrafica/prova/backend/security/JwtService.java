@@ -20,7 +20,7 @@ public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
-    // 1. Inietta i valori da application.properties
+    // Inietta i valori da application.properties
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
@@ -30,8 +30,7 @@ public class JwtService {
     // Questa è la chiave che useremo per firmare
     private Key key;
 
-    // 2. Questo metodo viene eseguito dopo che il servizio è stato creato
-    //    e decodifica la chiave segreta da Base64
+    // Questo metodo viene eseguito dopo che il servizio è stato creato e decodifica la chiave segreta da Base64
     @PostConstruct
     public void init() {
         try {
@@ -43,7 +42,7 @@ public class JwtService {
         }
     }
 
-    // 3. Il metodo principale: generare il token
+    // Il metodo principale: generare il token
     public String generateToken(Authentication authentication) {
 
         // Prendiamo l'utente (l'email) dall'oggetto Authentication
@@ -53,12 +52,12 @@ public class JwtService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
-        // 4. Costruiamo il token
+        // Costruiamo il token
         return Jwts.builder()
                 .setSubject(username) // L'utente (email)
                 .setIssuedAt(now) // Data di creazione
                 .setExpiration(expiryDate) // Data di scadenza
-                .signWith(key, SignatureAlgorithm.HS512) // Firma con la nostra chiave
+                .signWith(key, SignatureAlgorithm.HS256) // Firma con la nostra chiave
                 .compact(); // Costruisce la stringa
     }
 
