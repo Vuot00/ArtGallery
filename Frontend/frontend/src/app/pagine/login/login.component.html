@@ -10,8 +10,22 @@
       name="email"
       [(ngModel)]="datiLogin.email"
       required
-      email
-    >
+
+      pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+
+      #emailInput="ngModel">
+
+    <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="messaggio-errore">
+
+      <div *ngIf="emailInput.errors?.['required']">
+        L'email è obbligatoria.
+      </div>
+
+      <div *ngIf="emailInput.errors?.['pattern']">
+        Formato email non valido.
+      </div>
+
+    </div>
   </div>
 
   <div>
@@ -26,5 +40,10 @@
   </div>
 
   <button type="submit" [disabled]="!formLogin.form.valid">Accedi</button>
+
+  <p style="margin-top: 20px;">
+    Non hai ancora un account?
+    <a routerLink="/registrazione">Registrati ora</a>
+  </p>
 
 </form>

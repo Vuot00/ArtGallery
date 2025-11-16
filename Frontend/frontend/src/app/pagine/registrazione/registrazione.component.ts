@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import {RouterLink} from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrazione',
   standalone: true,
-  imports: [ CommonModule, FormsModule ],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './registrazione.component.html',
   styleUrl: './registrazione.component.scss'
 })
@@ -22,7 +24,7 @@ export class RegistrazioneComponent {
   // --- 1. DEFINISCI L'URL DEL TUO BACKEND ---
   private backendUrl = 'http://localhost:8080';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   registra() {
     // Pulisce gli input
@@ -41,6 +43,7 @@ export class RegistrazioneComponent {
       .subscribe({
         next: (risposta) => {
           alert(risposta);
+          this.router.navigate(['/login'])
         },
         error: (errore: HttpErrorResponse) => {
           if (errore.status === 400) {

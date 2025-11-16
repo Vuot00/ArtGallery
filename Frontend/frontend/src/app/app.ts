@@ -12,7 +12,7 @@ import { HttpClient } from '@angular/common/http';       // 3. Importa HttpClien
   ],
   // 5. Questo è l'HTML che verrà mostrato
   template: `
-    <h1>Test di Connessione Frontend-Backend</h1>
+    <h1>Test di Connessione Frontend-Backend (app.ts)</h1>
 
     <h2>Stato:</h2>
     <p style="font-family: monospace; background-color: #eee; padding: 10px;">
