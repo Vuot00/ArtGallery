@@ -18,6 +18,6 @@ public class TestController {
     @CrossOrigin(origins = "http://localhost:4200")
     public Map<String, String> getTestMessage() {
         // Restituiamo un oggetto JSON semplice
-        return Map.of("messaggio", "Ciao dal Backend! La connessione FUNZIONA.");
+        return Map.of("messaggio", "Ciao dal TestController! La connessione FUNZIONA.");
     }
 }
