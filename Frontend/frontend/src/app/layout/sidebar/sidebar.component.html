@@ -1,0 +1,18 @@
+<div class="sidebar-container">
+
+  <div class="menu-item">
+    <a routerLink="/home">🏠 Home</a>
+  </div>
+  <div class="menu-item">
+    <a routerLink="/profilo">👤 Profilo</a>
+  </div>
+
+  <div class="menu-item artist-section" *ngIf="authService.isArtist()">
+    <hr>
+    <span>Zona Artista</span>
+    <a routerLink="/upload-opera" class="btn-upload">
+      🎨 Carica Opera
+    </a>
+  </div>
+
+</div>

@@ -1,0 +1,39 @@
+// Il contenitore generale
+.app-container {
+  display: flex;             // Mette sidebar e main-content vicini
+  height: 100vh;             // Occupa tutto lo schermo
+  overflow: hidden;          // Evita doppie barre di scorrimento
+  background-color: #f5f7fa;
+}
+
+.sidebar {
+  width: 260px;              // Larghezza fissa
+  flex-shrink: 0;
+  background-color: white;
+  border-right: 1px solid #e0e0e0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.main-content {
+  flex: 1;                   // Prendi tutto lo spazio rimanente a destra
+  display: flex;
+  flex-direction: column;    // Mette Navbar sopra e Content sotto
+  height: 100%;
+  min-width: 0;
+}
+
+app-navbar {
+  display: block;
+  height: 64px;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.content-body {
+  flex: 1;                   // Prende lo spazio verticale rimasto
+  overflow-y: auto;
+  padding: 24px;
+}

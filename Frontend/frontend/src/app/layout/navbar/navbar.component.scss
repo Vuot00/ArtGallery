@@ -1,0 +1,80 @@
+.navbar {
+  display: flex;
+  justify-content: space-between; // Spinge ricerca a sx e utente a dx
+  align-items: center;
+  padding: 0 24px;
+  height: 100%; // Prende l'altezza definita nel main-layout
+  background-color: white;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: #f1f3f4;
+  padding: 8px 16px;
+  border-radius: 8px;
+  width: 400px;
+
+  .search-icon {
+    margin-right: 10px;
+    opacity: 0.5;
+    font-style: normal;
+  }
+
+  .search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    color: #333;
+
+    &::placeholder {
+      color: #999;
+    }
+  }
+}
+
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .user-name {
+    font-weight: 500;
+    color: #444;
+    font-size: 0.9rem;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    background-color: #3f51b5;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+  }
+}

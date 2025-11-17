@@ -1,16 +1,17 @@
-import { Component, OnInit, inject } from '@angular/core'; // 1. Aggiungi OnInit, inject
-import { CommonModule } from '@angular/common';           // 2. Importa CommonModule
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { HttpClient } from '@angular/common/http';       // 3. Importa HttpClient
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule,   // 4. Aggiungi CommonModule
+    CommonModule,
     RouterOutlet
   ],
-  // 5. Questo è l'HTML che verrà mostrato
+
+
   template: `
     <h1>Test di Connessione Frontend-Backend (app.ts)</h1>
 
@@ -22,7 +23,7 @@ import { HttpClient } from '@angular/common/http';       // 3. Importa HttpClien
     <router-outlet></router-outlet>
   `
 })
-export class AppComponent implements OnInit { // 6. Implementa OnInit
+export class AppComponent implements OnInit {
 
   // Variabile per salvare il messaggio
   messaggioDalBackend: string = "In attesa di risposta dal server...";
@@ -37,11 +38,9 @@ export class AppComponent implements OnInit { // 6. Implementa OnInit
     this.http.get<any>('http://localhost:8080/api/test')
       .subscribe(
         (risposta) => {
-          // Successo!
           this.messaggioDalBackend = risposta.messaggio;
         },
         (errore) => {
-          // Errore!
           this.messaggioDalBackend = "ERRORE: Impossibile connettersi al backend. (Controlla il CORS?)";
           console.error(errore);
         }

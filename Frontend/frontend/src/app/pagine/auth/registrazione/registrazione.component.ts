@@ -21,7 +21,6 @@ export class RegistrazioneComponent {
     tipoUtente: 'COLLEZIONISTA'
   };
 
-  // --- 1. DEFINISCI L'URL DEL TUO BACKEND ---
   private backendUrl = 'http://localhost:8080';
 
   constructor(private http: HttpClient, private router: Router) { }
@@ -34,11 +33,11 @@ export class RegistrazioneComponent {
 
     console.log('Dati inviati al backend:', this.datiRegistrazione);
 
-    // --- 2. USA L'URL COMPLETO PER LA CHIAMATA ---
+
     this.http.post(
       `${this.backendUrl}/api/auth/registrazione`,
       this.datiRegistrazione,
-      { responseType: 'text' } // Ci aspettiamo testo ("Utente registrato...")
+      { responseType: 'text' }
     )
       .subscribe({
         next: (risposta) => {
