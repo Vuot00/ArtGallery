@@ -44,12 +44,11 @@ public class AuthController {
      * registro un nuovo utente
      * ricevo un oggetto utente in formato json dal frontend
      */
-    // Assicurati di avere queste dipendenze iniettate nella classe
 
     @PostMapping("/registrazione")
     public ResponseEntity<?> registraUtente(@RequestBody RegistrationRequest request) {
 
-        // controllo che l'email non sia già in uso
+        // controllo per far si che l'email non sia già in uso
         if (utenteRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body("Errore: Email già in uso!");
         }

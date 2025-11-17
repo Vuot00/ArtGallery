@@ -8,12 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -49,12 +52,19 @@ public class JwtService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername(); // (La nostra email)
 
+        //Estraiamo i ruoli e li trasformiamo in una lista di stringhe
+        // Esempio risultato: ["ROLE_COLLEZIONISTA", "ROLE_ARTISTA"]
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
         // Costruiamo il token
         return Jwts.builder()
                 .setSubject(username) // L'utente (email)
+                .claim("roles", roles) // I suoi ruoli
                 .setIssuedAt(now) // Data di creazione
                 .setExpiration(expiryDate) // Data di scadenza
                 .signWith(key, SignatureAlgorithm.HS256) // Firma con la nostra chiave
