@@ -28,7 +28,7 @@ public class JwtService {
     private String jwtSecret;
 
     @Value("${app.jwt.expiration-ms}")
-    private int jwtExpirationMs;
+    private long jwtExpirationMs;
 
     // Questa è la chiave che useremo per firmare
     private Key key;
