@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,14 @@ export class OperaService {
     formData.append('descrizione', dati.descrizione);
     formData.append('prezzo', dati.prezzo);
     formData.append('anno', dati.anno);
+    formData.append('file', file);
 
+    const token = localStorage.getItem('jwtToken');
 
-    formData.append('immagine', file);
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
 
-    return this.http.post(this.apiUrl, formData);
+    return this.http.post(this.apiUrl, formData, { headers: headers });
   }
 }

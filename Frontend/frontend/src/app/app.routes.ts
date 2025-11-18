@@ -4,10 +4,12 @@ import { LoginComponent } from './pagine/auth/login/login.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { HomeComponent } from './pagine/dashboard/home/home.component';
 import { authGuard } from './servizi/auth.guard';
+import { CaricaOperaComponent } from './pagine/artista/carica-opera/carica-opera.component';
 
 export const routes: Routes = [
   { path: 'registrazione', component: RegistrazioneComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'carica-opera', component: CaricaOperaComponent },
 
   //  Reindirizza la home page (il percorso vuoto)
   //    alla pagina di login o di registrazione.

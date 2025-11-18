@@ -1,0 +1,42 @@
+<div class="upload-container">
+  <h2>🎨 Carica Nuova Opera</h2>
+
+  <form (ngSubmit)="onSubmit()" #operaForm="ngForm">
+
+    <div class="form-group">
+      <label>Titolo Opera</label>
+      <input type="text" [(ngModel)]="opera.titolo" name="titolo" required>
+    </div>
+
+    <div class="form-group">
+      <label>Descrizione</label>
+      <textarea [(ngModel)]="opera.descrizione" name="descrizione" rows="4" required></textarea>
+    </div>
+
+    <div class="row">
+      <div class="form-group half">
+        <label>Prezzo (€)</label>
+        <input type="number" [(ngModel)]="opera.prezzo" name="prezzo" required min="1">
+      </div>
+      <div class="form-group half">
+        <label>Anno di creazione</label>
+        <input type="number" [(ngModel)]="opera.anno" name="anno" required>
+      </div>
+    </div>
+
+    <div class="form-group file-upload">
+      <label>Immagine Opera</label>
+      <input type="file" (change)="onFileSelected($event)" accept="image/*">
+    </div>
+
+    <div *ngIf="previewUrl" class="preview-box">
+      <img [src]="previewUrl" alt="Anteprima">
+    </div>
+
+    <button type="submit" [disabled]="!operaForm.form.valid || !selectedFile" class="btn-submit">
+      Pubblica Opera
+    </button>
+
+  </form>
+</div>
+
