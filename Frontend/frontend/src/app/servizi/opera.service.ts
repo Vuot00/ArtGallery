@@ -26,6 +26,6 @@ export class OperaService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.post(this.apiUrl, formData, { headers: headers });
+    return this.http.post(this.apiUrl, formData, { headers: headers ,responseType: 'text'});
   }
 }
