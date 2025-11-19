@@ -1,0 +1,15 @@
+QUESTA CARTELLA CONTIENE: I DTO (DATA TRANSFER OBJECTS)
+
+COSA FANNO:
+Sono oggetti semplici usati solo per trasportare dati dal Frontend al Backend e viceversa.
+Servono a non esporre direttamente le Entità del database al mondo esterno.
+
+REGOLE:
+1. Sono classi semplici (POJO) o Record.
+2. Non hanno annotazioni @Entity (non diventano tabelle).
+3. Servono per filtrare i dati (es. LoginRequest contiene solo email e password, non tutto l'utente).
+
+
+- LoginRequest (dati in arrivo per il login)
+- RegistrationRequest (dati in arrivo per la registrazione)
+- JwtResponse (dati in uscita con il token)

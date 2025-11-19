@@ -1,5 +1,9 @@
-package com.anagrafica.prova.backend;
+package com.anagrafica.prova.backend.controller;
 
+import com.anagrafica.prova.backend.model.Opera;
+import com.anagrafica.prova.backend.repository.OperaRepository;
+import com.anagrafica.prova.backend.model.Utente;
+import com.anagrafica.prova.backend.repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/opere")
@@ -75,4 +80,27 @@ public class OperaController {
             return ResponseEntity.internalServerError().body("Errore generico: " + e.getMessage());
         }
     }
+    @GetMapping("/artista/{email}")
+    public ResponseEntity<?> getOpereByArtista(@PathVariable String email) {
+
+        try {
+
+            Utente artistaTrovato = utenteRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Utente non trovato: " + email));
+
+            List<Opera> opere = operaRepository.findByArtista(artistaTrovato);
+
+            return ResponseEntity.ok(opere);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Errore: " + e.getMessage());
+        }
+    }
+
+    // RECUPERARER TUTTE LE OPERE (Per la homepage)
+    @GetMapping
+    public ResponseEntity<List<Opera>> getAllOpere() {
+        return ResponseEntity.ok(operaRepository.findAll());
+    }
+
 }

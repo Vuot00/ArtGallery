@@ -1,4 +1,4 @@
-package com.anagrafica.prova.backend;
+package com.anagrafica.prova.backend.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,7 @@
 package com.anagrafica.prova.backend.security;
 
-import com.anagrafica.prova.backend.Utente;
-import com.anagrafica.prova.backend.UtenteRepository;
+import com.anagrafica.prova.backend.model.Utente;
+import com.anagrafica.prova.backend.repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

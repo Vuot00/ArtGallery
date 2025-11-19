@@ -1,4 +1,4 @@
-package com.anagrafica.prova.backend;
+package com.anagrafica.prova.backend.dto;
 
 import lombok.Getter;
 import lombok.Setter;

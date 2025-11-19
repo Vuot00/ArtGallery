@@ -1,0 +1,14 @@
+QUESTA CARTELLA CONTIENE: I REST CONTROLLER
+
+COSA FANNO:
+Sono il "Front Office" del Backend.
+Il loro unico compito è ascoltare le richieste HTTP (GET, POST, PUT, DELETE) che arrivano dal Frontend (Angular) o da Postman.
+
+REGOLE:
+1. Ogni classe deve avere l'annotazione @RestController.
+2. Non devono contenere logica complessa (calcoli, regolee di business).
+3. Ricevono i dati, chiamano il Service (o il Repository) e restituiscono una risposta (ResponseEntity).
+
+
+- AuthController (gestisce login e registrazione)
+- OperaController (gestisce caricamento e visualizzazione opere)

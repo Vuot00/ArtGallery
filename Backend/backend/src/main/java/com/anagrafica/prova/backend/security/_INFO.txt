@@ -1,0 +1,10 @@
+QUESTA CARTELLA CONTIENE: LA LOGICA DI SICUREZZA (JWT)
+
+COSA FANNO:
+Gestiscono l'autenticazione e l'autorizzazione tramite JSON Web Token (JWT).
+Proteggono le API impedendo accessi non autorizzati.
+
+COMPONENTI CHIAVE:
+- JwtService: Crea, firma e valida i token .
+- JwtAuthenticationFilter: Controlla ogni richiesta HTTP per vedere se ha un passaporto valido .
+- CustomUserDetailsService: Carica i dettagli dell'utente dal DB per Spring Security.

@@ -1,0 +1,8 @@
+QUESTA CARTELLA CONTIENE: LE CONFIGURAZIONI GLOBALI
+
+COSA FANNO:
+Definiscono come si comporta Spring Boot all'avvio.
+Qui si impostano le regole generali che valgono per tutta l'applicazione.
+
+
+- SecurityConfig: Definisce chi può accedere a quali URL, attiva il CORS e gestisce la catena di filtri di sicurezza.

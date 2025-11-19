@@ -1,4 +1,4 @@
-package com.anagrafica.prova.backend;
+package com.anagrafica.prova.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

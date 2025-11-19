@@ -1,5 +1,6 @@
-package com.anagrafica.prova.backend;
+package com.anagrafica.prova.backend.repository;
 
+import com.anagrafica.prova.backend.model.Utente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

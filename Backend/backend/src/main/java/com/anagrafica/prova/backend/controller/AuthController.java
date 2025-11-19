@@ -1,5 +1,12 @@
-package com.anagrafica.prova.backend;
+package com.anagrafica.prova.backend.controller;
 
+import com.anagrafica.prova.backend.dto.JwtResponse;
+import com.anagrafica.prova.backend.dto.LoginRequest;
+import com.anagrafica.prova.backend.dto.RegistrationRequest;
+import com.anagrafica.prova.backend.model.Role;
+import com.anagrafica.prova.backend.model.Utente;
+import com.anagrafica.prova.backend.repository.RoleRepository;
+import com.anagrafica.prova.backend.repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,14 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
-import com.anagrafica.prova.backend.JwtResponse;
-import com.anagrafica.prova.backend.LoginRequest;
-import com.anagrafica.prova.backend.RegistrationRequest;
 import com.anagrafica.prova.backend.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.util.HashSet;

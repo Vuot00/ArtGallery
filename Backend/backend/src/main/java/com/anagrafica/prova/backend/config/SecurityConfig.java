@@ -1,4 +1,4 @@
-package com.anagrafica.prova.backend;
+package com.anagrafica.prova.backend.config;
 
 import com.anagrafica.prova.backend.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,14 +53,21 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        // Permetti richieste OPTIONS (per CORS)
+                        // Permette le richieste di "controllo" del browser (CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Permetti API pubbliche
-                        .requestMatchers("/api/**").permitAll()
+                        // Permette Login e Registrazione
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // Permette l'endpoint di test
+                        .requestMatchers("/api/test").permitAll()
+
+                        // Permette a TUTTI di VEDERE le opere (GET)
+                        //    (Così anche chi non è loggato vede la home page)
+                        .requestMatchers(HttpMethod.GET, "/api/opere/**").permitAll()
 
 
-                        // Richiedi autenticazione per tutto il resto
+                        // TUTTO IL RESTO RICHIEDE LOGIN
                         .anyRequest().authenticated()
                 )
 

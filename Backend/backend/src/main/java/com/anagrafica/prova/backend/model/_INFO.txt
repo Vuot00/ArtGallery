@@ -1,0 +1,14 @@
+QUESTA CARTELLA CONTIENE: LE ENTITÀ (MODEL)
+
+COSA FANNO:
+Rappresentano le tabelle del Database MySQL.
+Ogni classe qui dentro corrisponde a una tabella, e ogni attributo a una colonna.
+
+REGOLE:
+1. Ogni classe deve avere l'annotazione @Entity.
+2. Usano Lombok (@Data) per non dover scrivere getter e setter a mano.
+3. Definiscono le relazioni tra tabelle (@OneToMany, @ManyToMany).
+
+- Utente (tabella 'utenti')
+- Opera (tabella 'opere')
+- Role (tabella 'ruoli')

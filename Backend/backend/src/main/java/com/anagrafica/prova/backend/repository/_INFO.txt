@@ -1,0 +1,11 @@
+QUESTA CARTELLA CONTIENE: I REPOSITORY
+
+COSA FANNO:
+Sono il collegamento diretto con il Database.
+Grazie a Spring Data JPA, ci permettono di fare query SQL scrivendo solo metodi Java, senza scrivere SQL a mano.
+
+REGOLE:
+1. Sono Interfacce, non Classi.
+2. Estendono JpaRepository<ClasseModello, TipoId>.
+3. Qui scriviamo metodi come findByEmail(), existsByUsername().
+
