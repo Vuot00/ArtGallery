@@ -62,9 +62,10 @@ public class SecurityConfig {
                         // Permette l'endpoint di test
                         .requestMatchers("/api/test").permitAll()
 
-                        // Permette a TUTTI di VEDERE le opere (GET)
-                        //    (Così anche chi non è loggato vede la home page)
-                        .requestMatchers(HttpMethod.GET, "/api/opere/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+
+                        // Permette agli utenti loggati di VEDERE le opere
+                        .requestMatchers("/api/opere/**").authenticated()
 
 
                         // TUTTO IL RESTO RICHIEDE LOGIN

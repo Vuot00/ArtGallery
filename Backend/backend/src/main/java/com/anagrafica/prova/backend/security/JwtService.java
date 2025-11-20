@@ -1,11 +1,14 @@
 package com.anagrafica.prova.backend.security;
 
+import com.anagrafica.prova.backend.model.Utente;
+import com.anagrafica.prova.backend.repository.UtenteRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,6 +36,9 @@ public class JwtService {
     // Questa è la chiave che useremo per firmare
     private Key key;
 
+    @Autowired
+    private UtenteRepository utenteRepository;
+
     // Questo metodo viene eseguito dopo che il servizio è stato creato e decodifica la chiave segreta da Base64
     @PostConstruct
     public void init() {
@@ -51,6 +57,15 @@ public class JwtService {
         // Prendiamo l'utente (l'email) dall'oggetto Authentication
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername(); // (La nostra email)
+        String nome = "";
+        try {
+            Utente utente = utenteRepository.findByEmail(username).orElse(null);
+            if (utente != null) {
+                nome = utente.getNome(); // Assumendo che tu abbia un campo 'nome' in Utente
+            }
+        } catch (Exception e) {
+            logger.warn("Impossibile recuperare il nome utente per il token");
+            }
 
         //Estraiamo i ruoli e li trasformiamo in una lista di stringhe
         // Esempio risultato: ["ROLE_COLLEZIONISTA", "ROLE_ARTISTA"]
@@ -65,6 +80,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(username) // L'utente (email)
                 .claim("roles", roles) // I suoi ruoli
+                .claim("nome", nome) // il suo nome
                 .setIssuedAt(now) // Data di creazione
                 .setExpiration(expiryDate) // Data di scadenza
                 .signWith(key, SignatureAlgorithm.HS256) // Firma con la nostra chiave
