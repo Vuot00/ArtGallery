@@ -13,7 +13,7 @@ import { HttpClient } from '@angular/common/http';
 
 
   template: `
-    <h1>Test di Connessione Frontend-Backend (app.ts)</h1>
+    <h1>Art Gallery (app.ts)</h1>
 
     <h2>Stato:</h2>
     <p style="font-family: monospace; background-color: #eee; padding: 10px;">

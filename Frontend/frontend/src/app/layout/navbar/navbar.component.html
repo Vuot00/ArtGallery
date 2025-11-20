@@ -1,20 +1,39 @@
 <nav class="navbar">
 
-  <div class="search-container">
-    <i class="search-icon">🔍</i>
-    <input type="text" placeholder="Cerca artisti, opere, collezioni..." class="search-input">
+  <div class="left-section">
+    <button class="menu-btn" (click)="layoutService.toggleSidebar()">
+      ☰
+    </button>
+
+    <div class="search-container">
+      <i class="search-icon">🔍</i>
+      <input type="text" placeholder="Cerca artisti, opere..." class="search-input">
+    </div>
   </div>
 
   <div class="user-actions">
-
     <button class="icon-btn">🔔</button>
 
-    <div class="user-profile">
-      <span class="user-name">Ciao, {{ username }}</span>
-      <div class="user-avatar">
-        {{ username.charAt(0).toUpperCase() }} </div>
+    <div class="user-profile-container">
+
+      <div class="user-info">
+        <span class="user-name">Ciao, {{ username }}</span>
+        <div class="user-avatar">
+          {{ username.charAt(0).toUpperCase() }}
+        </div>
+      </div>
+
+      <div class="dropdown-menu">
+        <div class="dropdown-header">
+          <p class="dd-name">{{ username }}</p>
+          <p class="dd-role">Utente Art Gallery</p>
+        </div>
+        <hr>
+        <button (click)="logout()" class="dropdown-item logout-btn">
+          🚪 Esci
+        </button>
+      </div>
+
     </div>
-
-  </div>
-
+    </div>
 </nav>

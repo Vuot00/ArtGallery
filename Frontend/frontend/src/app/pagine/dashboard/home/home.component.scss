@@ -1,0 +1,107 @@
+// 1. Contenitore principale della pagina
+.home-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto; // Centra la pagina su schermi enormi
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 2rem;
+}
+
+// 2. La Griglia (Responsive)
+.grid-opere {
+  display: grid;
+  // Crea colonne che si adattano: minimo 280px, massimo tutto lo spazio disponibile
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px; // Spazio tra le card
+}
+
+// 3. La Card (Il riquadro bianco)
+.card {
+  background: white;
+  border-radius: 12px; // Angoli arrotondati
+  overflow: hidden;    // IMPORTANTE: Taglia tutto ciò che esce dai bordi arrotondati
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08); // Ombra leggera
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column; // Per allineare immagine sopra e testo sotto
+
+  &:hover {
+    transform: translateY(-5px); // Si alza quando passi il mouse
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+}
+
+// 4. Il Contenitore dell'Immagine (FONDAMENTALE)
+.card-img {
+  width: 100%;
+  height: 220px; // <--- ALTEZZA FISSA: Decide quanto sono alte tutte le foto
+  background-color: #f0f0f0; // Colore di sfondo mentre carica
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+
+    object-fit: cover;
+    // Significa: "Riempi tutto il box 220px. Se l'immagine è troppo grande,
+    // taglia i bordi in eccesso ma NON deformarla/schiacciarla".
+  }
+}
+
+// 5. Il corpo del testo
+.card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; // Occupa lo spazio rimanente per allineare i footer
+
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; // Se il titolo è lunghissimo mette "..."
+  }
+
+  .descrizione {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+
+    // Limita la descrizione a 2 righe (opzionale, ma elegante)
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// 6. Footer della Card (Prezzo e Bottone)
+.card-footer {
+  margin-top: auto; // Spinge il footer sempre in fondo alla card
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+
+  .prezzo {
+    font-weight: 700;
+    color: #3f51b5; // Colore "Primary"
+    font-size: 1.2rem;
+  }
+
+  .artista {
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+  }
+}

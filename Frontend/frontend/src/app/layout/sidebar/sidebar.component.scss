@@ -1,0 +1,91 @@
+// 1. Il contenitore della Sidebar
+.sidebar {
+  height: 100%;
+  padding: 20px; // Spazio intorno ai pulsanti
+  display: flex;
+  flex-direction: column;
+  gap: 15px; // Spazio verticale tra un bottone e l'altro
+  align-items: stretch;
+}
+
+// 2. Stile Base dei Pulsanti (Link) -> STILE CARD
+button, a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px; // Belli grandi e cliccabili
+  box-sizing: border-box;
+
+  // --- INIZIO STILE CARD ---
+  background-color: #5c6b8a;
+  border: none;
+  border-radius: 12px; // Stessi bordi arrotondati delle opere
+  box-shadow: 0 4px 6px rgba(0,0,0,0.04); // Ombra leggera iniziale
+  transition: all 0.3s ease; // Transizione fluida
+  // --- FINE STILE CARD ---
+
+  text-decoration: none;
+  color: #444;
+  font-size: 1rem;
+  font-weight: 600; // Font un po' più cicciotto
+  cursor: pointer;
+
+  // Se hai icone (emoji o svg) le distanzia dal testo
+  gap: 12px;
+
+  // 3. Effetto Hover (Galleggiamento)
+  &:hover {
+    transform: translateY(-3px); // Si alza leggermente
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1); // L'ombra diventa più profonda
+    color: #3f51b5; // Il testo diventa blu (Primary Color)
+  }
+
+  // 4. Effetto Click (Active)
+  &:active {
+    transform: translateY(0); // Torna giù quando clicchi
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+}
+
+// 5. Zona Artista (Separatore)
+.artist-zone {
+  margin-top: 20px;
+
+  p {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #888;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    font-weight: bold;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+    margin-bottom: 15px;
+  }
+}
+
+// 6. Bottone Speciale "Carica Opera"
+// Lo rendiamo un po' diverso per farlo risaltare, ma sempre in stile card
+.btn-upload {
+  border: 2px solid #3f51b5 !important; // Bordo colorato
+  color: #3f51b5 !important;
+
+  &:hover {
+    background-color: #3f51b5 !important; // Diventa tutto blu al passaggio
+    color: white !important;
+  }
+}
+
+// 7. Bottone Logout (in fondo)
+.logout-btn {
+  margin-top: auto; // Spinge il logout in fondo alla pagina
+  color: #d32f2f !important; // Rosso
+
+  &:hover {
+    background-color: #ffebee !important; // Sfondo rossiccio chiaro
+  }
+}

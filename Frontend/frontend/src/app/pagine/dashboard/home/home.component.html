@@ -1,1 +1,29 @@
-<p>home works!</p>
+<div class="home-container">
+  <h1>Le Opere in Vetrina</h1>
+
+  <div *ngIf="opere.length === 0" class="no-data">
+    <p>Nessuna opera caricata al momento.</p>
+  </div>
+
+  <div class="grid-opere">
+
+    <div class="card" *ngFor="let opera of opere">
+
+      <div class="card-img">
+        <img [src]="backendUrl + opera.immagineUrl" [alt]="opera.titolo">
+      </div>
+
+      <div class="card-body">
+        <h3>{{ opera.titolo }}</h3>
+        <p class="descrizione">{{ opera.descrizione }}</p>
+
+        <div class="card-footer">
+          <span class="prezzo">€ {{ opera.prezzo }}</span>
+          <span class="artista" *ngIf="opera.artista">di {{ opera.artista.nome }}</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -66,6 +66,6 @@ export class AuthService {
   //Ottieni il nome utente (email) dal token
   getUsername(): string {
     const tokenPayload = this.getDecodedToken();
-    return tokenPayload ? tokenPayload.sub : '';
+    return tokenPayload ? tokenPayload.nome : '';
   }
 }
