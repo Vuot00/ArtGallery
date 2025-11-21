@@ -12,5 +12,4 @@ REGOLE:
 
 - AuthController (gestisce login e registrazione)
 - OperaController (gestisce caricamento e visualizzazione opere)
--TestController (gestisce caricamento e visualizzazione test)
-- UtenteController (gestisce visualizzazione profilo utente )
+- UtenteController (gestisce visualizzazione profilo utente)

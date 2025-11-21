@@ -13,3 +13,4 @@ REGOLE:
 - LoginRequest (dati in arrivo per il login)
 - RegistrationRequest (dati in arrivo per la registrazione)
 - JwtResponse (dati in uscita con il token)
+-ChangePasswordRequest (dati in arrivo per il cambio password)
