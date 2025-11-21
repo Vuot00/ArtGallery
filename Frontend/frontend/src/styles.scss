@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+/* styles.scss */
+
+html, body {
+  margin: 0;        /* Rimuove i bordi bianchi esterni */
+  padding: 0;       /* Rimuove padding indesiderati */
+  height: 100%;     /* Assicura che l'app occupi tutta l'altezza */
+  width: 100%;      /* Assicura che occupi tutta la larghezza */
+  font-family: 'Roboto', sans-serif; /* (Opzionale) Un font di default */
+  box-sizing: border-box; /* Gestione migliore delle dimensioni */
+}
+
+*, *:before, *:after {
+  box-sizing: inherit; /* Tutti gli elementi ereditano la gestione dimensioni */
+}

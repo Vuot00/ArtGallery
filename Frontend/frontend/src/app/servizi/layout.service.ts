@@ -7,10 +7,10 @@ export class LayoutService {
 
   // Usiamo i Signals (moderni e veloci)
   // true = Aperta, false = Chiusa
-  sidebarOpen = signal(true);
+  sidebarOpen = signal(false);
 
   toggleSidebar() {
-    this.sidebarOpen.update(value => value);
+    this.sidebarOpen.update(value => !value);
     console.log(this.sidebarOpen());
   }
 }

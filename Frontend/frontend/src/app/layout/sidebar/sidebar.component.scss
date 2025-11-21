@@ -1,15 +1,16 @@
-// 1. Il contenitore della Sidebar
+// Il contenitore della Sidebar
 .sidebar {
   height: 100%;
   padding: 20px; // Spazio intorno ai pulsanti
   display: flex;
   flex-direction: column;
-  gap: 15px; // Spazio verticale tra un bottone e l'altro
+  gap: 60px; // Spazio verticale tra un bottone e l'altro
   align-items: stretch;
 }
 
-// 2. Stile Base dei Pulsanti (Link) -> STILE CARD
+// Stile Base dei Pulsanti (Link) -> STILE CARD
 button, a {
+  margin-top: 5px;
   display: flex;
   align-items: center;
   width: 100%;
@@ -30,24 +31,24 @@ button, a {
   font-weight: 600; // Font un po' più cicciotto
   cursor: pointer;
 
-  // Se hai icone (emoji o svg) le distanzia dal testo
+  // Se abbiamo emoji o svg, la distanzia dal testo
   gap: 12px;
 
-  // 3. Effetto Hover (Galleggiamento)
+  // Effetto Hover (Galleggiamento)
   &:hover {
     transform: translateY(-3px); // Si alza leggermente
     box-shadow: 0 8px 15px rgba(0,0,0,0.1); // L'ombra diventa più profonda
     color: #3f51b5; // Il testo diventa blu (Primary Color)
   }
 
-  // 4. Effetto Click (Active)
+  // Effetto Click (Active)
   &:active {
     transform: translateY(0); // Torna giù quando clicchi
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
 }
 
-// 5. Zona Artista (Separatore)
+// Zona Artista (Separatore)
 .artist-zone {
   margin-top: 20px;
 
@@ -68,8 +69,7 @@ button, a {
   }
 }
 
-// 6. Bottone Speciale "Carica Opera"
-// Lo rendiamo un po' diverso per farlo risaltare, ma sempre in stile card
+// Bottone Speciale "Carica Opera"
 .btn-upload {
   border: 2px solid #3f51b5 !important; // Bordo colorato
   color: #3f51b5 !important;
@@ -80,7 +80,7 @@ button, a {
   }
 }
 
-// 7. Bottone Logout (in fondo)
+// Bottone Logout (in fondo)
 .logout-btn {
   margin-top: auto; // Spinge il logout in fondo alla pagina
   color: #d32f2f !important; // Rosso

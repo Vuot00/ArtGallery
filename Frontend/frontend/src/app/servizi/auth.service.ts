@@ -28,6 +28,14 @@ export class AuthService {
       );
   }
 
+  getEmail(): string {
+    const token: any = this.getDecodedToken();
+    if (token && token.sub) {
+      return token.sub; // 'sub' contiene l'email
+    }
+    return '';
+  }
+
   // Metodo Logout
   logout() {
     localStorage.removeItem('jwtToken');
