@@ -1,10 +1,13 @@
 package com.anagrafica.prova.backend.controller;
 
+import com.anagrafica.prova.backend.model.Immagine;
 import com.anagrafica.prova.backend.model.Opera;
+import com.anagrafica.prova.backend.repository.ImmagineRepository;
 import com.anagrafica.prova.backend.repository.OperaRepository;
 import com.anagrafica.prova.backend.model.Utente;
 import com.anagrafica.prova.backend.repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder; // <--- Importante!
@@ -29,6 +32,9 @@ public class OperaController {
     @Autowired
     private UtenteRepository utenteRepository;
 
+    @Autowired
+    private ImmagineRepository immagineRepository;
+
     // Cartella dove salvare le immagini (nella root del progetto backend)
     private static final String UPLOAD_DIR = "uploads/";
 
@@ -37,49 +43,94 @@ public class OperaController {
             @RequestParam("titolo") String titolo,
             @RequestParam("descrizione") String descrizione,
             @RequestParam("prezzo") Double prezzo,
-            @RequestParam("file") MultipartFile file
-
+            @RequestParam("files") MultipartFile[] files // <--- ORA È UN ARRAY!
     ) {
         try {
-
             String emailArtista = SecurityContextHolder.getContext().getAuthentication().getName();
-
-
             Utente artista = utenteRepository.findByEmail(emailArtista)
-                    .orElseThrow(() -> new RuntimeException("Utente non trovato con email: " + emailArtista));
-
-
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-
-
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath);
-
+                    .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
             Opera nuovaOpera = new Opera();
             nuovaOpera.setTitolo(titolo);
             nuovaOpera.setDescrizione(descrizione);
             nuovaOpera.setPrezzo(prezzo);
-            nuovaOpera.setImmagineUrl(fileName);
             nuovaOpera.setDataCaricamento(LocalDateTime.now());
             nuovaOpera.setArtista(artista);
 
+            // Gestione Cartella
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+
+            // Ciclo su ogni file caricato
+            for (MultipartFile file : files) {
+                String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                Files.copy(file.getInputStream(), uploadPath.resolve(fileName));
+
+                Immagine img = new Immagine();
+                img.setUrl(fileName);
+                img.setOpera(nuovaOpera);
+                nuovaOpera.getImmagini().add(img);
+            }
+
             operaRepository.save(nuovaOpera);
+            return ResponseEntity.ok("Opera con " + files.length + " immagini caricata!");
 
-            return ResponseEntity.ok("Opera caricata con successo!");
-
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Errore nel salvataggio del file: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Errore generico: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Errore: " + e.getMessage());
         }
     }
+
+    @PostMapping(value = "/{id}/immagini", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> aggiungiImmagine(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            Opera opera = operaRepository.findById(id).orElseThrow(() -> new RuntimeException("Opera non trovata"));
+
+
+            String emailCorrente = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (!opera.getArtista().getEmail().equals(emailCorrente)) {
+                return ResponseEntity.status(403).body("Non autorizzato");
+            }
+
+
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Files.copy(file.getInputStream(), Paths.get(UPLOAD_DIR).resolve(fileName));
+
+
+            Immagine img = new Immagine();
+            img.setUrl(fileName);
+            img.setOpera(opera);
+
+            immagineRepository.save(img);
+
+            return ResponseEntity.ok(img);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Errore upload: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/immagini/{idImmagine}")
+    public ResponseEntity<?> eliminaImmagine(@PathVariable Long idImmagine) {
+        try {
+            Immagine img = immagineRepository.findById(idImmagine)
+                    .orElseThrow(() -> new RuntimeException("Immagine non trovata"));
+
+
+            String emailCorrente = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (!img.getOpera().getArtista().getEmail().equals(emailCorrente)) {
+                return ResponseEntity.status(403).body("Non autorizzato");
+            }
+
+
+            try { Files.deleteIfExists(Paths.get(UPLOAD_DIR).resolve(img.getUrl())); } catch (Exception ignored) {}
+
+            immagineRepository.delete(img);
+            return ResponseEntity.ok("Immagine eliminata");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Errore eliminazione");
+        }
+    }
+
+
     @GetMapping("/artista/{email}")
     public ResponseEntity<?> getOpereByArtista(@PathVariable String email) {
 
@@ -96,6 +147,49 @@ public class OperaController {
             return ResponseEntity.badRequest().body("Errore: " + e.getMessage());
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOperaById(@PathVariable Long id) {
+        try {
+            Opera opera = operaRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Opera non trovata"));
+
+
+            return ResponseEntity.ok(opera);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Opera non trovata");
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> aggiornaOpera(@PathVariable Long id, @RequestBody Opera operaAggiornata) {
+        try {
+            String emailCorrente = SecurityContextHolder.getContext().getAuthentication().getName();
+
+
+            Opera opera = operaRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Opera non trovata"));
+
+
+            if (!opera.getArtista().getEmail().equals(emailCorrente)) {
+                return ResponseEntity.status(403).body("Non puoi modificare opere non tue!");
+            }
+
+            opera.setTitolo(operaAggiornata.getTitolo());
+            opera.setDescrizione(operaAggiornata.getDescrizione());
+            opera.setPrezzo(operaAggiornata.getPrezzo());
+
+
+            operaRepository.save(opera);
+
+            return ResponseEntity.ok("Opera aggiornata con successo!");
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Errore aggiornamento: " + e.getMessage());
+        }
+    }
+
 
     // RECUPERARER TUTTE LE OPERE (Per la homepage)
     @GetMapping

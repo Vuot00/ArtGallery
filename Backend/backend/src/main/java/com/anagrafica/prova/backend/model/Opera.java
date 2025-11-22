@@ -3,6 +3,7 @@ package com.anagrafica.prova.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
 @Table(name = "opere")
@@ -14,11 +15,14 @@ public class Opera {
     private Long id;
 
     private String titolo;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String descrizione;
     private Double prezzo;
 
 
-    private String immagineUrl;
+    @OneToMany(mappedBy = "opera", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Immagine> immagini = new ArrayList<>();
 
     private LocalDateTime dataCaricamento;
 

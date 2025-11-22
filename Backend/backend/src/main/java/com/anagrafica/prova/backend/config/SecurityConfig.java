@@ -65,7 +65,7 @@ public class SecurityConfig {
                         .requestMatchers("/uploads/**").permitAll()
 
                         // Permette agli utenti loggati di VEDERE le opere
-                        .requestMatchers("/api/opere/**").authenticated()
+                        .requestMatchers(HttpMethod.GET,"/api/opere/**").permitAll()
 
 
                         // TUTTO IL RESTO RICHIEDE LOGIN
