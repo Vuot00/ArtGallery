@@ -5,28 +5,39 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { HomeComponent } from './pagine/dashboard/home/home.component';
 import { authGuard } from './servizi/auth.guard';
 import { CaricaOperaComponent } from './pagine/artista/carica-opera/carica-opera.component';
-import {TestConnectionComponent} from './pagine/test-connection/test-connection.component';
+import { TestConnectionComponent } from './pagine/test-connection/test-connection.component';
 import { ProfiloComponent } from './pagine/profilo/profilo.component';
+import { DettaglioOperaComponent } from './pagine/dettaglio-opera/dettaglio-opera.component';
+import { ModificaOperaComponent } from './pagine/artista/modifica-opera/modifica-opera.component';
 
 export const routes: Routes = [
-  { path: 'registrazione', component: RegistrazioneComponent },
+  // --- ROTTE PUBBLICHE (Senza Sidebar/Navbar) ---
   { path: 'login', component: LoginComponent },
-  { path: 'carica-opera', component: CaricaOperaComponent },
-  { path: 'test', component: TestConnectionComponent },
-  { path: 'profilo', component: ProfiloComponent },
+  { path: 'registrazione', component: RegistrazioneComponent },
 
-  //  Reindirizza la home page (il percorso vuoto)
-  //    alla pagina di login o di registrazione.
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  // --- REDIRECT INIZIALE ---
+  // Se vado su "localhost:4200" vuoto, mi manda al login
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
+  // --- ROTTE PROTETTE (Con Sidebar, Navbar e AuthGuard) ---
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard], // Protegge tutte le pagine qui sotto
     children: [
+      // Se sono nel layout ma senza path specifico, vado alla home
       { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+      // Pagine dell'applicazione
       { path: 'home', component: HomeComponent },
-      // Qui aggiungeremo 'carica-opera', 'profilo', ecc.
+      { path: 'profilo', component: ProfiloComponent },
+      { path: 'carica-opera', component: CaricaOperaComponent },
+      { path: 'modifica-opera/:id', component: ModificaOperaComponent },
+      { path: 'opera/:id', component: DettaglioOperaComponent },
+      { path: 'test', component: TestConnectionComponent },
     ]
   },
+
+  // (Opzionale) Wildcard: se l'utente scrive un URL a caso, torna al login
+  { path: '**', redirectTo: 'login' }
 ];

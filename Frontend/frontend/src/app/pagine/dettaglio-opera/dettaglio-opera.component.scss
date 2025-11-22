@@ -1,0 +1,195 @@
+// Variabili (riprese dal tuo tema)
+$primary-color: #3f51b5;
+$text-dark: #333;
+$text-muted: #666;
+$bg-light: #f5f5f5;
+$card-radius: 16px;
+
+.dettaglio-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+// Stati di caricamento/errore
+.loading-state, .error-state {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: $text-muted;
+}
+
+.error-state p { color: #d32f2f; margin-bottom: 20px; }
+
+// Layout principale a 2 colonne
+.opera-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr; // Metà e metà su desktop
+  gap: 40px;
+  background: white;
+  padding: 30px;
+  border-radius: $card-radius;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; // Una colonna su mobile
+  }
+}
+
+// --- Colonna Immagine ---
+.opera-image-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  // Contenitore per l'immagine principale
+  // Questo forza lo spazio occupato ad essere sempre uguale
+  .main-image-container {
+    width: 100%;
+    height: 500px; // ALTEZZA FISSA: Questo impedisce al layout di saltare
+    background-color: #f0f0f0; // Sfondo neutro per riempire gli spazi vuoti
+    border-radius: $card-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    .main-image {
+      width: 100%;
+      height: 100%;
+
+      // MAGIA QUI:
+      // 'contain' = Mostra TUTTA l'immagine, lasciando bande vuote se necessario.
+      // È meglio per l'arte perché non taglia pezzi del quadro.
+      object-fit: contain;
+
+      transition: opacity 0.3s ease;
+    }
+  }
+
+  // --- Galleria Miniature ---
+  .gallery-thumbs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .thumb-container {
+      width: 80px;  // Larghezza fissa
+      height: 80px; // Altezza fissa (Quadrato perfetto)
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+      opacity: 0.6;
+      background-color: #ddd; // Sfondo mentre carica
+
+      img {
+        width: 100%;
+        height: 100%;
+
+        // MAGIA QUI:
+        // 'cover' = Riempie tutto il quadrato, tagliando i bordi se serve.
+        // Perfetto per le miniature.
+        object-fit: cover;
+      }
+
+      &:hover {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+
+      &.active {
+        opacity: 1;
+        border-color: $primary-color;
+        box-shadow: 0 4px 10px rgba($primary-color, 0.3);
+      }
+    }
+  }
+}
+
+// --- Colonna Info ---
+.opera-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+
+  .opera-titolo {
+    font-size: 2.5rem;
+    margin: 0;
+    color: $text-dark;
+    line-height: 1.2;
+  }
+
+  // Info Artista
+  .artista-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+
+    .avatar-placeholder {
+      width: 50px; height: 50px;
+      background-color: $primary-color;
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 1.2rem;
+    }
+
+    .label { font-size: 0.9rem; color: $text-muted; display: block; }
+    .artista-nome { margin: 0; font-size: 1.1rem; color: $text-dark; }
+  }
+
+  // Prezzo
+  .prezzo-box {
+    .prezzo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $primary-color;
+    }
+  }
+
+  // Descrizione
+  .descrizione-box {
+    h3 { font-size: 1.1rem; margin-bottom: 10px; color: $text-dark; }
+    .descrizione-testo {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.6;
+      white-space: pre-line; // Rispetta gli a capo nel testo
+    }
+  }
+
+  // Acquisto
+  .acquisto-actions {
+    margin-top: auto; // Spinge in fondo al contenitore
+    .btn-buy {
+      width: 100%;
+      padding: 18px;
+      background-color: $primary-color;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2rem; font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 4px 15px rgba(63, 81, 181, 0.3);
+
+      &:hover {
+        background-color: darken($primary-color, 5%);
+        transform: translateY(-2px);
+      }
+    }
+    .shipping-info {
+      text-align: center; font-size: 0.85rem; color: $text-muted; margin-top: 10px;
+    }
+  }
+}
+
+.fade-in { animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.btn-secondary { display: inline-block; padding: 10px 20px; background: #eee; color: $text-dark; text-decoration: none; border-radius: 8px; }

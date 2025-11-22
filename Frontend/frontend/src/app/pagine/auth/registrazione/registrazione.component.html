@@ -1,65 +1,69 @@
-<h3>Crea un nuovo account</h3>
+<div class="registrazione-container">
+  <div class="registrazione-card">
 
-<form (ngSubmit)="registra()" #formRegistrazione="ngForm">
+    <div class="registrazione-header">
+      <div class="icon-avatar">
+        📝 </div>
+      <h2>Crea Account</h2>
+      <p>Unisciti a noi! Bastano pochi secondi.</p>
+    </div>
 
-  <div>
-    <label for="nome">Nome:</label>
-    <input type="text" id="nome" name="nome"
-           [(ngModel)]="datiRegistrazione.nome" required>
-  </div>
+    <form (ngSubmit)="registra()" #formRegistrazione="ngForm" class="registrazione-form">
 
-  <div>
-    <label for="email">Email:</label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      [(ngModel)]="datiRegistrazione.email"
-      required
-
-      pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-
-      #emailInput="ngModel">
-
-    <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="messaggio-errore">
-
-      <div *ngIf="emailInput.errors?.['required']">
-        L'email è obbligatoria.
+      <div class="form-group">
+        <label for="nome">Nome Completo</label>
+        <input
+          type="text"
+          id="nome"
+          name="nome"
+          [(ngModel)]="datiRegistrazione.nome"
+          required
+          placeholder="Mario Rossi">
       </div>
 
-      <div *ngIf="emailInput.errors?.['pattern']">
-        Formato email non valido.
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="datiRegistrazione.email"
+          required
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          #emailInput="ngModel"
+          placeholder="nome@esempio.com">
+
+        <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="messaggio-errore">
+          <div *ngIf="emailInput.errors?.['required']">
+            L'email è obbligatoria.
+          </div>
+          <div *ngIf="emailInput.errors?.['pattern']">
+            Formato email non valido.
+          </div>
+        </div>
       </div>
 
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="datiRegistrazione.password"
+          required
+          placeholder="Scegli una password sicura">
+      </div>
+
+      <button type="submit" class="btn-registrazione" [disabled]="!formRegistrazione.form.valid">
+        Registrati
+      </button>
+
+    </form>
+
+    <div class="registrazione-footer">
+      Hai già un account?
+      <a routerLink="/login">Accedi</a>
     </div>
+
   </div>
-
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password"
-           [(ngModel)]="datiRegistrazione.password" required>
-  </div>
-
-  <div>
-    <label>Registrami come:</label>
-    <div>
-      <input type="radio" id="tipoCollezionista" name="tipoUtente"
-             value="COLLEZIONISTA"
-             [(ngModel)]="datiRegistrazione.tipoUtente" required>
-      <label for="tipoCollezionista">Collezionista</label>
-    </div>
-    <div>
-      <input type="radio" id="tipoArtista" name="tipoUtente"
-             value="ARTISTA"
-             [(ngModel)]="datiRegistrazione.tipoUtente" required>
-      <label for="tipoArtista">Artista</label>
-    </div>
-  </div>
-  <button type="submit" [disabled]="!formRegistrazione.form.valid">Registrati</button>
-
-  <p style="margin-top: 20px;">
-    Hai già un account?
-    <a routerLink="/login">Accedi ora</a>
-  </p>
-
-</form>
+</div>

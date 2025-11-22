@@ -1,0 +1,68 @@
+<div class="container-modifica">
+
+  <div *ngIf="loading" class="loading-spinner">
+    <p>Caricamento dati dell'opera...</p>
+  </div>
+
+  <div class="card-modifica" *ngIf="!loading">
+    <h2>Modifica Opera</h2>
+
+    <form (ngSubmit)="salvaModifiche()" #formModifica="ngForm">
+
+      <div class="form-group">
+        <label for="titolo">Titolo dell'Opera</label>
+        <input
+          type="text"
+          id="titolo"
+          name="titolo"
+          [(ngModel)]="datiOpera.titolo"
+          required
+          placeholder="Inserisci il titolo">
+      </div>
+
+      <div class="form-group">
+        <label for="prezzo">Prezzo (€)</label>
+        <input
+          type="number"
+          id="prezzo"
+          name="prezzo"
+          [(ngModel)]="datiOpera.prezzo"
+          required
+          placeholder="0.00">
+      </div>
+
+      <div class="form-group">
+        <label for="descrizione">Descrizione Completa / Storia dell'Opera</label>
+        <textarea
+          id="descrizione"
+          name="descrizione"
+          [(ngModel)]="datiOpera.descrizione"
+          rows="12"
+          required
+          placeholder="Scrivi qui tutta la storia, i dettagli e le curiosità sull'opera..."></textarea>
+      </div>
+
+      <div class="gestione-foto">
+        <h3>Gestione Foto</h3>
+
+        <div class="foto-grid">
+          <div class="foto-item" *ngFor="let img of datiOpera.immagini">
+            <img [src]="'http://localhost:8080/uploads/' + img.url">
+            <button type="button" class="btn-delete-img" (click)="eliminaImmagine(img.id)">🗑️</button>
+          </div>
+        </div>
+
+        <div class="add-foto">
+          <label>Aggiungi un'altra foto:</label>
+          <input type="file" (change)="uploadNuovaFoto($event)">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="annulla()">Annulla</button>
+        <button type="submit" class="btn-save" [disabled]="!formModifica.form.valid">Salva Modifiche</button>
+      </div>
+
+    </form>
+  </div>
+</div>

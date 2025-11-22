@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../servizi/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {UserService} from '../../servizi/user.service';
 
 @Component({
   selector: 'app-profilo',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './profilo.component.html',
   styleUrl: './profilo.component.scss'
 })
@@ -22,7 +22,7 @@ export class ProfiloComponent implements OnInit {
 
 
   // Stato
-  activeTab: string = 'dati'; // Tab attiva di default
+  activeTab: any = 'dati'; // Tab attiva di default
   isArtist: boolean = false;
 
   // Dati

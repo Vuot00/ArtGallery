@@ -7,10 +7,19 @@
 
   <div class="grid-opere">
 
-    <div class="card" *ngFor="let opera of opere">
+    <div class="card"
+         *ngFor="let opera of opere"
+         [routerLink]="['/opera', opera.id]"
+         style="cursor: pointer;"
+         title="Clicca per vedere i dettagli">
 
       <div class="card-img">
-        <img [src]="backendUrl + opera.immagineUrl" [alt]="opera.titolo">
+        <img *ngIf="opera.immagini && opera.immagini.length > 0"
+             [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url"
+             [alt]="opera.titolo">
+
+        <img *ngIf="!opera.immagini || opera.immagini.length === 0"
+             src="assets/placeholder.png" alt="Nessuna foto">
       </div>
 
       <div class="card-body">

@@ -1,0 +1,71 @@
+<div class="dettaglio-container">
+
+  <div *ngIf="loading" class="loading-state">
+    <p>Caricamento dettagli opera...</p>
+  </div>
+
+  <div *ngIf="errore" class="error-state">
+    <p>{{ errore }}</p>
+    <a routerLink="/home" class="btn-secondary">Torna alla Home</a>
+  </div>
+
+  <div *ngIf="!loading && !errore && opera" class="opera-content fade-in">
+
+    <div class="opera-image-col">
+
+      <div class="main-image-container">
+
+        <img *ngIf="immagineSelezionata"
+             [src]="getBgImage(immagineSelezionata)"
+             [alt]="opera.titolo"
+             class="main-image">
+
+        <img *ngIf="!immagineSelezionata && (!opera.immagini || opera.immagini.length === 0)"
+             src="assets/placeholder.png"
+             alt="Nessuna immagine"
+             class="main-image">
+
+      </div>
+
+      <div class="gallery-thumbs" *ngIf="opera.immagini && opera.immagini.length > 1">
+        <div *ngFor="let img of opera.immagini"
+             class="thumb-container"
+             (click)="cambiaImmaginePrincipale(img.url)"
+             [class.active]="img.url === immagineSelezionata">
+
+          <img [src]="getBgImage(img.url)" class="thumb">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="opera-info-col">
+      <h1 class="opera-titolo">{{ opera.titolo }}</h1>
+
+      <div class="artista-info">
+        <div class="avatar-placeholder">{{ opera.artista.nome.charAt(0).toUpperCase() }}</div>
+        <div>
+          <span class="label">Artista</span>
+          <h3 class="artista-nome">{{ opera.artista.nome }}</h3>
+        </div>
+      </div>
+
+      <div class="prezzo-box">
+        <span class="prezzo">{{ opera.prezzo | currency:'EUR' }}</span>
+      </div>
+
+      <div class="descrizione-box">
+        <h3>Descrizione dell'Opera</h3>
+        <p class="descrizione-testo">
+          {{ opera.descrizione }}
+        </p>
+      </div>
+
+      <div class="acquisto-actions">
+        <button class="btn-buy" (click)="acquistaOpera()">Acquista Ora quest'Opera</button>
+        <p class="shipping-info">Spedizione assicurata inclusa. Certificato di autenticità fornito dall'artista.</p>
+      </div>
+
+    </div>
+  </div>
+</div>

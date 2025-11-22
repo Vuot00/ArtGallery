@@ -1,0 +1,166 @@
+// --- Variabili (Coerenti con il tuo tema) ---
+$primary-color: #3f51b5;
+$primary-hover: darken($primary-color, 10%);
+$danger-color: #d32f2f; // Rosso per annulla/elimina
+$text-dark: #333;
+$text-muted: #666;
+$bg-light: #f5f5f5;
+$border-radius-card: 12px;
+$border-radius-input: 8px;
+
+// --- Layout Pagina ---
+.container-modifica {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // Allineato in alto con un po' di margine
+  min-height: 90vh;
+  background-color: $bg-light;
+  padding: 40px 20px;
+}
+
+// --- Card Principale ---
+.card-modifica {
+  background: white;
+  padding: 40px;
+  border-radius: $border-radius-card;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 600px; // Un po' più larga del login per stare comodi con la descrizione
+  animation: fadeIn 0.4s ease;
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 30px;
+    color: $text-dark;
+    font-size: 1.8rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+  }
+}
+
+// --- Form Styles ---
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: $text-dark;
+    font-size: 0.95rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: $border-radius-input;
+    font-size: 1rem;
+    color: #333;
+    box-sizing: border-box; // Fondamentale per non sbordare
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #fafafa;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      background-color: #fff;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+
+    &::placeholder {
+      color: #bbb;
+    }
+  }
+
+  textarea {
+    resize: vertical; // Permette di allungare la textarea solo in verticale
+    min-height: 120px;
+    line-height: 1.5;
+  }
+}
+
+// --- Pulsanti (Actions) ---
+.actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  justify-content: flex-end; // Allinea i bottoni a destra
+
+  button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: $border-radius-input;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    // Stile Bottone "Salva"
+    &.btn-save {
+      background-color: $primary-color;
+      color: white;
+      flex-grow: 1; // Su mobile si allarga
+
+      &:hover {
+        background-color: $primary-hover;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($primary-color, 0.2);
+      }
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    // Stile Bottone "Annulla"
+    &.btn-cancel {
+      background-color: transparent;
+      color: $text-muted;
+      border: 1px solid #ddd;
+
+      &:hover {
+        background-color: #f0f0f0;
+        color: $text-dark;
+        border-color: #ccc;
+      }
+    }
+  }
+}
+
+// --- Stato di Caricamento ---
+.loading-spinner {
+  text-align: center;
+  padding: 50px;
+  color: $text-muted;
+  font-size: 1.1rem;
+}
+
+// --- Media Query per Mobile ---
+@media (max-width: 600px) {
+  .container-modifica {
+    padding: 20px 10px;
+  }
+
+  .card-modifica {
+    padding: 25px;
+  }
+
+  .actions {
+    flex-direction: column-reverse; // Mette "Salva" sopra "Annulla" su mobile
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// --- Animazione ---
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

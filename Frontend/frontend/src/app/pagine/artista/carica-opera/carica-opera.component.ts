@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OperaService } from '../../../servizi/opera.service';
 
+
 @Component({
   selector: 'app-carica-opera',
   standalone: true,
@@ -25,39 +26,51 @@ export class CaricaOperaComponent {
   };
 
 
-  selectedFile: File | null = null;
-  previewUrl: string | null = null;
+  selectedFiles: File[] =[];
+  previewUrls: string[] = [];
 
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+    if (event.target.files) {
+      const files = Array.from(event.target.files) as File[];
 
+      for (let file of files) {
+        this.selectedFiles.push(file);
 
-      const reader = new FileReader();
-      reader.onload = e => this.previewUrl = reader.result as string;
-      reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.previewUrls.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
     }
+  }
+
+  removeFile(index: number) {
+    this.selectedFiles.splice(index, 1);
+    this.previewUrls.splice(index, 1);
   }
 
 
   onSubmit() {
-    if (!this.selectedFile) {
-      alert("Devi selezionare un'immagine!");
+    if (this.selectedFiles.length === 0) {
+      alert("Devi selezionare almeno un'immagine!");
       return;
     }
 
     console.log("Invio opera...", this.opera);
+    console.log("Numero immagini:", this.selectedFiles.length);
 
-    this.operaService.caricaOpera(this.opera, this.selectedFile).subscribe({
+    this.operaService.caricaOpera(this.opera, this.selectedFiles).subscribe({
       next: (res) => {
-        alert("Opera caricata con successo!");
+        alert("Opera e galleria caricate con successo!");
         this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error("Errore caricamento", err);
-        alert("Errore durante il caricamento.");
+        // Mostra un messaggio più specifico se possibile
+        const msg = err.error || "Errore durante il caricamento.";
+        alert(msg);
       }
     });
   }

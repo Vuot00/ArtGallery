@@ -47,15 +47,19 @@
     </div>
 
     <div class="mini-grid">
-      <div class="mini-card" *ngFor="let opera of mieOpere">
-        <img [src]="'http://localhost:8080/uploads/' + opera.immagineUrl">
+      <div class="mini-card" *ngFor="let opera of mieOpere"> <img [src]="'http://localhost:8080/uploads/' + opera.immagineUrl" alt="opera">
+
         <div class="mini-info">
           <strong>{{ opera.titolo }}</strong>
           <span>€ {{ opera.prezzo }}</span>
+
+          <button class="btn-edit" [routerLink]="['/modifica-opera', opera.id]">
+            ✏️ Modifica
+          </button>
         </div>
+
       </div>
     </div>
-  </div>
 
   <div class="tab-content" *ngIf="activeTab === 'vendite'">
     <h3>Storico Vendite</h3>

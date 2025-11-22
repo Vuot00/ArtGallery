@@ -6,6 +6,11 @@ export interface Opera {
   immagineUrl: string;
   anno?: number;
 
+  immagini: {
+    id: number;
+    url: string;
+  }[];
+
   // Se il backend manda anche l'artista:
   artista?: {
     id: number;

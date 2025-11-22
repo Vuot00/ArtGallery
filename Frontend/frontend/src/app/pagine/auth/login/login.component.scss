@@ -1,0 +1,141 @@
+// Variabili estratte dal tuo stile profilo
+$primary-color: #3f51b5;
+$text-dark: #333;
+$text-muted: #666;
+$bg-light: #f5f5f5; // Un grigio chiaro per lo sfondo della pagina
+$border-radius-card: 12px;
+$border-radius-input: 8px;
+
+// --- Layout Pagina ---
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; // Occupa tutta l'altezza dello schermo
+  background-color: $bg-light;
+  padding: 20px;
+}
+
+// --- La Card di Login ---
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: $border-radius-card;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08); // Un po' più profonda per farla "galleggiare"
+  width: 100%;
+  max-width: 450px; // Larghezza massima contenuta
+  text-align: center;
+  animation: fadeIn 0.5s ease; // Stessa animazione del profilo
+
+  // Header della card
+  .login-header {
+    margin-bottom: 30px;
+
+    .icon-avatar {
+      width: 70px;
+      height: 70px;
+      background: $primary-color;
+      color: white;
+      border-radius: 50%;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px auto; // Centrato
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: $text-dark;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: $text-muted;
+      font-size: 0.95rem;
+    }
+  }
+
+  // Form (Stile ripreso da .form-profilo)
+  .login-form {
+    text-align: left; // Gli input stanno meglio allineati a sinistra
+
+    .form-group {
+      margin-bottom: 20px;
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #444;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: $border-radius-input;
+        font-size: 1rem;
+        box-sizing: border-box; // Importante per il padding
+        transition: border-color 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-color;
+          background-color: #fcfcfc;
+        }
+      }
+    }
+
+    // Pulsante (Stile ripreso da .btn-save ma full width)
+    .btn-login {
+      width: 100%;
+      background: $primary-color;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: $border-radius-input;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+      box-shadow: 0 4px 10px rgba(63, 81, 181, 0.2);
+
+      &:hover {
+        background: darken($primary-color, 5%);
+      }
+
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+    }
+  }
+
+  // Footer (Link registrazione)
+  .login-footer {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: $text-muted;
+
+    a {
+      color: $primary-color;
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

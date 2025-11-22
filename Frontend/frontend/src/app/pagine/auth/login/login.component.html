@@ -1,49 +1,61 @@
-<h3>Accedi al tuo account</h3>
+<div class="login-container">
+  <div class="login-card">
 
-<form (ngSubmit)="login()" #formLogin="ngForm">
-
-  <div>
-    <label for="email">Email:</label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      [(ngModel)]="datiLogin.email"
-      required
-
-      pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-
-      #emailInput="ngModel">
-
-    <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="messaggio-errore">
-
-      <div *ngIf="emailInput.errors?.['required']">
-        L'email è obbligatoria.
+    <div class="login-header">
+      <div class="icon-avatar">
+        🔒
       </div>
-
-      <div *ngIf="emailInput.errors?.['pattern']">
-        Formato email non valido.
-      </div>
-
+      <h2>Accedi</h2>
+      <p>Bentornato! Inserisci le tue credenziali.</p>
     </div>
+
+    <form (ngSubmit)="login()" #formLogin="ngForm" class="login-form">
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="datiLogin.email"
+          required
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          #emailInput="ngModel"
+          placeholder="nome@esempio.com"
+        >
+
+        <div *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)" class="messaggio-errore">
+          <div *ngIf="emailInput.errors?.['required']">
+            L'email è obbligatoria.
+          </div>
+          <div *ngIf="emailInput.errors?.['pattern']">
+            Formato email non valido.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="datiLogin.password"
+          required
+          placeholder="••••••••"
+        >
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="!formLogin.form.valid">
+        Accedi
+      </button>
+
+    </form>
+
+    <div class="login-footer">
+      Non hai ancora un account?
+      <a routerLink="/registrazione">Registrati ora</a>
+    </div>
+
   </div>
-
-  <div>
-    <label for="password">Password:</label>
-    <input
-      type="password"
-      id="password"
-      name="password"
-      [(ngModel)]="datiLogin.password"
-      required
-    >
-  </div>
-
-  <button type="submit" [disabled]="!formLogin.form.valid">Accedi</button>
-
-  <p style="margin-top: 20px;">
-    Non hai ancora un account?
-    <a routerLink="/registrazione">Registrati ora</a>
-  </p>
-
-</form>
+</div>
