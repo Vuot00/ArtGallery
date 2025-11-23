@@ -49,7 +49,7 @@
     <div class="mini-grid">
       <div class="mini-card" *ngFor="let opera of mieOpere">
 
-        <img [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url"
+        <img [src]="'http://localhost:8080/uploads/' + opera.immagineUrl"
              alt="{{ opera.titolo }}"
              style="width: 100%; height: 180px; object-fit: cover;">
         <div class="mini-info">

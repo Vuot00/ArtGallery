@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 import { OperaService } from '../../../servizi/opera.service';
+import { ToastService } from '../../../servizi/toast.service';
 
 @Component({
   selector: 'app-modifica-opera',
@@ -12,6 +13,8 @@ import { OperaService } from '../../../servizi/opera.service';
   styleUrl: './modifica-opera.component.scss'
 })
 export class ModificaOperaComponent implements OnInit {
+
+  toastService = inject(ToastService);
 
   idOpera!: number;
   datiOpera: any = {
@@ -37,7 +40,7 @@ export class ModificaOperaComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        alert('Errore nel caricamento opera');
+        this.toastService.show("Errore nel caricamento opera", "error");
         this.router.navigate(['/profilo']);
       }
     });
@@ -52,21 +55,31 @@ export class ModificaOperaComponent implements OnInit {
 
     this.operaService.modificaOpera(this.idOpera, datiDaInviare).subscribe({
       next: () => {
-        alert('Opera modificata con successo!');
+        this.toastService.show("Opera modificata con successo!", "success");
         this.router.navigate(['/profilo']);
       },
       error: (err) => {
         console.error("DETTAGLI ERRORE:", err);
-        alert('Errore: ' + (err.error || 'Errore sconosciuto'));
+        this.toastService.show("Errore ",(err.error || 'Errore sconosciuto'));
       }
     });
   }
 
   eliminaImmagine(idImg: number) {
+    if (this.datiOpera.immagini && this.datiOpera.immagini.length <= 1) {
+      this.toastService.show("Impossibile eliminare: L'opera deve avere almeno una foto!", "error");
+      return;
+    }
     if(!confirm("Vuoi eliminare questa foto?")) return;
 
-    this.operaService.eliminaFoto(idImg).subscribe(() => {
-      this.datiOpera.immagini = this.datiOpera.immagini.filter((img: any) => img.id !== idImg);
+    this.operaService.eliminaFoto(idImg).subscribe({
+      next: () => {
+        this.datiOpera.immagini = this.datiOpera.immagini.filter((img: any) => img.id !== idImg);
+        this.toastService.show("Foto eliminata con successo!", "success");
+      },
+      error: (err) => {
+        this.toastService.show("Errore durante l'eliminazione", "error");
+      }
     });
   }
 
@@ -76,7 +89,7 @@ export class ModificaOperaComponent implements OnInit {
       this.operaService.aggiungiFoto(this.idOpera, file).subscribe((nuovaImg) => {
 
         this.datiOpera.immagini.push(nuovaImg);
-        alert("Foto aggiunta!");
+        this.toastService.show("Foto caricata con successo!", "success");
       });
     }
   }

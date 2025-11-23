@@ -47,8 +47,17 @@
 
         <div class="foto-grid">
           <div class="foto-item" *ngFor="let img of datiOpera.immagini">
+
             <img [src]="'http://localhost:8080/uploads/' + img.url">
-            <button type="button" class="btn-delete-img" (click)="eliminaImmagine(img.id)">🗑️</button>
+
+            <button
+              type="button"
+              class="btn-delete-img"
+              *ngIf="datiOpera.immagini.length > 1"
+              (click)="eliminaImmagine(img.id)">
+              🗑️
+            </button>
+
           </div>
         </div>
 

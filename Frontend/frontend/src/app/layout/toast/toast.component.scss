@@ -1,0 +1,52 @@
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px; // In alto a destra
+  z-index: 10000; // Sopra TUTTO (anche modali e navbar)
+
+  min-width: 300px;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15); // Ombra profonda
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  cursor: pointer;
+  // Animazione di entrata (scivola da destra)
+  animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  // --- Colori dinamici in base al tipo ---
+  &.success {
+    border-left: 6px solid #2e7d32; // Verde
+    .icon { color: #2e7d32; }
+  }
+
+  &.error {
+    border-left: 6px solid #d32f2f; // Rosso
+    .icon { color: #d32f2f; }
+  }
+
+  &.info {
+    border-left: 6px solid #3f51b5; // Blu
+    .icon { color: #3f51b5; }
+  }
+}
+
+.message {
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.icon {
+  font-size: 1.2rem;
+}
+
+// Keyframes Animazione
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}

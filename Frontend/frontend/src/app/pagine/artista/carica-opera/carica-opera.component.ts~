@@ -72,7 +72,7 @@ export class CaricaOperaComponent {
         console.error("Errore caricamento", err);
         // Mostra un messaggio più specifico se possibile
         const msg = err.error || "Errore durante il caricamento.";
-        this.toastService.show(msg, "error");
+        alert(msg);
       }
     });
   }

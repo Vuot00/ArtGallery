@@ -67,7 +67,6 @@ export class DettaglioOperaComponent implements OnInit {
 
   acquistaOpera() {
     // Qui andrebbe la logica di integrazione con Stripe, PayPal, etc.
-
     alert("Funzionalità di acquisto in arrivo! Contatta l'artista per maggiori info.");
   }
 }

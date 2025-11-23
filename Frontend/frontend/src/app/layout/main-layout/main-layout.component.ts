@@ -4,6 +4,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { LayoutService} from '../../servizi/layout.service';
 import {NgClass} from '@angular/common';
+import {ToastComponent} from '../toast/toast.component';
 
 @Component({
   selector: 'app-main-layout',
@@ -12,7 +13,8 @@ import {NgClass} from '@angular/common';
     RouterOutlet,
     NavbarComponent,
     SidebarComponent,
-    NgClass
+    NgClass,
+    ToastComponent
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss'

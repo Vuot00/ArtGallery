@@ -1,7 +1,6 @@
-// --- Variabili (Coerenti con il tuo tema) ---
 $primary-color: #3f51b5;
 $primary-hover: darken($primary-color, 10%);
-$danger-color: #d32f2f; // Rosso per annulla/elimina
+$danger-color: #d32f2f;
 $text-dark: #333;
 $text-muted: #666;
 $bg-light: #f5f5f5;
@@ -10,57 +9,56 @@ $border-radius-input: 8px;
 
 // --- Layout Pagina ---
 .container-modifica {
+  padding: 40px 20px;
   display: flex;
   justify-content: center;
-  align-items: flex-start; // Allineato in alto con un po' di margine
-  min-height: 90vh;
-  background-color: $bg-light;
-  padding: 40px 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
 }
 
 // --- Card Principale ---
 .card-modifica {
   background: white;
   padding: 40px;
-  border-radius: $border-radius-card;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   width: 100%;
-  max-width: 600px; // Un po' più larga del login per stare comodi con la descrizione
+  max-width: 800px; // Aumentato per ospitare meglio la griglia foto
   animation: fadeIn 0.4s ease;
 
   h2 {
     margin-top: 0;
     margin-bottom: 30px;
-    color: $text-dark;
-    font-size: 1.8rem;
-    text-align: center;
-    border-bottom: 1px solid #eee;
+    color: #333;
+    border-bottom: 2px solid #f0f0f0;
     padding-bottom: 15px;
   }
 }
 
 // --- Form Styles ---
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 
   label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: $text-dark;
-    font-size: 0.95rem;
+    color: #555;
   }
 
-  input, textarea {
+  input[type="text"],
+  input[type="number"],
+  textarea {
     width: 100%;
     padding: 12px 15px;
     border: 1px solid #ddd;
     border-radius: $border-radius-input;
     font-size: 1rem;
     color: #333;
-    box-sizing: border-box; // Fondamentale per non sbordare
+    box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
     background-color: #fafafa;
+    resize: vertical;
 
     &:focus {
       outline: none;
@@ -75,9 +73,79 @@ $border-radius-input: 8px;
   }
 
   textarea {
-    resize: vertical; // Permette di allungare la textarea solo in verticale
     min-height: 120px;
     line-height: 1.5;
+  }
+}
+
+// --- Gestione Foto (Nuova Sezione) ---
+.gestione-foto {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  border: 1px dashed #ccc;
+
+  h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #444;
+  }
+}
+
+.foto-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.foto-item {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background: white;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .btn-delete-img {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+    &:hover {
+      background: $danger-color;
+      color: white;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.add-foto {
+  margin-top: 15px;
+  label {
+    font-weight: bold;
+    margin-right: 10px;
   }
 }
 
@@ -85,8 +153,10 @@ $border-radius-input: 8px;
 .actions {
   display: flex;
   gap: 15px;
-  margin-top: 30px;
-  justify-content: flex-end; // Allinea i bottoni a destra
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  justify-content: flex-end;
 
   button {
     padding: 12px 24px;
@@ -97,11 +167,9 @@ $border-radius-input: 8px;
     cursor: pointer;
     transition: all 0.2s;
 
-    // Stile Bottone "Salva"
     &.btn-save {
       background-color: $primary-color;
       color: white;
-      flex-grow: 1; // Su mobile si allarga
 
       &:hover {
         background-color: $primary-hover;
@@ -117,7 +185,6 @@ $border-radius-input: 8px;
       }
     }
 
-    // Stile Bottone "Annulla"
     &.btn-cancel {
       background-color: transparent;
       color: $text-muted;
@@ -150,16 +217,18 @@ $border-radius-input: 8px;
     padding: 25px;
   }
 
-  .actions {
-    flex-direction: column-reverse; // Mette "Salva" sopra "Annulla" su mobile
+  .foto-grid {
+    justify-content: center;
+  }
 
+  .actions {
+    flex-direction: column-reverse;
     button {
       width: 100%;
     }
   }
 }
 
-// --- Animazione ---
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

@@ -36,14 +36,34 @@
       </div>
     </div>
 
-    <div *ngIf="previewUrls" class="preview-box">
-      <img [src]="previewUrls" alt="Anteprima">
-    </div>
-
     <button type="submit" [disabled]="!operaForm.form.valid || !selectedFiles" class="btn-submit">
       Pubblica Opera
     </button>
 
   </form>
+
+  <div class="upload-container">
+  </div>
+
+  <div class="modal-overlay" *ngIf="showSuccessModal">
+
+    <div class="modal-box">
+      <div class="icon-check">✅</div>
+      <h3>Opera Pubblicata!</h3>
+      <p>La tua opera è stata caricata correttamente ed è ora visibile nella home.</p>
+
+      <div class="modal-actions">
+        <button class="btn-home" (click)="router.navigate(['/home'])">
+          🏠 Torna alla Home
+        </button>
+
+        <button class="btn-new" (click)="resetForm()">
+          ➕ Carica un'altra
+        </button>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 

@@ -27,14 +27,24 @@ export class OperaService {
     formData.append('descrizione', dati.descrizione);
     formData.append('prezzo', dati.prezzo);
 
-    // Appendiamo ogni file all'array 'files'
     for (let file of files) {
       formData.append('files', file);
     }
 
     const token = localStorage.getItem('jwtToken');
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-    return this.http.post(this.apiUrl, formData, { headers });
+    return this.http.post(this.apiUrl, formData, {
+      headers: headers,
+      responseType: 'text'
+    });
+  }
+
+  eliminaOpera(idOpera: number): Observable<any> {
+    const token = localStorage.getItem('jwtToken');
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+
+    // responseType: 'text' perché il backend risponde con una stringa
+    return this.http.delete(`${this.apiUrl}/${idOpera}`, { headers, responseType: 'text' });
   }
 
   aggiungiFoto(idOpera: number, file: File): Observable<any> {
@@ -58,7 +68,7 @@ export class OperaService {
     const token = localStorage.getItem('jwtToken');
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json' // Stiamo mandando JSON questa volta, non file
+      'Content-Type': 'application/json' // Stiamo mandando JSON
     });
 
     return this.http.put(url, dati, { headers: headers, responseType: 'text' });

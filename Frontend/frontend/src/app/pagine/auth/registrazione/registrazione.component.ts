@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import { Router } from '@angular/router';
+import {ToastService} from '../../../servizi/toast.service';
 
 @Component({
   selector: 'app-registrazione',
@@ -22,6 +23,7 @@ export class RegistrazioneComponent {
   };
 
   private backendUrl = 'http://localhost:8080';
+  private toastService = inject(ToastService);
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -41,16 +43,16 @@ export class RegistrazioneComponent {
     )
       .subscribe({
         next: (risposta) => {
-          alert(risposta);
+          this.toastService.show(risposta, 'success');
           this.router.navigate(['/login'])
         },
         error: (errore: HttpErrorResponse) => {
           if (errore.status === 400) {
             // Errore 400 (es. Email già in uso)
-            alert(errore.error);
+            this.toastService.show(errore.error, 'error');
           } else {
             // Altri errori (es. 500, o se il backend è spento)
-            alert('Si è verificato un errore di rete: ' + errore.statusText);
+            this.toastService.show('Siè verificato un errore di rete: ' + errore.statusText, 'error');
           }
         }
       });
