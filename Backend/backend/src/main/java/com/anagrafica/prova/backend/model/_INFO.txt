@@ -12,3 +12,4 @@ REGOLE:
 - Utente (tabella 'utenti')
 - Opera (tabella 'opere')
 - Role (tabella 'ruoli')
+- Immagine (tabella 'immagini')

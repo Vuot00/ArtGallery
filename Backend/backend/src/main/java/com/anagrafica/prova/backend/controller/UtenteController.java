@@ -53,7 +53,6 @@ public class UtenteController {
     @PostMapping("/me/password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         Utente me = getMe();
-
         if (!passwordEncoder.matches(request.getVecchiaPassword(), me.getPassword())) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("error", "La vecchia password non è corretta."));
         }

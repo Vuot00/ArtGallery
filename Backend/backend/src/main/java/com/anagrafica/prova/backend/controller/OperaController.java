@@ -130,6 +130,28 @@ public class OperaController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminaOpera(@PathVariable Long id) {
+        try {
+
+            String emailArtista = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            Opera opera = operaRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Opera non trovata"));
+
+            if (!opera.getArtista().getEmail().equals(emailArtista)) {
+                return ResponseEntity.status(403).body("Non hai il permesso di eliminare questa opera!");
+            }
+
+            operaRepository.delete(opera);
+
+            return ResponseEntity.ok("Opera eliminata con successo.");
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Errore durante l'eliminazione: " + e.getMessage());
+        }
+    }
+
 
     @GetMapping("/artista/{email}")
     public ResponseEntity<?> getOpereByArtista(@PathVariable String email) {
