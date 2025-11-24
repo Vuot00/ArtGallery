@@ -74,7 +74,7 @@
         </div>
       </div>
 
-
+     
 
       <button type="submit" class="btn-registrazione" [disabled]="!formRegistrazione.form.valid">
         Registrati

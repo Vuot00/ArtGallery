@@ -44,7 +44,9 @@ export class RegistrazioneComponent {
       .subscribe({
         next: (risposta) => {
           this.toastService.show(risposta, 'success');
-          this.router.navigate(['/login'])
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
         },
         error: (errore: HttpErrorResponse) => {
           if (errore.status === 400) {

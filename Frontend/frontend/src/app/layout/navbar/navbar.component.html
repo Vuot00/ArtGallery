@@ -11,11 +11,11 @@
         </div>
     </div>
 
-    <div class="user-actions">
+  <div class="user-actions">
 
-        <button routerLink="/carica-opera" class="upload-btn">
-            <span>➕</span> Carica Opera
-        </button>
+    <button *ngIf="authService.isArtist()" routerLink="/carica-opera" class="upload-btn">
+        <span>➕</span> Carica Opera
+    </button>
 
         <div class="notification-container">
 

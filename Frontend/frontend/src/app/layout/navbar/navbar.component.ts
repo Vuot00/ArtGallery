@@ -1,21 +1,19 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../servizi/auth.service';
 import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent implements OnInit {
 
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);//messo public per far si che l HTML lo legga
   private router = inject(Router);
-
-  // layoutService rimosso dall'uso se non serve più per il toggle sidebar
-  // public layoutService = inject(LayoutService);
 
   username: string = 'Utente';
 
