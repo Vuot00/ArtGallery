@@ -1,8 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../servizi/auth.service';
-import { Router } from '@angular/router';
-import {LayoutService} from '../../servizi/layout.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -13,15 +11,12 @@ import { RouterLink } from '@angular/router';
 })
 export class NavbarComponent implements OnInit {
 
-  // Iniettiamo il servizio
   private authService = inject(AuthService);
-
-  public layoutService=inject(LayoutService);
-
-
   private router = inject(Router);
 
-  // Variabile per l'HTML
+  // layoutService rimosso dall'uso se non serve più per il toggle sidebar
+  // public layoutService = inject(LayoutService);
+
   username: string = 'Utente';
 
   ngOnInit() {
@@ -35,5 +30,4 @@ export class NavbarComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['login']);
   }
-
 }

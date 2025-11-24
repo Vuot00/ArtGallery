@@ -1,9 +1,9 @@
 .navbar {
   display: flex;
-  justify-content: space-between; // Spinge ricerca a sx e utente a dx
+  justify-content: space-between;
   align-items: center;
   padding: 0 24px;
-  height: 100%; // Prende l'altezza definita nel main-layout
+  height: 100%;
   background-color: #5c6b8a;
 }
 
@@ -13,17 +13,21 @@
   gap: 15px;
 }
 
-.menu-btn {
+// Stile per il tasto Home
+.nav-btn {
   background: none;
   border: none;
-  font-size: 1.5rem; // Icona grande
+  font-size: 1.5rem;
   cursor: pointer;
-  color: #334155; // Grigio scuro
+  color: white;
   padding: 5px;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    background-color: #f1f5f9;
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -55,18 +59,20 @@
   }
 }
 
-
 .user-actions {
   display: flex;
   align-items: center;
   gap: 20px;
 
+  // Stile generico per bottoni icona (es. campanella)
   .icon-btn {
     background: none;
     border: none;
     cursor: pointer;
     font-size: 1.2rem;
     transition: transform 0.2s;
+    // Se vuoi l'icona bianca scommenta la riga sotto
+    // color: white;
 
     &:hover {
       transform: scale(1.1);
@@ -74,6 +80,196 @@
   }
 }
 
+// --- TASTO CARICA OPERA ---
+.upload-btn {
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+  &:hover {
+    background-color: #303f9f;
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ==========================================
+//   INIZIO NUOVI STILI NOTIFICHE
+// ==========================================
+
+.notification-container {
+  position: relative; // Fondamentale per il dropdown absolute
+  height: 100%;       // Assicura che l'hover funzioni anche nello spazio tra icona e menu
+  display: flex;
+  align-items: center;
+  margin-right: 5px;  // Distanza dal profilo
+  cursor: pointer;
+
+  // MECCANICA HOVER: Mostra il menu quando passi sopra il contenitore
+  &:hover .notification-dropdown {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bell-btn {
+  position: relative; // Per posizionare il badge
+  padding: 5px;       // Aumenta l'area cliccabile
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #e74c3c; // Rosso notifica
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #5c6b8a; // Bordo uguale allo sfondo navbar per effetto "stacco"
+}
+
+.notification-dropdown {
+  display: none; // Nascosto di default
+  position: absolute;
+  top: 100%;
+  right: -80px; // Centrato rispetto alla campanella (aggiusta se serve)
+  width: 320px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 200; // Più alto del resto
+  border: 1px solid #eee;
+
+  // Animazione ingresso
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s, transform 0.2s;
+
+  // Triangolino decorativo
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    right: 88px; // Allinea questo valore alla posizione della campanella
+    width: 12px;
+    height: 12px;
+    background: white;
+    transform: rotate(45deg);
+    border-top: 1px solid #eee;
+    border-left: 1px solid #eee;
+  }
+}
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+
+  span { font-weight: bold; color: #333; font-size: 0.95rem; }
+
+  .mark-read-btn {
+    background: none;
+    border: none;
+    color: #3f51b5;
+    font-size: 0.8rem;
+    cursor: pointer;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.notif-list {
+  max-height: 280px;
+  overflow-y: auto; // Scrollbar se la lista è lunga
+}
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f9f9f9;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #f5f7fa;
+  }
+
+  // Stile "Non Letto"
+  &.unread {
+    background-color: #eef2ff; // Sfondo azzurrino
+    .notif-text { font-weight: 600; color: #222; }
+  }
+}
+
+.notif-icon {
+  font-size: 1.2rem;
+  padding-top: 2px;
+}
+
+.notif-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notif-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.3;
+}
+
+.notif-time {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.notif-footer {
+  padding: 10px;
+  text-align: center;
+  border-top: 1px solid #eee;
+
+  button {
+    background: none;
+    border: none;
+    color: #3f51b5;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    &:hover { color: #2c3e50; }
+  }
+}
+
+// ==========================================
+//   FINE NUOVI STILI NOTIFICHE
+// ==========================================
+
+
+// --- PROFILO UTENTE (Tuo codice esistente) ---
 .user-profile-container {
   position: relative;
   cursor: pointer;
@@ -89,7 +285,7 @@
   }
 }
 
-.user-info{
+.user-info {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -98,15 +294,15 @@
 
 .user-name {
   font-weight: 500;
-  color: #444;
+  color: #f1f5f9;
   font-size: 0.9rem;
 }
 
 .user-avatar {
   width: 36px;
   height: 36px;
-  background-color: #3f51b5;
-  color: white;
+  background-color: #f1f3f4;
+  color: #5c6b8a;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -116,24 +312,21 @@
 }
 
 .dropdown-menu {
-  display: none; // Nascosto di default
+  display: none;
   position: absolute;
-  top: 100%;     // Posizionato subito sotto la navbar
-  right: 0;      // Allineato a destra
+  top: 100%;
+  right: 0;
   width: 200px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); // Ombra elegante
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 10px 0;
   z-index: 100;
   border: 1px solid #eee;
-
-  // Piccola animazione (opzionale)
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.2s, transform 0.2s;
 
-  // Triangolino puntatore (opzionale, carino esteticamente)
   &::before {
     content: '';
     position: absolute;
@@ -150,7 +343,6 @@
 
 .dropdown-header {
   padding: 10px 20px;
-
   .dd-name { font-weight: bold; margin: 0; color: #333; }
   .dd-role { font-size: 0.8rem; color: #888; margin: 0; }
 }
@@ -180,9 +372,7 @@ hr {
   }
 
   &.logout-btn {
-    color: #d32f2f; // Rosso per il logout
-    &:hover { background-color: #ffebee;}
-    }
+    color: #d32f2f;
+    &:hover { background-color: #ffebee; }
+  }
 }
-
-
