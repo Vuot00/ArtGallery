@@ -22,11 +22,19 @@ export class ProfiloPubblicoComponent implements OnInit {
   loading = true;
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.route.paramMap.subscribe(params => {
 
-    if (id) {
-      this.caricaDati(id);
-    }
+      const id = Number(params.get('id'));
+
+      if (id) {
+        this.artista = null;
+        this.opere = [];
+        this.loading = true;
+
+
+        this.caricaDati(id);
+      }
+    });
   }
 
   caricaDati(id: number) {
