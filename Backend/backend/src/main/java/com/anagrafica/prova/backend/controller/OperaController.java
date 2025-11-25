@@ -212,10 +212,17 @@ public class OperaController {
         }
     }
 
-
     // RECUPERARER TUTTE LE OPERE (Per la homepage)+ordinarle per ordine di caricamento(dallapiu recente alla piu vecchia)
     @GetMapping
     public ResponseEntity<List<Opera>> getAllOpere() {
         return ResponseEntity.ok(operaRepository.findAllByOrderByDataCaricamentoDesc());
     }
+    @GetMapping("/artista/id/{id}")
+    public ResponseEntity<?> getOpereByArtistaId(@PathVariable Long id) {
+        // Nota: Assicurati di avere findByArtistaId nel repository o usa findByArtista_Id
+        return ResponseEntity.ok(operaRepository.findByArtistaId(id));
+    }
+
+
+
 }

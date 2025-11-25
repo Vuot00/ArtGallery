@@ -64,6 +64,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/uploads/**").permitAll()
 
+                        .requestMatchers("/api/search/**" ).permitAll()
+
                         // Permette agli utenti loggati di VEDERE le opere
                         .requestMatchers(HttpMethod.GET,"/api/opere/**").permitAll()
 

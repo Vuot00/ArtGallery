@@ -66,15 +66,4 @@ public class UtenteController {
 
         return ResponseEntity.ok(Collections.singletonMap("message", "Password modificata con successo!"));
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProfiloPubblico(@PathVariable Long id) {
-        return utenteRepository.findById(id)
-                .map(u -> {
-                    u.setPassword(null); // Nascondi password
-                    u.setRoles(null);    // Nascondi ruoli tecnici
-                    return ResponseEntity.ok(u);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
 }
