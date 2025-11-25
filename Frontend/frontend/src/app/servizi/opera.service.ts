@@ -79,6 +79,12 @@ export class OperaService {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
+  getOpereByArtistaId(id: number): Observable<any> {
+    const token = localStorage.getItem('jwtToken');
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.get(`${this.apiUrl}/artista/id/${id}`, { headers });
+  }
+
   getImmagineUrl(nomeFile: string): string {
     return `http://localhost:8080/uploads/${nomeFile}`;
   }

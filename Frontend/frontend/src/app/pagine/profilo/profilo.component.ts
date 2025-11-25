@@ -96,16 +96,10 @@ export class ProfiloComponent implements OnInit {
 
   salvaDati() {
     this.userService.updateProfilo(this.utente).subscribe({
-      next: () => this.toastService.show('Profilo aggiornato con successo!', 'success'),
-
-      error: () => this.toastService.show('Errore aggiornamento', 'error'),
-    });
-  }
-
-  aggiornaDati() {
-    this.http.put('http://localhost:8080/api/utente/me', this.utente).subscribe({
-      next: () => this.toastService.show('Profilo aggiornato con successo!', 'success'),
-
+      next: () =>{
+        this.toastService.show('Profilo aggiornato con successo!', 'success');
+        this.authService.updateNameManual(this.utente.nome);
+      },
       error: () => this.toastService.show('Errore aggiornamento', 'error'),
     });
   }

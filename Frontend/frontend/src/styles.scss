@@ -8,6 +8,7 @@ html, body {
   width: 100%;      /* Assicura che occupi tutta la larghezza */
   font-family: 'Roboto', sans-serif; /* (Opzionale) Un font di default */
   box-sizing: border-box; /* Gestione migliore delle dimensioni */
+  overflow: hidden;
 }
 
 *, *:before, *:after {

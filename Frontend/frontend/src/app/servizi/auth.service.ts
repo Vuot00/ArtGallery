@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable , signal} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
@@ -9,8 +9,20 @@ import { jwtDecode } from 'jwt-decode';
 export class AuthService {
 
   private apiUrl = 'http://localhost:8080/api/auth';
+  userNameSignal = signal<string>('');
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.aggiornaNomeDaToken(); // cosi appena parte il sito, riempiamo il signal con il nome ricavato dal token
+  }
+
+  private aggiornaNomeDaToken() {
+    const tokenData: any = this.getDecodedToken();
+    if (tokenData && tokenData.nome) {
+      this.userNameSignal.set(tokenData.nome);
+    } else if (tokenData && tokenData.sub) {
+      this.userNameSignal.set(tokenData.sub); // Fallback sull'email
+    }
+  }
 
   login(loginRequest: any) {
     return this.http.post<any>(`${this.apiUrl}/login`, loginRequest)
@@ -22,11 +34,17 @@ export class AuthService {
             // salviamo il token nel browser
             localStorage.setItem('jwtToken', token);
 
+            this.aggiornaNomeDaToken();
+
             console.log("Token salvato con successo:", token);
           }
         })
       );
   }
+  updateNameManual(nuovoNome: string) {
+    this.userNameSignal.set(nuovoNome);
+  }
+
 
   getEmail(): string {
     const token: any = this.getDecodedToken();
@@ -39,6 +57,7 @@ export class AuthService {
   // Metodo Logout
   logout() {
     localStorage.removeItem('jwtToken');
+    this.userNameSignal.set(''); // cosi che siamo sicuri che il campo rimanga pulito
   }
 
   // Metodo  utente loggato
@@ -73,7 +92,6 @@ export class AuthService {
 
   //Ottieni il nome utente (email) dal token
   getUsername(): string {
-    const tokenPayload = this.getDecodedToken();
-    return tokenPayload ? tokenPayload.nome : '';
+    return this.userNameSignal();
   }
 }

@@ -1,0 +1,160 @@
+$primary-color: #3f51b5;
+$primary-hover: darken($primary-color, 8%);
+$danger-color: #d32f2f;
+$text-dark: #333;
+$text-muted: #666;
+$bg-light: #f5f5f5;
+$border-radius-card: 16px;
+$border-radius-btn: 30px;
+
+// --- Layout Generale ---
+.profilo-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  animation: fadeIn 0.5s ease;
+}
+
+// --- Header Profilo (Card) ---
+.header-card {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background: white;
+  padding: 40px;
+  border-radius: $border-radius-card;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  margin-bottom: 40px;
+
+  .avatar-big {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, $primary-color, lighten($primary-color, 20%));
+    color: white;
+    border-radius: 50%;
+    font-size: 3rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba($primary-color, 0.4);
+  }
+
+  .info {
+    h1 { margin: 0 0 5px 0; font-size: 2rem; color: $text-dark; }
+    p { margin: 0 0 15px 0; color: $text-muted; font-size: 1.1rem; }
+
+    .badge-artista {
+      background: #e8eaf6;
+      color: $primary-color;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// --- Navigazione Tabs ---
+.tabs-nav {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
+  overflow-x: auto;
+
+  button {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-muted;
+    cursor: pointer;
+    border-radius: $border-radius-btn;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      background: #f0f2f5;
+      color: $text-dark;
+    }
+
+    &.active {
+      background: $primary-color;
+      color: white;
+      box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+    }
+  }
+}
+
+// --- Contenuto Tab ---
+.tab-content {
+  background: white;
+  padding: 40px;
+  border-radius: $border-radius-card;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  animation: slideUp 0.3s ease-out;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: $text-dark;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+  }
+}
+
+// --- Griglia Opere ---
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+.mini-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+
+  img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .mini-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+
+    strong { font-size: 1.1rem; color: $text-dark; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+    span { color: $primary-color; font-weight: 700; font-size: 1.1rem; }
+  }
+}
+
+// --- Empty State & Animazioni ---
+.empty-state {
+  text-align: center; padding: 40px; color: $text-muted;
+  a { color: $primary-color; font-weight: bold; text-decoration: none; &:hover { text-decoration: underline; }}
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

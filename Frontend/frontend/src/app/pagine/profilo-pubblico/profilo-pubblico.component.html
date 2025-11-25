@@ -1,0 +1,36 @@
+<div class="profilo-container" *ngIf="artista">
+
+  <div class="header-card">
+    <div class="avatar-big">
+      {{ artista.nome.charAt(0).toUpperCase() }}
+    </div>
+    <div class="info">
+      <h1>{{ artista.nome }}</h1>
+      <p>{{ artista.email }}</p>
+      <span class="badge-artista">🎨 Artista</span>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <h3>Opere di {{ artista.nome }}</h3>
+  </div>
+
+  <div class="mini-grid">
+    <div class="mini-card" *ngFor="let opera of opere">
+
+      <div [routerLink]="['/opera', opera.id]" style="cursor: pointer;">
+
+        <img *ngIf="opera.immagini?.length > 0"
+             [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url">
+
+        <div class="mini-info">
+          <strong>{{ opera.titolo }}</strong>
+          <span>€ {{ opera.prezzo }}</span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

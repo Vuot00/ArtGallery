@@ -1,4 +1,5 @@
 // Variabili estratte dal tuo stile profilo
+$error-color: #d32f2f;
 $primary-color: #3f51b5;
 $text-dark: #333;
 $text-muted: #666;
@@ -86,6 +87,15 @@ $border-radius-input: 8px;
           background-color: #fcfcfc;
         }
       }
+      .messaggio-errore {
+        color: $error-color;      // Usa la variabile rossa
+        font-size: 0.85rem;       // Testo un po' più piccolo
+        margin-top: 6px;          // Spazio dall'input
+        font-weight: 500;         // Leggermente grassetto per leggibilità
+        display: block;           // Assicura che vada a capo
+        animation: fadeIn 0.3s ease;
+      }
+
     }
 
     // Pulsante (Stile ripreso da .btn-save ma full width)

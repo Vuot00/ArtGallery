@@ -30,6 +30,12 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/me/password`, datiPassword, this.getHeaders());
   }
 
+  getProfiloPubblico(id: number): Observable<any> {
+    const token = localStorage.getItem('jwtToken');
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.get(`${this.apiUrl}/${id}`, { headers });
+  }
+
   // --- TODO: FUTURE IMPLEMENTAZIONI ---
 
   getAcquisti(): Observable<any[]> {
@@ -40,4 +46,5 @@ export class UserService {
   getVendite(): Observable<any[]> {
     return of([]); // Ritorna lista vuota per ora
   }
+
 }

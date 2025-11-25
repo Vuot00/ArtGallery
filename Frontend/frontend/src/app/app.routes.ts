@@ -9,6 +9,7 @@ import { TestConnectionComponent } from './pagine/test-connection/test-connectio
 import { ProfiloComponent } from './pagine/profilo/profilo.component';
 import { DettaglioOperaComponent } from './pagine/dettaglio-opera/dettaglio-opera.component';
 import { ModificaOperaComponent } from './pagine/artista/modifica-opera/modifica-opera.component';
+import {ProfiloPubblicoComponent} from './pagine/profilo-pubblico/profilo-pubblico.component';
 
 export const routes: Routes = [
   // --- ROTTE PUBBLICHE (Senza Sidebar/Navbar) ---
@@ -30,11 +31,12 @@ export const routes: Routes = [
 
       // Pagine dell'applicazione
       { path: 'home', component: HomeComponent },
-      { path: 'profilo', component: ProfiloComponent },
       { path: 'carica-opera', component: CaricaOperaComponent },
       { path: 'modifica-opera/:id', component: ModificaOperaComponent },
       { path: 'opera/:id', component: DettaglioOperaComponent },
       { path: 'test', component: TestConnectionComponent },
+      { path: 'profilo', component: ProfiloComponent },
+      { path: 'profilo/:id', component: ProfiloPubblicoComponent },
     ]
   },
 
