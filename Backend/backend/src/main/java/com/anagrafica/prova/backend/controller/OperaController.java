@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder; // <--- Importante!
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -213,10 +213,9 @@ public class OperaController {
     }
 
 
-    // RECUPERARER TUTTE LE OPERE (Per la homepage)
+    // RECUPERARER TUTTE LE OPERE (Per la homepage)+ordinarle per ordine di caricamento(dallapiu recente alla piu vecchia)
     @GetMapping
     public ResponseEntity<List<Opera>> getAllOpere() {
-        return ResponseEntity.ok(operaRepository.findAll());
+        return ResponseEntity.ok(operaRepository.findAllByOrderByDataCaricamentoDesc());
     }
-
 }

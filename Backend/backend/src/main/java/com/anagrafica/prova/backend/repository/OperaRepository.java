@@ -9,4 +9,5 @@ public interface OperaRepository extends JpaRepository<Opera, Long> {
 
     //List<Opera> findByEmail(Utente email); era sbagliato questo
     List<Opera> findByArtista(Utente artista);
+    List<Opera> findAllByOrderByDataCaricamentoDesc();
 }
