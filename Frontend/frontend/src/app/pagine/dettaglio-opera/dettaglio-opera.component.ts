@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { OperaService } from '../../servizi/opera.service';
 
 @Component({
   selector: 'app-dettaglio-opera',
   standalone: true,
-  // Importiamo CommonModule per *ngIf, RouterLink per la navigazione
   imports: [CommonModule, RouterLink],
   templateUrl: './dettaglio-opera.component.html',
   styleUrl: './dettaglio-opera.component.scss'
@@ -19,7 +18,8 @@ export class DettaglioOperaComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private operaService: OperaService
+    private operaService: OperaService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -70,4 +70,13 @@ export class DettaglioOperaComponent implements OnInit {
 
     alert("Funzionalità di acquisto in arrivo! Contatta l'artista per maggiori info.");
   }
+
+  vaiAllAsta() {
+    if (this.opera && this.opera.astaId) {
+      this.router.navigate(['/asta', this.opera.astaId]);
+    } else {
+      console.error("ID Asta non trovato!");
+    }
+  }
+
 }

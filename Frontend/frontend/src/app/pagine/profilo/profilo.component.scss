@@ -19,7 +19,7 @@
   }
 }
 
-// --- Bottoni Azione (Salva, Modifica, Elimina) ---
+// --- Bottoni Generali Pagina (Salva, Modifica Password) ---
 .btn-save, .btn-danger {
   padding: 12px 30px;
   border: none; border-radius: $border-radius-btn;
@@ -33,9 +33,59 @@
 .btn-save { background-color: $primary-color; }
 .btn-danger { background-color: $danger-color; }
 
-// Bottone Modifica Opera (Grigio chiaro)
-.btn-edit {
+
+// ==========================================
+//   STILI SPECIFICI PER LE CARD DELLE OPERE
+// ==========================================
+
+// Contenitore dei bottoni nella card
+.card-actions {
   margin-top: auto;
+  display: flex;
+  gap: 8px; // Spazio tra i bottoni
+  flex-wrap: wrap; // Se lo spazio manca, vanno a capo
+}
+
+// 1. Bottone "Metti all'Asta" (NUOVO - Viola)
+.btn-auction {
+  background-color: #673ab7; // Viola intenso
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem; // Emoji un po' più grande
+  flex: 1; // Si allarga per riempire lo spazio
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #512da8; // Viola più scuro
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(103, 58, 183, 0.3);
+  }
+}
+
+// 2. Badge "In Asta" (NUOVO - Giallo)
+.badge-asta {
+  background-color: #fff3cd; // Sfondo giallino
+  color: #856404; // Testo oro scuro
+  border: 1px solid #ffeeba;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+// 3. Bottone Modifica Opera (Esistente)
+.btn-edit {
   background-color: #f5f7fa;
   color: $text-dark;
   border: 1px solid #e0e0e0;
@@ -44,6 +94,10 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s;
+  flex: 1; // Si allarga uniformemente
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: $primary-color;
@@ -52,7 +106,7 @@
   }
 }
 
-// Bottone Elimina Opera (Rosso)
+// 4. Bottone Elimina Opera (Esistente)
 .btn-delete-opera {
   background-color: #ffebee;
   color: $danger-color;
@@ -60,7 +114,7 @@
   border-radius: 8px;
   padding: 8px 12px;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   transition: all 0.2s;
   display: flex;
   align-items: center;
@@ -78,4 +132,9 @@
 .todo-box {
   background: #fff8e1; border: 2px dashed #ffb74d; color: #f57c00;
   padding: 30px; border-radius: 12px; text-align: center; font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

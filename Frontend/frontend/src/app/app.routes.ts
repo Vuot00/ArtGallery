@@ -10,11 +10,13 @@ import { ProfiloComponent } from './pagine/profilo/profilo.component';
 import { DettaglioOperaComponent } from './pagine/dettaglio-opera/dettaglio-opera.component';
 import { ModificaOperaComponent } from './pagine/artista/modifica-opera/modifica-opera.component';
 import {ProfiloPubblicoComponent} from './pagine/profilo-pubblico/profilo-pubblico.component';
+import {AstaLiveComponent} from "./pagine/asta-live/asta-live.component";
 
 export const routes: Routes = [
   // --- ROTTE PUBBLICHE (Senza Sidebar/Navbar) ---
   { path: 'login', component: LoginComponent },
   { path: 'registrazione', component: RegistrazioneComponent },
+  { path: 'asta/:id', component: AstaLiveComponent }, // :id sarà l'ID dell'ASTA
 
   // --- REDIRECT INIZIALE ---
   // Se vado su "localhost:4200" vuoto, mi manda al login

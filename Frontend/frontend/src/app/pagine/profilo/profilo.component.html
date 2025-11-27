@@ -1,110 +1,139 @@
 <div class="profilo-container">
 
-  <div class="header-card">
-    <div class="avatar-big">
-      {{ utente.nome ? utente.nome.charAt(0).toUpperCase() : 'U' }}
-    </div>
-    <div class="info">
-      <h1>{{ utente.nome }}</h1>
-      <p>{{ utente.email }}</p>
-      <span *ngIf="authService.isArtist()" class="badge-artista">🎨 Artista Verificato</span>
-    </div>
-  </div>
-
-  <div class="tabs-nav">
-    <button [class.active]="activeTab === 'dati'" (click)="activeTab = 'dati'">✏️ Dati</button>
-
-    <ng-container *ngIf="authService.isArtist()">
-      <button [class.active]="activeTab === 'opere'" (click)="activeTab = 'opere'">🖼️ Le mie Opere</button>
-      <button [class.active]="activeTab === 'vendite'" (click)="activeTab = 'vendite'">💰 Vendite</button>
-    </ng-container>
-
-    <button [class.active]="activeTab === 'acquisti'" (click)="activeTab = 'acquisti'">🛍️ Acquisti</button>
-    <button [class.active]="activeTab === 'sicurezza'" (click)="activeTab = 'sicurezza'">🔒 Sicurezza</button>
-  </div>
-
-  <div class="tab-content" *ngIf="activeTab === 'dati'">
-    <h3>I miei Dati</h3>
-    <form (ngSubmit)="salvaDati()" class="form-profilo">
-      <div class="form-group">
-        <label>Nome Completo</label>
-        <input type="text" [(ngModel)]="utente.nome" name="nome">
-      </div>
-      <div class="form-group">
-        <label>Email (Non modificabile)</label>
-        <input type="text" [value]="utente.email" disabled class="disabled">
-      </div>
-      <button type="submit" class="btn-save">Salva Modifiche</button>
-    </form>
-  </div>
-
-  <div class="tab-content" *ngIf="activeTab === 'opere'">
-    <h3>Opere Caricate</h3>
-
-    <div *ngIf="mieOpere.length === 0" class="empty-state">
-      <p>Non hai ancora caricato nessuna opera.</p>
-      <a routerLink="/carica-opera">Carica la prima!</a>
-    </div>
-
-    <div class="mini-grid">
-      <div class="mini-card" *ngFor="let opera of mieOpere">
-
-        <img [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url"
-             alt="{{ opera.titolo }}"
-             style="width: 100%; height: 180px; object-fit: cover;">
-        <div class="mini-info">
-
-          <strong>{{ opera.titolo }}</strong>
-          <span>€ {{ opera.prezzo }}</span>
-
-          <div class="card-actions" style="margin-top: auto; display: flex; gap: 10px;">
-            <button class="btn-edit" [routerLink]="['/modifica-opera', opera.id]" style="flex: 1;">
-              ✏️ Modifica
-            </button>
-
-            <button class="btn-delete-opera" (click)="eliminaOpera(opera.id)" title="Elimina Opera">
-              🗑️
-            </button>
-          </div>
-
+    <div class="header-card">
+        <div class="avatar-big">
+            {{ utente.nome ? utente.nome.charAt(0).toUpperCase() : 'U' }}
         </div>
-      </div>
+        <div class="info">
+            <h1>{{ utente.nome }}</h1>
+            <p>{{ utente.email }}</p>
+            <span *ngIf="authService.isArtist()" class="badge-artista">🎨 Artista Verificato</span>
+        </div>
     </div>
-  </div>
 
-  <div class="tab-content" *ngIf="activeTab === 'vendite'">
-    <h3>Storico Vendite</h3>
-    <div class="todo-box">
-      🚧 <strong>Funzionalità in arrivo!</strong><br>
-      Qui vedrai lo storico delle opere che hai venduto e i guadagni totali.
+    <div class="tabs-nav">
+        <button [class.active]="activeTab === 'dati'" (click)="activeTab = 'dati'">✏️ Dati</button>
+
+        <ng-container *ngIf="authService.isArtist()">
+            <button [class.active]="activeTab === 'opere'" (click)="activeTab = 'opere'">🖼️ Le mie Opere</button>
+            <button [class.active]="activeTab === 'vendite'" (click)="activeTab = 'vendite'">💰 Vendite</button>
+        </ng-container>
+
+        <button [class.active]="activeTab === 'acquisti'" (click)="activeTab = 'acquisti'">🛍️ Acquisti</button>
+        <button [class.active]="activeTab === 'sicurezza'" (click)="activeTab = 'sicurezza'">🔒 Sicurezza</button>
     </div>
-  </div>
 
-  <div class="tab-content" *ngIf="activeTab === 'acquisti'">
-    <h3>I miei Acquisti</h3>
-    <div class="todo-box">
-      🚧 <strong>Funzionalità in arrivo!</strong><br>
-      Qui vedrai le opere che hai acquistato.
+    <div class="tab-content" *ngIf="activeTab === 'dati'">
+        <h3>I miei Dati</h3>
+        <form (ngSubmit)="salvaDati()" class="form-profilo">
+            <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" [(ngModel)]="utente.nome" name="nome">
+            </div>
+            <div class="form-group">
+                <label>Email (Non modificabile)</label>
+                <input type="text" [value]="utente.email" disabled class="disabled">
+            </div>
+            <button type="submit" class="btn-save">Salva Modifiche</button>
+        </form>
     </div>
-  </div>
 
-  <div class="tab-content" *ngIf="activeTab === 'sicurezza'">
-    <h3>Cambia Password</h3>
-    <form (ngSubmit)="cambiaPassword()" class="form-profilo">
-      <div class="form-group">
-        <label>Vecchia Password</label>
-        <input type="password" [(ngModel)]="passData.vecchiaPassword" name="old" required>
-      </div>
-      <div class="form-group">
-        <label>Nuova Password</label>
-        <input type="password" [(ngModel)]="passData.nuovaPassword" name="new" required>
-      </div>
-      <div class="form-group">
-        <label>Conferma Nuova</label>
-        <input type="password" [(ngModel)]="passData.confermaPassword" name="confirm" required>
-      </div>
-      <button type="submit" class="btn-danger">Aggiorna Password</button>
-    </form>
-  </div>
+    <div class="tab-content" *ngIf="activeTab === 'opere'">
+        <h3>Opere Caricate</h3>
+
+        <div *ngIf="mieOpere.length === 0" class="empty-state">
+            <p>Non hai ancora caricato nessuna opera.</p>
+            <a routerLink="/carica-opera">Carica la prima!</a>
+        </div>
+
+        <div class="mini-grid">
+            <div class="mini-card" *ngFor="let opera of mieOpere">
+
+                <img [src]="opera.immagini && opera.immagini.length > 0
+                    ? 'http://localhost:8080/uploads/' + opera.immagini[0].url
+                    : 'assets/placeholder.png'"
+                     alt="{{ opera.titolo }}"
+                     style="width: 100%; height: 180px; object-fit: cover;">
+
+                <div class="mini-info">
+
+                    <strong>{{ opera.titolo }}</strong>
+
+                    <span>€ {{ opera.prezzo }}</span>
+
+                    <div class="card-actions">
+
+                        <div *ngIf="opera.stato === 'IN_ASTA'" class="badge-asta">
+                            ⏳ In Asta
+                        </div>
+
+                        <div *ngIf="opera.stato === 'VENDUTA'" class="badge-asta" style="background-color: #d4edda; color: #155724; border-color: #c3e6cb;">
+                            ✅ Venduta
+                        </div>
+
+                        <ng-container *ngIf="opera.stato === 'DISPONIBILE'">
+
+                            <button class="btn-auction" (click)="openAstaModal(opera.id)" title="Metti all'Asta">
+                                🔨
+                            </button>
+
+                            <button class="btn-edit" [routerLink]="['/modifica-opera', opera.id]" title="Modifica">
+                                ✏️
+                            </button>
+
+                            <button class="btn-delete-opera" (click)="eliminaOpera(opera.id)" title="Elimina Opera">
+                                🗑️
+                            </button>
+
+                        </ng-container>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'vendite'">
+        <h3>Storico Vendite</h3>
+        <div class="todo-box">
+            🚧 <strong>Funzionalità in arrivo!</strong><br>
+            Qui vedrai lo storico delle opere che hai venduto e i guadagni totali.
+        </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'acquisti'">
+        <h3>I miei Acquisti</h3>
+        <div class="todo-box">
+            🚧 <strong>Funzionalità in arrivo!</strong><br>
+            Qui vedrai le opere che hai acquistato.
+        </div>
+    </div>
+
+    <div class="tab-content" *ngIf="activeTab === 'sicurezza'">
+        <h3>Cambia Password</h3>
+        <form (ngSubmit)="cambiaPassword()" class="form-profilo">
+            <div class="form-group">
+                <label>Vecchia Password</label>
+                <input type="password" [(ngModel)]="passData.vecchiaPassword" name="old" required>
+            </div>
+            <div class="form-group">
+                <label>Nuova Password</label>
+                <input type="password" [(ngModel)]="passData.nuovaPassword" name="new" required>
+            </div>
+            <div class="form-group">
+                <label>Conferma Nuova</label>
+                <input type="password" [(ngModel)]="passData.confermaPassword" name="confirm" required>
+            </div>
+            <button type="submit" class="btn-danger">Aggiorna Password</button>
+        </form>
+    </div>
 
 </div>
+
+<app-avvia-asta
+        *ngIf="showAstaModal && selectedOperaId"
+        [operaId]="selectedOperaId"
+        (close)="closeModal()"
+        (auctionStarted)="refreshList()">
+</app-avvia-asta>

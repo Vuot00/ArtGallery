@@ -1,0 +1,55 @@
+<div class="live-container" *ngIf="asta">
+
+    <div class="live-header">
+        <div class="status-badge" [ngClass]="statoAsta">
+            <span class="dot">●</span> {{ statoAsta === 'APERTA' ? 'LIVE NOW' : statoAsta }}
+        </div>
+        <div class="timer">
+            ⏱️ {{ countdown }}
+        </div>
+    </div>
+
+    <div class="grid-layout">
+
+        <div class="opera-view">
+            <img [src]="'http://localhost:8080/uploads/' + asta.opera.immagini[0]?.url" class="main-img">
+
+            <div class="info-box">
+                <h2>{{ asta.opera.titolo }}</h2>
+                <p>di {{ asta.opera.artista.nome }} {{ asta.opera.artista.cognome }}</p>
+                <p class="desc">{{ asta.opera.descrizione }}</p>
+            </div>
+        </div>
+
+        <div class="bidding-console">
+
+            <div class="current-price-box" [class.pulse]="pricePulse">
+                <span class="label">Prezzo Attuale</span>
+                <span class="price">€ {{ prezzoCorrente | number:'1.2-2' }}</span>
+            </div>
+
+            <div class="bid-actions" *ngIf="statoAsta === 'APERTA'">
+                <label>La tua offerta (€)</label>
+
+                <div class="input-group">
+                    <input type="number" [(ngModel)]="offertaUtente" [min]="prezzoCorrente + 1">
+                    <button (click)="inviaOfferta()" [disabled]="!offertaUtente || offertaUtente <= prezzoCorrente">
+                        PIAZZA OFFERTA
+                    </button>
+                </div>
+
+                <p class="min-increment">Incremento minimo consigliato: € 10.00</p>
+            </div>
+
+            <div class="status-msg waiting" *ngIf="statoAsta === 'ATTESA'">
+                🕐 Preparati, l'asta inizierà a breve.
+            </div>
+
+            <div class="status-msg closed" *ngIf="statoAsta === 'CHIUSA'">
+                🏁 L'asta è conclusa. Grazie per aver partecipato.
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -1,21 +1,22 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../servizi/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {Router, RouterLink} from '@angular/router';
-import {UserService} from '../../servizi/user.service';
+import { Router, RouterLink } from '@angular/router';
+import { UserService } from '../../servizi/user.service';
 import { ToastService } from '../../servizi/toast.service';
 import { OperaService } from '../../servizi/opera.service';
+import { AvviaAstaComponent } from '../artista/avvia-asta/avvia-asta.component';
 
 @Component({
   selector: 'app-profilo',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, AvviaAstaComponent],
   templateUrl: './profilo.component.html',
   styleUrl: './profilo.component.scss'
 })
-export class ProfiloComponent implements OnInit {
+export class ProfiloComponent implements OnInit, OnDestroy {
 
   private userService = inject(UserService);
   public authService = inject(AuthService);
@@ -24,10 +25,15 @@ export class ProfiloComponent implements OnInit {
   private toastService = inject(ToastService);
   private operaService = inject(OperaService);
 
-
   // Stato
   activeTab: any = 'dati'; // Tab attiva di default
   isArtist: boolean = false;
+
+  showAstaModal = false;
+  selectedOperaId: number | null = null;
+
+  // Variabile per gestire il timer dell'auto-refresh
+  private refreshInterval: any;
 
   // Dati
   utente: any = {};
@@ -46,7 +52,21 @@ export class ProfiloComponent implements OnInit {
     this.caricaProfilo();
 
     if (this.isArtist) {
+      // 1. Carica subito le opere
       this.caricaMieOpere();
+
+      // 2. Avvia l'auto-refresh ogni minuto
+      // Questo serve per aggiornare lo stato (es. da IN_ASTA a VENDUTA) senza ricaricare la pagina
+      this.refreshInterval = setInterval(() => {
+        this.caricaMieOpere();
+      }, 60000);
+    }
+  }
+
+  // FONDAMENTALE: Puliamo il timer quando l'utente cambia pagina
+  ngOnDestroy() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
     }
   }
 
@@ -79,16 +99,18 @@ export class ProfiloComponent implements OnInit {
     const token = localStorage.getItem('jwtToken');
 
     if (email && token) {
-      // Inseriamo il token nell'header per autorizzare la richiesta
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${token}`
       });
 
       this.http.get(`http://localhost:8080/api/opere/artista/${email}`, { headers })
-        .subscribe({
-          next: (res: any) => this.mieOpere = res,
-          error: (err) => console.error('Errore caricamento opere:', err)
-        });
+          .subscribe({
+            next: (res: any) => {
+              this.mieOpere = res;
+              // console.log("Opere aggiornate:", this.mieOpere); // Decommenta per debug
+            },
+            error: (err) => console.error('Errore caricamento opere:', err)
+          });
     } else {
       console.error('Impossibile caricare le opere: Dati utente mancanti.');
     }
@@ -96,7 +118,7 @@ export class ProfiloComponent implements OnInit {
 
   salvaDati() {
     this.userService.updateProfilo(this.utente).subscribe({
-      next: () =>{
+      next: () => {
         this.toastService.show('Profilo aggiornato con successo!', 'success');
         this.authService.updateNameManual(this.utente.nome);
       },
@@ -117,4 +139,21 @@ export class ProfiloComponent implements OnInit {
       error: (err) => this.toastService.show('Errore cambio password', 'error'),
     });
   }
+
+  openAstaModal(id: number) {
+    this.selectedOperaId = id;
+    this.showAstaModal = true;
+  }
+
+  closeModal() {
+    this.showAstaModal = false;
+    this.selectedOperaId = null;
+  }
+
+  refreshList() {
+    this.closeModal();
+    // Aggiornamento immediato dopo l'azione manuale (oltre all'auto-refresh)
+    this.caricaMieOpere();
+  }
+
 }

@@ -1,0 +1,30 @@
+<div class="modal-overlay">
+    <div class="modal-content">
+        <h3>🔨 Configura Asta</h3>
+        <p>Imposta i dettagli per mettere in vendita la tua opera.</p>
+
+        <div class="form-group">
+            <label>Prezzo di Partenza (€)</label>
+            <input type="number" [(ngModel)]="form.prezzoPartenza" min="1" placeholder="Es. 100.00">
+        </div>
+
+        <div class="row">
+            <div class="form-group half">
+                <label>Inizio Asta</label>
+                <input type="datetime-local" [(ngModel)]="form.dataInizio">
+            </div>
+
+            <div class="form-group half">
+                <label>Fine Asta</label>
+                <input type="datetime-local" [(ngModel)]="form.dataFine">
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-cancel" (click)="annulla()" [disabled]="isLoading">Annulla</button>
+            <button class="btn-confirm" (click)="conferma()" [disabled]="isLoading">
+                {{ isLoading ? 'Elaborazione...' : 'Avvia Vendita' }}
+            </button>
+        </div>
+    </div>
+</div>
