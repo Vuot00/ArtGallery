@@ -27,7 +27,7 @@ import java.util.List;
 public class OperaController {
 
     @Autowired
-    private OperaRepository operaRepository;
+    protected OperaRepository operaRepository;
 
     @Autowired
     private UtenteRepository utenteRepository;
@@ -43,7 +43,7 @@ public class OperaController {
             @RequestParam("titolo") String titolo,
             @RequestParam("descrizione") String descrizione,
             @RequestParam("prezzo") Double prezzo,
-            @RequestParam("files") MultipartFile[] files // <--- ORA È UN ARRAY!
+            @RequestParam("files") MultipartFile[] files
     ) {
         try {
             String emailArtista = SecurityContextHolder.getContext().getAuthentication().getName();

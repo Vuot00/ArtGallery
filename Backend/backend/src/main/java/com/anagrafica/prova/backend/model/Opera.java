@@ -1,13 +1,17 @@
 package com.anagrafica.prova.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
 @Table(name = "opere")
 @Data
+@NoArgsConstructor
 public class Opera {
 
     @Id
@@ -20,6 +24,9 @@ public class Opera {
     private String descrizione;
     private Double prezzo;
 
+    @Enumerated(EnumType.STRING)
+    private StatoOpera stato = StatoOpera.DISPONIBILE;
+
 
     @OneToMany(mappedBy = "opera", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Immagine> immagini = new ArrayList<>();
@@ -30,4 +37,23 @@ public class Opera {
     @ManyToOne
     @JoinColumn(name = "artista_id")
     private Utente artista;
+
+    public Opera(String titolo, String descrizione, Double prezzo, LocalDateTime anno, Utente artista) {
+        this.titolo = titolo;
+        this.descrizione = descrizione;
+        this.prezzo = prezzo;
+        this.dataCaricamento = anno;
+        this.artista = artista;
+    }
+
+    @OneToOne(mappedBy = "opera")
+    @JsonIgnore
+    private Asta astaAttiva;
+
+    /*
+    public Long getAstaId() {
+        return astaAttiva != null ? astaAttiva.getId() : null;
+    }
+   */
+
 }
