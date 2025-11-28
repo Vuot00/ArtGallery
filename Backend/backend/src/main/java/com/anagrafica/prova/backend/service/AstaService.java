@@ -31,7 +31,7 @@ public class AstaService {
         nuovaAsta.setPrezzoPartenza(request.getPrezzoPartenza());
         nuovaAsta.setPrezzoAttuale(request.getPrezzoPartenza());
         nuovaAsta.setDataInizio(request.getDataInizio());
-        nuovaAsta.setDataFine(request.getDataFine());
+        nuovaAsta.setDataFine(request.getDataFine().withSecond(0));
 
         // Cambia lo stato dell'opera (BLOCCO)
         opera.setStato(StatoOpera.IN_ASTA);

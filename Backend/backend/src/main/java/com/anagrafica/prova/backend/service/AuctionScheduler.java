@@ -23,7 +23,7 @@ public class AuctionScheduler {
     @Autowired private OperaRepository operaRepository;
     @Autowired private SimpMessagingTemplate messagingTemplate;
 
-    @Scheduled(fixedRate = 60000) // Ogni minuto
+    @Scheduled(cron = "0 * * * * *") // Ogni minuto
     @Transactional
     public void controllaScadenzaAste() {
         LocalDateTime now = LocalDateTime.now();
