@@ -20,6 +20,9 @@ public class Opera {
     private String descrizione;
     private Double prezzo;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean venduta = false;
+
 
     @OneToMany(mappedBy = "opera", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Immagine> immagini = new ArrayList<>();
