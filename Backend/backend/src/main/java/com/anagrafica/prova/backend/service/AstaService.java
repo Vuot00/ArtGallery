@@ -74,17 +74,16 @@ public class AstaService {
             throw new RuntimeException("Impossibile annullare: l'asta è già avviata o conclusa.");
         }
 
-        // 1. Ripristina lo stato dell'opera a DISPONIBILE
+        // Ripristina lo stato dell'opera a DISPONIBILE
         opera.setStato(StatoOpera.DISPONIBILE);
 
-        // 2. IMPORTANTE: Rompiamo il legame bidirezionale per evitare errori di Hibernate (TransientObjectException)
-        // Se non lo facciamo, quando salviamo l'opera, Hibernate prova a risalvare l'asta che stiamo cancellando.
+
         opera.setAsta(null);
 
-        // 3. Salviamo l'opera "pulita"
+        // Salviamo l'opera "pulita"
         operaRepository.save(opera);
 
-        // 4. Eliminiamo fisicamente l'asta dal DB
+        // Eliminiamo fisicamente l'asta dal DB
         astaRepository.delete(asta);
 
         System.out.println("🗑️ Asta programmata " + idAsta + " annullata. Opera tornata DISPONIBILE.");
