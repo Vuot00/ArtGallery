@@ -23,4 +23,17 @@ export class AstaService {
 
         return this.http.post(url, datiAsta, { headers });
     }
+
+
+    annullaAsta(idAsta: number): Observable<any> {
+        const url = `${this.apiUrl}/${idAsta}/annulla`;
+
+        const token = localStorage.getItem('jwtToken');
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+
+        // responseType: 'text' è fondamentale perché il backend restituisce una stringa semplice, non un JSON
+        return this.http.delete(url, { headers, responseType: 'text' });
+    }
 }

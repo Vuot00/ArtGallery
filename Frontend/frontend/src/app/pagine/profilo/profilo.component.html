@@ -63,14 +63,34 @@
 
                     <div class="card-actions">
 
+                        <!-- SEZIONE ASTA IN CORSO -->
                         <div *ngIf="opera.stato === 'IN_ASTA'" class="badge-asta">
                             ⏳ In Asta
                         </div>
 
+                        <!-- SEZIONE PROGRAMMATA (AGGIORNATA) -->
+                        <div *ngIf="opera.stato === 'PROGRAMMATA'" style="text-align: center; width: 100%;">
+
+                            <!-- Badge Giallo con Data e Ora -->
+                            <div class="badge-asta" style="background-color: #fff3cd; color: #856404; border-color: #ffeeba; display: flex; align-items: center; justify-content: center; font-weight: bold; gap: 5px;">
+                                📅 {{ opera.asta?.dataInizio | date:'dd/MM HH:mm' }}
+                            </div>
+
+                            <!-- Bottone Annulla -->
+                            <button class="btn-delete-opera"
+                                    style="width: 100%; background-color: #dc3545; color: white; margin-top: 5px;"
+                                    (click)="annullaProgrammazione(opera)"
+                                    title="Annulla Programmazione">
+                                ❌ Annulla
+                            </button>
+                        </div>
+
+                        <!-- SEZIONE VENDUTA -->
                         <div *ngIf="opera.stato === 'VENDUTA'" class="badge-asta" style="background-color: #d4edda; color: #155724; border-color: #c3e6cb;">
                             ✅ Venduta
                         </div>
 
+                        <!-- SEZIONE DISPONIBILE -->
                         <ng-container *ngIf="opera.stato === 'DISPONIBILE'">
 
                             <button class="btn-auction" (click)="openAstaModal(opera.id)" title="Metti all'Asta">
