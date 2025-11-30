@@ -62,7 +62,9 @@
       </div>
 
       <div class="acquisto-actions">
-        <button class="btn-buy" (click)="acquistaOpera()">Acquista Ora quest'Opera</button>
+        <button class="btn-buy" [routerLink]="['/checkout', opera.id]">
+          🛒 Acquista Ora
+        </button>
         <p class="shipping-info">Spedizione assicurata inclusa. Certificato di autenticità fornito dall'artista.</p>
       </div>
 

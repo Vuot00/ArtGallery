@@ -26,8 +26,9 @@
   font-size: 1rem; font-weight: 700;
   cursor: pointer; transition: transform 0.2s;
   color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 
-  &:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
 }
 
 .btn-save { background-color: $primary-color; }
@@ -74,8 +75,25 @@
   }
 }
 
-// Todo Box
-.todo-box {
-  background: #fff8e1; border: 2px dashed #ffb74d; color: #f57c00;
-  padding: 30px; border-radius: 12px; text-align: center; font-weight: 500;
+// --- Badges (Venduto / Ordine) ---
+.badge-venduto {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+  border: 1px solid #c8e6c9;
+}
+
+.badge-pagato {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+  border: 1px solid #bbdefb;
 }

@@ -44,7 +44,8 @@ export class UserService {
   }
 
   getVendite(): Observable<any[]> {
-    return of([]); // Ritorna lista vuota per ora
+      return this.http.get<any[]>(`${this.apiUrl}/vendite`, this.getHeaders());
   }
+
 
 }

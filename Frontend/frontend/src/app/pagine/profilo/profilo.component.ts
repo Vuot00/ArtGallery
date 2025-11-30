@@ -45,8 +45,10 @@ export class ProfiloComponent implements OnInit {
     this.isArtist = this.authService.isArtist();
     this.caricaProfilo();
 
+
     if (this.isArtist) {
       this.caricaMieOpere();
+      this.caricaVendite();
     }
   }
 
@@ -115,6 +117,13 @@ export class ProfiloComponent implements OnInit {
         this.authService.logout(); // Logout forzato per sicurezza
       },
       error: (err) => this.toastService.show('Errore cambio password', 'error'),
+    });
+  }
+
+  caricaVendite() {
+    this.userService.getVendite().subscribe(res => {
+      console.log("VENDITE SCARICATE:", res); // <--- VEDI QUESTO LOG?
+      this.vendite = res;
     });
   }
 }
