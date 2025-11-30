@@ -48,7 +48,9 @@
             </div>
 
             <div class="prezzo-box">
+                <!-- Gestione Etichette Prezzo -->
                 <span class="label-prezzo" *ngIf="opera.stato === 'IN_ASTA'">Offerta attuale:</span>
+                <span class="label-prezzo" *ngIf="opera.stato === 'PROGRAMMATA'">Base d'asta:</span>
                 <span class="prezzo">{{ opera.prezzo | currency:'EUR' }}</span>
             </div>
 
@@ -61,6 +63,7 @@
 
             <div class="acquisto-actions">
 
+                <!-- 1. CASO IN ASTA (In Corso) -->
                 <div *ngIf="opera.stato === 'IN_ASTA'" class="auction-mode">
                     <div class="auction-alert">
                         🔥 <strong>Asta in corso!</strong> Non perdere l'occasione.
@@ -70,12 +73,26 @@
                     </button>
                 </div>
 
+                <!-- 2. CASO PROGRAMMATA (In Arrivo) - NUOVA SEZIONE -->
+                <div *ngIf="opera.stato === 'PROGRAMMATA'" class="auction-mode">
+                    <div class="auction-alert" >
+                        📅 <strong>Asta Programmata</strong><br>
+                        Inizio il: {{ opera.asta?.dataInizio | date:'dd/MM/yy   ore HH:mm' }}
+                    </div>
+                    <!-- Usa la stessa funzione vaiAllAsta() per andare alla pagina dell'asta -->
+                    <button class="btn-auction" (click)="vaiAllAsta()" >
+                        🔜 Visualizza Pagina Asta
+                    </button>
+                </div>
+
+                <!-- 3. CASO DISPONIBILE (Vendita Diretta) -->
                 <div *ngIf="opera.stato === 'DISPONIBILE'" class="buy-mode">
                     <button class="btn-buy" (click)="acquistaOpera()">
                         🛒 Acquista Ora quest'Opera
                     </button>
                 </div>
 
+                <!-- 4. CASO VENDUTA -->
                 <div *ngIf="opera.stato === 'VENDUTA'" class="sold-mode">
                     <div class="sold-badge">❌ VENDUTA</div>
                     <p>Quest'opera ha già trovato un proprietario.</p>

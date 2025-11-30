@@ -72,21 +72,18 @@
                         <div *ngIf="opera.stato === 'PROGRAMMATA'" style="text-align: center; width: 100%;">
 
                             <!-- Badge Giallo con Data e Ora -->
-                            <div class="badge-asta" style="background-color: #fff3cd; color: #856404; border-color: #ffeeba; display: flex; align-items: center; justify-content: center; font-weight: bold; gap: 5px;">
+                            <div class="badge-asta" >
                                 📅 {{ opera.asta?.dataInizio | date:'dd/MM HH:mm' }}
                             </div>
 
                             <!-- Bottone Annulla -->
-                            <button class="btn-delete-opera"
-                                    style="width: 100%; background-color: #dc3545; color: white; margin-top: 5px;"
-                                    (click)="annullaProgrammazione(opera)"
-                                    title="Annulla Programmazione">
+                            <button class="btn-delete-opera" (click)="annullaProgrammazione(opera)" title="Annulla Programmazione">
                                 ❌ Annulla
                             </button>
                         </div>
 
                         <!-- SEZIONE VENDUTA -->
-                        <div *ngIf="opera.stato === 'VENDUTA'" class="badge-asta" style="background-color: #d4edda; color: #155724; border-color: #c3e6cb;">
+                        <div *ngIf="opera.stato === 'VENDUTA'" class="badge-asta" >
                             ✅ Venduta
                         </div>
 

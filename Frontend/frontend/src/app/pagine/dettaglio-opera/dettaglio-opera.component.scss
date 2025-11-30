@@ -1,6 +1,7 @@
 // Variabili
 $primary-color: #3f51b5;
 $auction-color: #673ab7; // Viola per le aste
+$warning-color: #ffc107; // Giallo per programmate
 $danger-color: #d32f2f;
 $text-dark: #333;
 $text-muted: #666;
@@ -131,7 +132,7 @@ $card-radius: 16px;
     .artista-nome { margin: 0; font-size: 1.1rem; color: $text-dark; }
   }
 
-  // Prezzo (Modificato per gestire la label "Offerta attuale")
+  // Prezzo
   .prezzo-box {
     .label-prezzo {
       display: block;
@@ -158,13 +159,13 @@ $card-radius: 16px;
     }
   }
 
-  // --- SEZIONE AZIONI (Acquista / Asta / Venduta) ---
+  // --- SEZIONE AZIONI ---
   .acquisto-actions {
     margin-top: auto;
     padding-top: 20px;
     border-top: 1px solid #eee;
 
-    // 1. STILE BOTTONE ACQUISTA (Verde scuro/Blu)
+    // 1. BOTTONE ACQUISTA
     .btn-buy {
       width: 100%;
       padding: 18px;
@@ -183,10 +184,11 @@ $card-radius: 16px;
       }
     }
 
-    // 2. STILE BOTTONE ASTA (Viola sfumato)
+    // 2. BOTTONE ASTA
     .btn-auction {
       width: 100%;
       padding: 18px;
+      // Default: Viola
       background: linear-gradient(135deg, $auction-color, darken($auction-color, 10%));
       color: white;
       border: none;
@@ -204,6 +206,18 @@ $card-radius: 16px;
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba($auction-color, 0.5);
       }
+
+      // Variante: Programmata (Giallo)
+      &.programmed {
+        background: $warning-color;
+        color: $text-dark;
+        box-shadow: 0 4px 15px rgba($warning-color, 0.4);
+
+        &:hover {
+          background: darken($warning-color, 5%);
+          box-shadow: 0 6px 20px rgba($warning-color, 0.5);
+        }
+      }
     }
 
     .auction-alert {
@@ -217,7 +231,7 @@ $card-radius: 16px;
       font-size: 0.95rem;
     }
 
-    // 3. STILE VENDUTA (Timbro rosso)
+    // 3. VENDUTA
     .sold-mode {
       text-align: center;
       background: #fafafa;
@@ -233,7 +247,7 @@ $card-radius: 16px;
         border: 4px solid $danger-color;
         padding: 10px 20px;
         border-radius: 10px;
-        transform: rotate(-5deg); // Effetto timbro storto
+        transform: rotate(-5deg);
         margin-bottom: 10px;
         opacity: 0.8;
       }

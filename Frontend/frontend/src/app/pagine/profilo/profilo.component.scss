@@ -1,5 +1,9 @@
 @import 'profile-shared';
 
+// ==========================================
+//   STILI GENERALI DEL PROFILO
+// ==========================================
+
 // --- Stili per i Form (Dati, Password) ---
 .form-profilo {
   max-width: 600px;
@@ -44,9 +48,10 @@
   display: flex;
   gap: 8px; // Spazio tra i bottoni
   flex-wrap: wrap; // Se lo spazio manca, vanno a capo
+  width: 100%;
 }
 
-// 1. Bottone "Metti all'Asta" (NUOVO - Viola)
+// 1. Bottone "Metti all'Asta" (Viola)
 .btn-auction {
   background-color: #673ab7; // Viola intenso
   color: white;
@@ -55,7 +60,7 @@
   padding: 8px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 1.1rem; // Emoji un po' più grande
+  font-size: 1.1rem;
   flex: 1; // Si allarga per riempire lo spazio
   display: flex;
   align-items: center;
@@ -69,22 +74,25 @@
   }
 }
 
-// 2. Badge "In Asta" (NUOVO - Giallo)
+// 2. Badge Base (Default: IN ASTA - Viola Chiaro)
 .badge-asta {
-  background-color: #fff3cd; // Sfondo giallino
-  color: #856404; // Testo oro scuro
-  border: 1px solid #ffeeba;
+  background-color: #ede7f6; // Viola chiarissimo
+  color: #512da8; // Testo viola scuro
+  border: 1px solid #d1c4e9;
   padding: 8px;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 700;
   text-align: center;
   width: 100%;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   animation: fadeIn 0.5s ease;
 }
 
-// 3. Bottone Modifica Opera (Esistente)
+// 3. Bottone Modifica Opera (Grigio Chiaro)
 .btn-edit {
   background-color: #f5f7fa;
   color: $text-dark;
@@ -94,7 +102,7 @@
   cursor: pointer;
   font-weight: 600;
   transition: all 0.2s;
-  flex: 1; // Si allarga uniformemente
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,7 +114,8 @@
   }
 }
 
-// 4. Bottone Elimina Opera (Esistente)
+// 4. Bottone Elimina Opera (Rosso Chiaro)
+// Nota: Usato anche per "Annulla Programmazione"
 .btn-delete-opera {
   background-color: #ffebee;
   color: $danger-color;
