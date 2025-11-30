@@ -10,5 +10,6 @@ import java.util.List;
 public interface AstaRepository extends JpaRepository<Asta, Long> {
     //Trova tutte le aste attive (dove dataFine è nel futuro)
     //List<Asta> findByDataFineAfter(LocalDateTime now);
+    List<Asta> findAllByDataInizioBeforeAndOpera_Stato(LocalDateTime time, StatoOpera stato);
     List<Asta> findAllByDataFineBeforeAndOpera_Stato(LocalDateTime now, StatoOpera stato);
 }
