@@ -1,6 +1,5 @@
 package com.anagrafica.prova.backend.controller;
 
-
 import com.anagrafica.prova.backend.dto.AstaRequest;
 import com.anagrafica.prova.backend.model.Asta;
 import com.anagrafica.prova.backend.service.AstaService;
@@ -24,6 +23,17 @@ public class AstaController {
             return ResponseEntity.ok(asta);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @DeleteMapping("/{id}/annulla")
+    public ResponseEntity<?> annullaAsta(@PathVariable Long id) {
+        try {
+            astaService.annullaProgrammazione(id);
+            return ResponseEntity.ok("Programmazione annullata con successo. L'opera è tornata disponibile.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Errore durante l'annullamento: " + e.getMessage());
         }
     }
 }

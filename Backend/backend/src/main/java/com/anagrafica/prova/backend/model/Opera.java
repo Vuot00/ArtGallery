@@ -1,6 +1,6 @@
 package com.anagrafica.prova.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,20 +19,20 @@ public class Opera {
     private Long id;
 
     private String titolo;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String descrizione;
+
     private Double prezzo;
 
     @Enumerated(EnumType.STRING)
     private StatoOpera stato = StatoOpera.DISPONIBILE;
 
-
     @OneToMany(mappedBy = "opera", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Immagine> immagini = new ArrayList<>();
 
     private LocalDateTime dataCaricamento;
-
 
     @ManyToOne
     @JoinColumn(name = "artista_id")
@@ -46,14 +46,10 @@ public class Opera {
         this.artista = artista;
     }
 
+    // --- MODIFICA FONDAMENTALE ---
+    // 1. Rinominato in 'asta' per matchare il frontend (opera.asta.id)
+    // 2. Usato JsonIgnoreProperties invece di JsonIgnore per inviare i dati senza loop
     @OneToOne(mappedBy = "opera")
-    @JsonIgnore
-    private Asta astaAttiva;
-
-    /*
-    public Long getAstaId() {
-        return astaAttiva != null ? astaAttiva.getId() : null;
-    }
-   */
-
+    @JsonIgnoreProperties("opera")
+    private Asta asta;
 }
