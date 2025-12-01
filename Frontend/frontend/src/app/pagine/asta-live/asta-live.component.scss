@@ -132,7 +132,13 @@ $text-dark: #333;
     }
   }
 
-  .min-increment { font-size: 0.8rem; color: #999; text-align: center; margin-top: -15px; }
+  // MODIFICA APPLICATA QUI SOTTO
+  .min-increment {
+    font-size: 0.8rem;
+    color: #999;
+    text-align: center;
+    margin-top: 15px; // Cambiato da -15px a 15px per creare spazio
+  }
 
   .status-msg {
     padding: 20px; text-align: center; border-radius: 8px; font-weight: 500;

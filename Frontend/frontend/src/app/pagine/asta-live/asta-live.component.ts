@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy, inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router'; // Router aggiunto
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { WebSocketService } from '../../servizi/websocket.service';
 import { ToastService } from '../../servizi/toast.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-asta-live',
@@ -19,9 +20,12 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private wsService = inject(WebSocketService);
   private toast = inject(ToastService);
+  private router = inject(Router);
 
   private ngZone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
+
+  private wsSubscription: Subscription | null = null;
 
   asta: any = null;
   idAsta!: number;
@@ -29,8 +33,6 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
   prezzoCorrente: number = 0;
   offertaUtente: number | null = null;
   countdown: string = 'Caricamento...';
-
-  // Stati possibili: 'ATTESA' | 'APERTA' | 'CHIUSA'
   statoAsta: string = 'ATTESA';
 
   pricePulse: boolean = false;
@@ -39,17 +41,22 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.idAsta = Number(this.route.snapshot.paramMap.get('id'));
 
-    //Caricamento Iniziale Dati (REST)
-    this.caricaDatiIniziali();
+    // Recupera token per controllo
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      this.toast.show("Accesso negato: effettua il login", "error");
+      this.router.navigate(['/login']);
+      return;
+    }
 
-    //Connessione WebSocket (REAL-TIME)
-    this.wsService.watchAsta(this.idAsta).subscribe((messaggio: any) => {
+    // 1. Carica i dati statici (REST)
+    this.caricaDatiIniziali(token);
 
-
+    // 2. Connetti al WebSocket (STOMP)
+    // Nota: Il service gestisce la connessione interna, qui ci sottoscriviamo solo al topic
+    this.wsSubscription = this.wsService.watchAsta(this.idAsta).subscribe((messaggio: any) => {
       this.ngZone.run(() => {
         console.log('📩 Messaggio WebSocket:', messaggio);
-
-
 
         if (messaggio.tipo === 'CHIUSURA') {
           this.gestisciChiusuraAsta(messaggio);
@@ -57,20 +64,20 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
           this.aggiornaPrezzo(messaggio.importo);
           this.toast.show(`Nuova offerta di € ${messaggio.importo}!`, 'info');
         }
-
-        // da rivedere
         this.cdr.detectChanges();
       });
-
     });
   }
 
-  caricaDatiIniziali() {
-    this.http.get<any>(`http://localhost:8080/api/aste/${this.idAsta}`).subscribe({
+  caricaDatiIniziali(token: string) {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    this.http.get<any>(`http://localhost:8080/api/aste/${this.idAsta}`, { headers }).subscribe({
       next: (data) => {
         this.asta = data;
         this.prezzoCorrente = data.prezzoAttuale || data.prezzoPartenza;
-
 
         if (data.opera.stato === 'VENDUTA' || data.opera.stato === 'DISPONIBILE') {
           this.statoAsta = 'CHIUSA';
@@ -80,23 +87,23 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
         }
 
         this.offertaUtente = this.prezzoCorrente + 10;
-
-
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error(err);
-        this.toast.show("Errore caricamento dati asta", "error");
+        console.error("Errore caricamento dati:", err);
+        if (err.status === 403 || err.status === 401) {
+          this.toast.show("Sessione scaduta. Effettua il login.", "error");
+          this.router.navigate(['/login']);
+        } else {
+          this.toast.show("Errore caricamento dati asta", "error");
+        }
       }
     });
   }
 
-
   aggiornaPrezzo(nuovoImporto: number) {
     this.prezzoCorrente = nuovoImporto;
-    this.offertaUtente = this.prezzoCorrente + 10; // Aggiorna input utente
-
-
+    this.offertaUtente = this.prezzoCorrente + 10;
     this.pricePulse = true;
     this.cdr.detectChanges();
 
@@ -106,15 +113,12 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-
   gestisciChiusuraAsta(messaggio: any) {
     this.statoAsta = 'CHIUSA';
     this.countdown = 'Asta Terminata';
     this.prezzoCorrente = messaggio.prezzoFinale;
 
-
     if (this.timerInterval) clearInterval(this.timerInterval);
-
 
     if (messaggio.statoFinale === 'VENDUTA') {
       this.toast.show('🏆 Asta conclusa! Opera VENDUTA.', 'success');
@@ -138,7 +142,6 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
     this.http.post('http://localhost:8080/api/offerte', body, { headers }).subscribe({
       next: () => {
         this.toast.show("Offerta inviata con successo!", "success");
-        // Non aggiorniamo manualmente qui, aspettiamo il WebSocket
       },
       error: (err) => {
         this.toast.show(err.error || "Errore nell'offerta", "error");
@@ -146,12 +149,10 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
     });
   }
 
-
   avviaTimer() {
     this.aggiornaStatoTimer();
     this.timerInterval = setInterval(() => {
       this.aggiornaStatoTimer();
-      // this.cdr.detectChanges(); da provare
     }, 1000);
   }
 
@@ -183,5 +184,8 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
   }
 }

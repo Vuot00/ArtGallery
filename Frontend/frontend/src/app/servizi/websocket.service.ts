@@ -11,25 +11,43 @@ export class WebSocketService {
     private connectionStatus = new BehaviorSubject<boolean>(false);
 
     constructor() {
+        // 1. Recupera il token
+        const token = localStorage.getItem('jwtToken');
+
+        // 2. Costruisci l'URL dinamico.
+        // Se il token non c'è, usiamo l'URL base (il server risponderà 403, ma evitiamo crash client)
+        const baseUrl = 'ws://localhost:8080/ws-auction';
+        const brokerUrl = token ? `${baseUrl}?access_token=${token}` : baseUrl;
+
+        console.log("🔌 Configurazione WebSocket con Token...");
+
         this.client = new Client({
-            // Assicurati che l'URL sia corretto (ws:// se HTTP, wss:// se HTTPS)
-            brokerURL: 'ws://localhost:8080/ws-auction',
-            reconnectDelay: 5000, // Riprova a connettersi ogni 5s se cade
-            debug: (str) => console.log(str),
+            brokerURL: brokerUrl,
+            reconnectDelay: 5000, // Riprova ogni 5s se cade la linea
+            // debug: (str) => console.log(str), // Decommenta per vedere log dettagliati STOMP
         });
 
-        this.client.onConnect = () => {
-            console.log('🔗 WebSocket Connesso!');
+        this.client.onConnect = (frame) => {
+            console.log('🔗 WebSocket STOMP Connesso!');
             this.connectionStatus.next(true);
         };
 
-        this.client.onDisconnect = () => {
+        this.client.onStompError = (frame) => {
+            console.error('Broker error: ' + frame.headers['message']);
+            console.error('Details: ' + frame.body);
+        };
+
+        this.client.onWebSocketClose = () => {
             console.log('❌ WebSocket Disconnesso');
             this.connectionStatus.next(false);
         };
 
-        // Avvia la connessione appena il service viene istanziato
-        this.client.activate();
+        // 3. Attiva la connessione solo se abbiamo un token (o prova comunque se vuoi gestire l'errore)
+        if (token) {
+            this.client.activate();
+        } else {
+            console.warn("⚠️ WebSocket: Nessun token trovato. Connessione non avviata.");
+        }
     }
 
     /**
@@ -43,7 +61,6 @@ export class WebSocketService {
 
     /**
      * Si iscrive al canale di una specifica asta.
-     * Gestisce l'attesa della connessione in modo trasparente.
      */
     watchAsta(idAsta: number): Observable<any> {
         return this.waitForConnection().pipe(
