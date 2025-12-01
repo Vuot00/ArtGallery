@@ -15,6 +15,14 @@ public class AstaService {
     @Autowired private OperaRepository operaRepository;
     @Autowired private AstaRepository astaRepository;
 
+    // --- NUOVO METODO AGGIUNTO ---
+    // Serve al Controller per restituire i dati al Frontend
+    public Asta getAstaById(Long id) {
+        return astaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Asta non trovata con ID: " + id));
+    }
+    // -----------------------------
+
     @Transactional
     public Asta avviaAsta(Long idOpera, AstaRequest request) {
 

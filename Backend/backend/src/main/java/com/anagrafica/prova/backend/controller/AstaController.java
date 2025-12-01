@@ -7,11 +7,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional; // Import necessario
+
 @RestController
 @RequestMapping("/api/aste")
 public class AstaController {
 
     @Autowired private AstaService astaService;
+
+    // --- AGGIUNGI QUESTO METODO QUI SOTTO ---
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAstaById(@PathVariable Long id) {
+        try {
+            // Nota: Assicurati che nel tuo AstaService esista un metodo 'findById' o 'getAstaById'
+            // Se il tuo service restituisce Optional, usa .orElseThrow() o gestiscilo così:
+            Asta asta = astaService.getAstaById(id);
+            return ResponseEntity.ok(asta);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Asta non trovata: " + e.getMessage());
+        }
+    }
+    // ----------------------------------------
 
     @PostMapping("/avvia/{idOpera}")
     public ResponseEntity<?> avviaAsta(@PathVariable Long idOpera, @RequestBody AstaRequest request) {
