@@ -1,90 +1,67 @@
 @import 'profile-shared';
 
 // ==========================================
-//   STILI GENERALI DEL PROFILO
+// STILI GENERALI DEL PROFILO
 // ==========================================
 
-// --- Stili per i Form (Dati, Password) ---
 .form-profilo {
   max-width: 600px;
-
   .form-group {
     margin-bottom: 20px;
     label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
     input {
-      width: 100%; padding: 12px 15px;
-      border: 2px solid #e0e0e0; border-radius: 10px;
-      font-size: 1rem; box-sizing: border-box;
-      transition: all 0.3s;
-
+      width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; box-sizing: border-box; transition: all 0.3s;
       &:focus { outline: none; border-color: $primary-color; box-shadow: 0 0 0 4px rgba($primary-color, 0.1); }
       &.disabled { background: #f9f9f9; color: #999; cursor: not-allowed; }
     }
   }
 }
 
-// --- Bottoni Generali Pagina (Salva, Modifica Password) ---
 .btn-save, .btn-danger {
-  padding: 12px 30px;
-  border: none; border-radius: $border-radius-btn;
-  font-size: 1rem; font-weight: 700;
-  cursor: pointer; transition: transform 0.2s;
-  color: white;
-
+  padding: 12px 30px; border: none; border-radius: $border-radius-btn; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s; color: white;
   &:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 }
-
 .btn-save { background-color: $primary-color; }
 .btn-danger { background-color: $danger-color; }
 
 
 // ==========================================
-//   STILI SPECIFICI PER LE CARD DELLE OPERE
+// STILI SPECIFICI PER LE CARD DELLE OPERE
 // ==========================================
 
-// Contenitore dei bottoni nella card
 .card-actions {
   margin-top: auto;
   display: flex;
-  gap: 8px; // Spazio tra i bottoni
-  flex-wrap: wrap; // Se lo spazio manca, vanno a capo
+  gap: 8px;
+  flex-wrap: wrap;
   width: 100%;
 }
 
-// 1. Bottone "Metti all'Asta" (Viola)
-.btn-auction {
-  background-color: #673ab7; // Viola intenso
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1.1rem;
-  flex: 1; // Si allarga per riempire lo spazio
+// Classe contenitore per lo stato "PROGRAMMATA"
+// Assicura che i figli occupino tutto lo spazio disponibile in colonna
+.programmed-actions {
+  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #512da8; // Viola più scuro
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(103, 58, 183, 0.3);
-  }
+  flex-direction: column;
+  gap: 8px;
 }
 
-// 2. Badge Base (Default: IN ASTA - Viola Chiaro)
+// 1. Bottone "Metti all'Asta"
+.btn-auction {
+  background-color: #673ab7; color: white; border: none; border-radius: 8px; padding: 8px; cursor: pointer; font-weight: 600; font-size: 1.1rem; flex: 1; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  &:hover { background-color: #512da8; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(103, 58, 183, 0.3); }
+}
+
+// 2. Badge Base (Default: IN ASTA)
 .badge-asta {
-  background-color: #ede7f6; // Viola chiarissimo
-  color: #512da8; // Testo viola scuro
-  border: 1px solid #d1c4e9;
-  padding: 8px;
+  background-color: #ede7f6; color: #512da8; border: 1px solid #d1c4e9;
+  padding: 10px;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   text-align: center;
-  width: 100%;
+  width: 100%; /* Forza larghezza piena */
+  box-sizing: border-box; /* Include padding nella larghezza */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,58 +69,27 @@
   animation: fadeIn 0.5s ease;
 }
 
-// 3. Bottone Modifica Opera (Grigio Chiaro)
+// 3. Bottone Modifica
 .btn-edit {
-  background-color: #f5f7fa;
-  color: $text-dark;
-  border: 1px solid #e0e0e0;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: $primary-color;
-    color: white;
-    border-color: $primary-color;
-  }
+  background-color: #f5f7fa; color: $text-dark; border: 1px solid #e0e0e0; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; flex: 1; display: flex; align-items: center; justify-content: center;
+  &:hover { background-color: $primary-color; color: white; border-color: $primary-color; }
 }
 
-// 4. Bottone Elimina Opera (Rosso Chiaro)
-// Nota: Usato anche per "Annulla Programmazione"
+// 4. Bottone Elimina Opera (o Annulla Asta)
 .btn-delete-opera {
-  background-color: #ffebee;
-  color: $danger-color;
-  border: 1px solid #ffcdd2;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #ffebee; color: $danger-color; border: 1px solid #ffcdd2; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 1.1rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
 
-  &:hover {
-    background-color: $danger-color;
-    color: white;
-    border-color: $danger-color;
-    transform: scale(1.05);
+  &:hover { background-color: $danger-color; color: white; border-color: $danger-color; transform: scale(1.05); }
+
+  // Variante Full Width per il bottone Annulla
+  &.full-width {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px; /* Match padding badge */
+    margin-top: 0; /* Rimuove margini se gestiti dal gap */
   }
 }
 
-// Todo Box
-.todo-box {
-  background: #fff8e1; border: 2px dashed #ffb74d; color: #f57c00;
-  padding: 30px; border-radius: 12px; text-align: center; font-weight: 500;
-}
+.todo-box { background: #fff8e1; border: 2px dashed #ffb74d; color: #f57c00; padding: 30px; border-radius: 12px; text-align: center; font-weight: 500; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
