@@ -62,8 +62,11 @@
       </div>
 
       <div class="acquisto-actions">
-        <button class="btn-buy" [routerLink]="['/checkout', opera.id]">
+        <button *ngIf="!opera.venduta" class="btn-buy" [routerLink]="['/checkout', opera.id]">
           🛒 Acquista Ora
+        </button>
+        <button *ngIf="opera.venduta" class="btn-sold" disabled>
+          🚫 OPERA NON DISPONIBILE
         </button>
         <p class="shipping-info">Spedizione assicurata inclusa. Certificato di autenticità fornito dall'artista.</p>
       </div>

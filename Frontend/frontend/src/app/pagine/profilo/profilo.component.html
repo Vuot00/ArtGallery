@@ -125,12 +125,14 @@
     <div class="mini-grid">
       <div class="mini-card" *ngFor="let ordine of acquisti">
 
-        <img [src]="'http://localhost:8080/uploads/' + (ordine.opera?.immagini && ordine.opera?.immagini[0]?.url)"
-             alt="{{ ordine.opera?.titolo }}"
-             style="width: 100%; height: 180px; object-fit: cover;">
+        <img
+          [src]="'http://localhost:8080/uploads/' + (ordine.opera?.immagini && ordine.opera?.immagini[0]?.url)"
+          alt="{{ ordine.opera?.titolo }}"
+          style="width: 100%; height: 180px; object-fit: cover;">
 
         <div class="mini-info">
           <strong>{{ ordine.opera?.titolo }}</strong>
+
           <span style="color: #333;">Pagato: € {{ ordine.importo }}</span>
 
           <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">

@@ -44,6 +44,7 @@ export class ProfiloComponent implements OnInit {
   ngOnInit() {
     this.isArtist = this.authService.isArtist();
     this.caricaProfilo();
+    this.caricaAcquisti();
 
 
     if (this.isArtist) {
@@ -124,6 +125,16 @@ export class ProfiloComponent implements OnInit {
     this.userService.getVendite().subscribe(res => {
       console.log("VENDITE SCARICATE:", res); // <--- VEDI QUESTO LOG?
       this.vendite = res;
+    });
+  }
+
+  caricaAcquisti() {
+    this.userService.getAcquisti().subscribe({
+      next: (res) => {
+        console.log("ACQUISTI SCARICATI:", res); // Debug
+        this.acquisti = res;
+      },
+      error: (err) => console.error("Errore acquisti:", err)
     });
   }
 }
