@@ -84,9 +84,8 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
 
         // NOTA: Non reimpostiamo 'immagineSelezionata' qui,
         // per evitare di cambiare l'immagine che l'utente sta guardando
-        // se ne ha selezionata una specifica dalla galleria.
 
-        // Se per caso l'immagine selezionata non esiste più nei nuovi dati (raro), fallback
+        // Fallback: se l'immagine selezionata non esiste più
         if (this.immagineSelezionata && this.opera.immagini) {
           const imageExists = this.opera.immagini.some((img: any) => img.url === this.immagineSelezionata);
           if (!imageExists && this.opera.immagini.length > 0) {
@@ -95,10 +94,28 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        // In caso di errore nel polling, logghiamo ma non blocchiamo l'UI
         console.error("Errore aggiornamento silenzioso:", err);
       }
     });
+  }
+
+  // NUOVO METODO: Calcola quale prezzo mostrare in base allo stato
+  getPrezzoDinamico(): number {
+    if (!this.opera) return 0;
+
+    // Se programmata -> Prezzo di partenza dell'asta
+    if (this.opera.stato === 'PROGRAMMATA' && this.opera.asta) {
+      return this.opera.asta.prezzoPartenza;
+    }
+
+    // Se in asta -> Prezzo attuale (l'offerta corrente o la base se nessuna offerta)
+    if (this.opera.stato === 'IN_ASTA' && this.opera.asta) {
+      // Se prezzoAttuale è null (nessuna offerta), usa prezzoPartenza
+      return this.opera.asta.prezzoAttuale || this.opera.asta.prezzoPartenza;
+    }
+
+    // Default (DISPONIBILE, VENDUTA o se mancano dati asta) -> Prezzo originale opera
+    return this.opera.prezzo;
   }
 
   cambiaImmaginePrincipale(urlNuovaImmagine: string) {
@@ -117,9 +134,7 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
     if (this.opera && this.opera.astaId) {
       this.router.navigate(['/asta', this.opera.astaId]);
     } else {
-      // Se l'ID asta non è presente nell'oggetto opera, proviamo a ricaricarlo o logghiamo errore
       console.error("ID Asta non trovato!");
-      // Fallback: se siamo in polling potremmo aver appena ricevuto l'astaId
       if(this.opera.asta?.id) {
         this.router.navigate(['/asta', this.opera.asta.id]);
       }
