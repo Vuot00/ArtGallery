@@ -5,6 +5,7 @@ export interface Opera {
   prezzo: number;
   immagineUrl: string;
   anno?: number;
+  stato: string;
 
   immagini: {
     id: number;
