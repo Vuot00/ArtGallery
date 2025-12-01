@@ -10,4 +10,6 @@ public interface OrdineRepository extends JpaRepository<Ordine, Long> {
 
     List<Ordine> findByAcquirenteOrderByDataCreazioneDesc(Utente acquirente);
 
+
+
 }
