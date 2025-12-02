@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.anagrafica.prova.backend.service.EmailService;
 
 @RestController
 @RequestMapping("/api/pagamenti")
@@ -32,6 +33,8 @@ public class PaymentController {
     private OperaRepository operaRepository;
     @Autowired
     private UtenteRepository utenteRepository;
+    @Autowired
+    private EmailService emailService;
 
     // 1. AVVIA IL PAGAMENTO
     @PostMapping("/create/{idOpera}")
@@ -95,6 +98,7 @@ public class PaymentController {
                     operaRepository.save(operaVenduta); // Salva lo stato
 
                     ordineRepository.save(ordine);
+                    emailService.sendOrderConfirmation(ordine, ordine.getAcquirente().getEmail());
                     return ResponseEntity.ok("Pagamento completato.");
                 }
             }
