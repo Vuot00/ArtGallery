@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { SearchService } from '../../servizi/search.service';
 import {debounceTime, distinctUntilChanged, of, Subject, switchMap} from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import {NotificationService} from '../../servizi/notification';
 
 @Component({
   selector: 'app-navbar',
@@ -18,6 +19,7 @@ export class NavbarComponent implements OnInit {
   public authService = inject(AuthService);//messo public per far si che l HTML lo legga
   private router = inject(Router);
   private searchService = inject(SearchService);
+  public notificationService = inject(NotificationService);
 
   username: string = 'Utente';
 
@@ -30,6 +32,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     const nome = this.authService.getUsername();
+    this.notificationService.startPolling();
     if (nome) {
       this.username = nome;
     }
