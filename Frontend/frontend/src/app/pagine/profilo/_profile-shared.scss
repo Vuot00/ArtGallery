@@ -116,6 +116,19 @@ $border-radius-btn: 30px;
   gap: 25px;
 }
 
+.badge-venduto {
+  background: #e8f5e9; // Verde chiarissimo
+  color: #2e7d32;      // Verde scuro
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+  border: 1px solid #c8e6c9;
+  width: 100%; // Occupa tutta la larghezza come i bottoni
+  text-align: center;
+}
+
 .mini-card {
   background: white;
   border-radius: 12px;
@@ -154,6 +167,33 @@ $border-radius-btn: 30px;
 .empty-state {
   text-align: center; padding: 40px; color: $text-muted;
   a { color: $primary-color; font-weight: bold; text-decoration: none; &:hover { text-decoration: underline; }}
+}
+
+// --- STILE TARGHETTA VENDUTA ---
+.overlay-sold {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5); // Velo bianco
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  border-radius: 12px; // Stesso raggio della card
+
+  span {
+    background-color: #d32f2f; // Rosso
+    color: white;
+    padding: 5px 15px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transform: rotate(-15deg); // Effetto timbro inclinato
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

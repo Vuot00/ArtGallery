@@ -260,6 +260,26 @@ $card-radius: 16px;
   }
 }
 
+// --- BOTTONE VENDUTO (Grigio) ---
+.btn-sold {
+  width: 100%;
+  padding: 16px;
+  background-color: #e0e0e0; // Grigio spento
+  color: #888;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: not-allowed; // Cursore divieto
+  text-transform: uppercase;
+
+  &:hover {
+    background-color: #e0e0e0; // Nessun effetto hover
+    transform: none;
+    box-shadow: none;
+  }
+}
+
 .fade-in { animation: fadeIn 0.5s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 .btn-secondary { display: inline-block; padding: 10px 20px; background: #eee; color: $text-dark; text-decoration: none; border-radius: 8px; }

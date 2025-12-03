@@ -1,104 +1,103 @@
 <div class="dettaglio-container">
 
-    <div *ngIf="loading" class="loading-state">
-        <div class="spinner"></div> <p>Caricamento dettagli opera...</p>
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Caricamento dettagli opera...</p>
+  </div>
+
+  <div *ngIf="errore" class="error-state">
+    <p>⚠️ {{ errore }}</p>
+    <a routerLink="/home" class="btn-secondary">Torna alla Home</a>
+  </div>
+
+  <div *ngIf="!loading && !errore && opera" class="opera-content fade-in">
+
+    <div class="opera-image-col">
+      <div class="main-image-container">
+        <img *ngIf="immagineSelezionata"
+             [src]="getBgImage(immagineSelezionata)"
+             [alt]="opera.titolo"
+             class="main-image">
+
+        <img *ngIf="!immagineSelezionata && (!opera.immagini || opera.immagini.length === 0)"
+             src="assets/placeholder.png"
+             alt="Nessuna immagine"
+             class="main-image">
+      </div>
+
+      <div class="gallery-thumbs" *ngIf="opera.immagini && opera.immagini.length > 1">
+        <div *ngFor="let img of opera.immagini"
+             class="thumb-container"
+             (click)="cambiaImmaginePrincipale(img.url)"
+             [class.active]="img.url === immagineSelezionata">
+          <img [src]="getBgImage(img.url)" class="thumb">
+        </div>
+      </div>
     </div>
 
-    <div *ngIf="errore" class="error-state">
-        <p>⚠️ {{ errore }}</p>
-        <a routerLink="/home" class="btn-secondary">Torna alla Home</a>
-    </div>
+    <div class="opera-info-col">
+      <h1 class="opera-titolo">{{ opera.titolo }}</h1>
 
-    <div *ngIf="!loading && !errore && opera" class="opera-content fade-in">
+      <div class="artista-info">
+        <div class="avatar-placeholder">
+          {{ opera.artista?.nome?.charAt(0)?.toUpperCase() || 'A' }}
+        </div>
+        <div>
+          <span class="label">Artista</span>
+          <h3 class="artista-nome">{{ opera.artista?.nome }} {{ opera.artista?.cognome }}</h3>
+        </div>
+      </div>
 
-        <div class="opera-image-col">
-            <div class="main-image-container">
-                <img *ngIf="immagineSelezionata"
-                     [src]="getBgImage(immagineSelezionata)"
-                     [alt]="opera.titolo"
-                     class="main-image">
+      <div class="prezzo-box">
+        <span class="label-prezzo" *ngIf="opera.stato === 'IN_ASTA'">Offerta attuale:</span>
+        <span class="label-prezzo" *ngIf="opera.stato === 'PROGRAMMATA'">Base d'asta:</span>
+        <span class="prezzo">{{ getPrezzoDinamico() | currency:'EUR' }}</span>
+      </div>
 
-                <img *ngIf="!immagineSelezionata && (!opera.immagini || opera.immagini.length === 0)"
-                     src="assets/placeholder.png"
-                     alt="Nessuna immagine"
-                     class="main-image">
-            </div>
+      <div class="descrizione-box">
+        <h3>Descrizione dell'Opera</h3>
+        <p class="descrizione-testo">
+          {{ opera.descrizione }}
+        </p>
+      </div>
 
-            <div class="gallery-thumbs" *ngIf="opera.immagini && opera.immagini.length > 1">
-                <div *ngFor="let img of opera.immagini"
-                     class="thumb-container"
-                     (click)="cambiaImmaginePrincipale(img.url)"
-                     [class.active]="img.url === immagineSelezionata">
-                    <img [src]="getBgImage(img.url)" class="thumb">
-                </div>
-            </div>
+      <div class="acquisto-actions">
+
+        <div *ngIf="opera.stato === 'IN_ASTA'" class="auction-mode">
+          <div class="auction-alert">
+            🔥 <strong>Asta in corso!</strong> Non perdere l'occasione.
+          </div>
+          <button class="btn-auction" (click)="vaiAllAsta()">
+            🖐️ Partecipa all'Asta
+          </button>
         </div>
 
-        <div class="opera-info-col">
-            <h1 class="opera-titolo">{{ opera.titolo }}</h1>
-
-            <div class="artista-info">
-                <div class="avatar-placeholder">
-                    {{ opera.artista?.nome?.charAt(0)?.toUpperCase() || 'A' }}
-                </div>
-                <div>
-                    <span class="label">Artista</span>
-                    <h3 class="artista-nome">{{ opera.artista?.nome }} {{ opera.artista?.cognome }}</h3>
-                </div>
-            </div>
-
-            <div class="prezzo-box">
-                <span class="label-prezzo" *ngIf="opera.stato === 'IN_ASTA'">Offerta attuale:</span>
-                <span class="label-prezzo" *ngIf="opera.stato === 'PROGRAMMATA'">Base d'asta:</span>
-
-                <span class="prezzo">{{ getPrezzoDinamico() | currency:'EUR' }}</span>
-            </div>
-
-            <div class="descrizione-box">
-                <h3>Descrizione dell'Opera</h3>
-                <p class="descrizione-testo">
-                    {{ opera.descrizione }}
-                </p>
-            </div>
-
-            <div class="acquisto-actions">
-
-                <div *ngIf="opera.stato === 'IN_ASTA'" class="auction-mode">
-                    <div class="auction-alert">
-                        🔥 <strong>Asta in corso!</strong> Non perdere l'occasione.
-                    </div>
-                    <button class="btn-auction" (click)="vaiAllAsta()">
-                        🖐️ Partecipa all'Asta
-                    </button>
-                </div>
-
-                <div *ngIf="opera.stato === 'PROGRAMMATA'" class="auction-mode">
-                    <div class="auction-alert" >
-                        📅 <strong>Asta Programmata</strong><br>
-                        Inizio il: {{ opera.asta?.dataInizio | date:'dd/MM/yy   ore HH:mm' }}
-                    </div>
-                    <button class="btn-auction" (click)="vaiAllAsta()" >
-                        🔜 Visualizza Pagina Asta
-                    </button>
-                </div>
-
-                <div *ngIf="opera.stato === 'DISPONIBILE'" class="buy-mode">
-                    <button class="btn-buy" (click)="acquistaOpera()">
-                        🛒 Acquista Ora quest'Opera
-                    </button>
-                </div>
-
-                <div *ngIf="opera.stato === 'VENDUTA'" class="sold-mode">
-                    <div class="sold-badge">❌ VENDUTA</div>
-                    <p>Quest'opera ha già trovato un proprietario.</p>
-                </div>
-
-                <p class="shipping-info" *ngIf="opera.stato !== 'VENDUTA'">
-                    Spedizione assicurata inclusa. Certificato di autenticità fornito dall'artista.
-                </p>
-
-            </div>
-
+        <div *ngIf="opera.stato === 'PROGRAMMATA'" class="auction-mode">
+          <div class="auction-alert" >
+            📅 <strong>Asta Programmata</strong><br>
+            Inizio il: {{ opera.asta?.dataInizio | date:'dd/MM/yy   ore HH:mm' }}
+          </div>
+          <button class="btn-auction" (click)="vaiAllAsta()" >
+            🔜 Visualizza Pagina Asta
+          </button>
         </div>
+
+        <div *ngIf="opera.stato === 'DISPONIBILE'" class="buy-mode">
+          <button class="btn-buy" (click)="acquistaOpera()">
+            🛒 Acquista Ora quest'Opera
+          </button>
+        </div>
+
+        <div *ngIf="opera.stato === 'VENDUTA'" class="sold-mode">
+          <div class="sold-badge">❌ VENDUTA</div>
+          <p>Quest'opera ha già trovato un proprietario.</p>
+        </div>
+
+        <p class="shipping-info" *ngIf="opera.stato !== 'VENDUTA'">
+          Spedizione assicurata inclusa. Certificato di autenticità fornito dall'artista.
+        </p>
+      </div>
+
     </div>
+  </div>
 </div>

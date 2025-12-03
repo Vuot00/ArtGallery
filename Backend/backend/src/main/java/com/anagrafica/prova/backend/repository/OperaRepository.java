@@ -10,12 +10,15 @@ import java.util.List;
 
 public interface OperaRepository extends JpaRepository<Opera, Long> {
 
-    //List<Opera> findByEmail(Utente email); era sbagliato questo
-    List<Opera> findByArtista(Utente artista);
-
-    List<Opera> findAllByOrderByDataCaricamentoDesc();
-
     List<Opera> findByTitoloContainingIgnoreCase(String titolo);
 
     List<Opera> findByArtistaId(Long id);
+
+    List<Opera> findByVendutaFalseOrderByDataCaricamentoDesc();
+
+    @Query("SELECT o FROM Opera o WHERE o.artista.id = :artistaId AND o.venduta = false")
+    List<Opera> findOpereInVendita(@Param("artistaId") Long artistaId);
+
+    List<Opera> findByArtistaIdAndVendutaTrue(Long artistaId);
+
 }

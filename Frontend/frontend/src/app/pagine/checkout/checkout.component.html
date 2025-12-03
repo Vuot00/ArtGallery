@@ -1,0 +1,19 @@
+<div class="checkout-container" *ngIf="opera">
+
+  <div class="summary-card">
+    <h2>Riepilogo Ordine</h2>
+    <div class="item-info">
+      <h3>{{ opera.titolo }}</h3>
+      <p>di {{ opera.artista?.nome }}</p>
+      <span class="price">€ {{ opera.prezzo }}</span>
+    </div>
+
+    <hr>
+
+    <div class="paypal-box">
+      <p>Paga in sicurezza con:</p>
+      <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+    </div>
+  </div>
+
+</div>

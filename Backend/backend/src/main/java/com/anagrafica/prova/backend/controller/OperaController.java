@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -155,16 +154,11 @@ public class OperaController {
 
     @GetMapping("/artista/{email}")
     public ResponseEntity<?> getOpereByArtista(@PathVariable String email) {
-
         try {
+            Utente artista = utenteRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-            Utente artistaTrovato = utenteRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Utente non trovato: " + email));
-
-            List<Opera> opere = operaRepository.findByArtista(artistaTrovato);
-
-            return ResponseEntity.ok(opere);
-
+            return ResponseEntity.ok(operaRepository.findOpereInVendita(artista.getId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Errore: " + e.getMessage());
         }
@@ -215,7 +209,7 @@ public class OperaController {
     // RECUPERARER TUTTE LE OPERE (Per la homepage)+ordinarle per ordine di caricamento(dallapiu recente alla piu vecchia)
     @GetMapping
     public ResponseEntity<List<Opera>> getAllOpere() {
-        return ResponseEntity.ok(operaRepository.findAllByOrderByDataCaricamentoDesc());
+        return ResponseEntity.ok(operaRepository.findByVendutaFalseOrderByDataCaricamentoDesc());
     }
     @GetMapping("/artista/id/{id}")
     public ResponseEntity<?> getOpereByArtistaId(@PathVariable Long id) {

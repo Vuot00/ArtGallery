@@ -1,0 +1,31 @@
+.checkout-container {
+  display: flex;
+  justify-content: center;
+  padding: 50px 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.summary-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+
+  h2 { color: #333; margin-bottom: 30px; }
+
+  .item-info {
+    margin-bottom: 20px;
+    h3 { margin: 0; font-size: 1.5rem; }
+    p { color: #666; }
+    .price { display: block; margin-top: 10px; font-size: 2rem; font-weight: bold; color: #3f51b5; }
+  }
+
+  .paypal-box {
+    margin-top: 30px;
+    p { font-size: 0.9rem; color: #888; margin-bottom: 10px; }
+  }
+}

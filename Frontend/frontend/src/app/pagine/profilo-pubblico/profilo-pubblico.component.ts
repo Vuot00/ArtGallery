@@ -31,7 +31,6 @@ export class ProfiloPubblicoComponent implements OnInit {
         this.opere = [];
         this.loading = true;
 
-
         this.caricaDati(id);
       }
     });

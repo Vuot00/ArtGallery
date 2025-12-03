@@ -1,54 +1,54 @@
 <div class="home-container">
-    <h1>Le Opere in Vetrina</h1>
+  <h1>Le Opere in Vetrina</h1>
 
-    <div *ngIf="opere.length === 0" class="no-data">
-        <p>Nessuna opera caricata al momento.</p>
-    </div>
+  <div *ngIf="opere.length === 0" class="no-data">
+    <p>Nessuna opera caricata al momento.</p>
+  </div>
 
-    <div class="grid-opere">
+  <div class="grid-opere">
 
-        <div class="card"
-             *ngFor="let opera of opere; trackBy: trackOpera"
-             [routerLink]="['/opera', opera.id]"
-             style="cursor: pointer;"
-             title="Clicca per vedere i dettagli">
+    <div class="card"
+         *ngFor="let opera of opere; trackBy: trackOpera"
+         [routerLink]="['/opera', opera.id]"
+         style="cursor: pointer;"
+         title="Clicca per vedere i dettagli">
 
-            <div class="card-img">
-                <img *ngIf="opera.immagini && opera.immagini.length > 0"
-                     [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url"
-                     [alt]="opera.titolo">
+      <div class="card-img">
+        <img *ngIf="opera.immagini && opera.immagini.length > 0"
+             [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url"
+             [alt]="opera.titolo">
 
-                <img *ngIf="!opera.immagini || opera.immagini.length === 0"
-                     src="assets/placeholder.png" alt="Nessuna foto">
-            </div>
+        <img *ngIf="!opera.immagini || opera.immagini.length === 0"
+             src="assets/placeholder.png" alt="Nessuna foto">
+      </div>
 
-            <div class="card-body">
-                <h3>{{ opera.titolo }}</h3>
-                <p class="descrizione">{{ opera.descrizione }}</p>
+      <div class="card-body">
+        <h3>{{ opera.titolo }}</h3>
+        <p class="descrizione">{{ opera.descrizione }}</p>
 
-                <div class="card-footer">
+        <div class="card-footer">
 
-          <span class="prezzo" *ngIf="opera.stato === 'DISPONIBILE' || !opera.stato">
-            € {{ opera.prezzo }}
-          </span>
+                    <span class="prezzo" *ngIf="opera.stato === 'DISPONIBILE'">
+                        € {{ opera.prezzo }}
+                    </span>
 
-                    <span class="badge-stato programmata" *ngIf="opera.stato === 'PROGRAMMATA'">
-            📅 Asta Programmata
-          </span>
+          <span class="badge-stato programmata" *ngIf="opera.stato === 'PROGRAMMATA'">
+                        📅 Asta Programmata
+                    </span>
 
-                    <span class="badge-stato in-asta" *ngIf="opera.stato === 'IN_ASTA'">
-            🔥 Asta in Corso
-          </span>
+          <span class="badge-stato in-asta" *ngIf="opera.stato === 'IN_ASTA'">
+                        🔥 Asta in Corso
+                    </span>
 
-                    <span class="badge-stato venduta" *ngIf="opera.stato === 'VENDUTA'">
-            ❌ Venduta
-          </span>
+          <span class="badge-stato venduta" *ngIf="opera.stato === 'VENDUTA'">
+                        ❌ Venduta
+                    </span>
 
-                    <span class="artista" *ngIf="opera.artista">di {{ opera.artista.nome }}</span>
-                </div>
-            </div>
-
+          <span class="artista" *ngIf="opera.artista">di {{ opera.artista.nome }}</span>
         </div>
+      </div>
 
     </div>
+
+  </div>
 </div>

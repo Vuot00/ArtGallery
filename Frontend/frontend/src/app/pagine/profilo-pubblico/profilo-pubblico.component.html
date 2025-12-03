@@ -20,17 +20,34 @@
 
       <div [routerLink]="['/opera', opera.id]" style="cursor: pointer;">
 
-        <img *ngIf="opera.immagini?.length > 0"
-             [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url">
+        <div class="img-container" style="position: relative;">
+
+          <div class="overlay-sold" *ngIf="opera.venduta">
+            <span>VENDUTA</span>
+          </div>
+
+          <img *ngIf="opera.immagini?.length > 0"
+               [src]="'http://localhost:8080/uploads/' + opera.immagini[0].url"
+               alt="{{ opera.titolo }}"
+               style="width: 100%; height: 180px; object-fit: cover; display: block;">
+
+        </div>
 
         <div class="mini-info">
           <strong>{{ opera.titolo }}</strong>
-          <span>€ {{ opera.prezzo }}</span>
+
+          <span [style.text-decoration]="opera.venduta ? 'line-through' : 'none'"
+                [style.color]="opera.venduta ? '#999' : '#3f51b5'">
+          € {{ opera.prezzo }}
+        </span>
+
+          <span *ngIf="opera.venduta" style="color: #d32f2f; font-size: 0.8rem; font-weight: bold;">
+           (Non disponibile)
+        </span>
         </div>
 
       </div>
 
     </div>
   </div>
-
 </div>

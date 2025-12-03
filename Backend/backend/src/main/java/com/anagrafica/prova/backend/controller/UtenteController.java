@@ -2,6 +2,7 @@ package com.anagrafica.prova.backend.controller;
 
 import com.anagrafica.prova.backend.dto.ChangePasswordRequest;
 import com.anagrafica.prova.backend.model.Utente;
+import com.anagrafica.prova.backend.repository.OperaRepository;
 import com.anagrafica.prova.backend.repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.Map;
+import com.anagrafica.prova.backend.repository.OrdineRepository;
 
 @RestController
 @RequestMapping("/api/utente")
@@ -21,6 +22,12 @@ public class UtenteController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private OrdineRepository ordineRepository;
+
+    @Autowired
+    private OperaRepository operaRepository;
 
     //Metodo che Recupera l'utente loggato dal Token
     private Utente getMe() {
@@ -76,5 +83,17 @@ public class UtenteController {
                     return ResponseEntity.ok(u);
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/acquisti")
+    public ResponseEntity<?> getMieiAcquisti() {
+        Utente me = getMe();
+        return ResponseEntity.ok(ordineRepository.findByAcquirenteOrderByDataCreazioneDesc(me));
+    }
+
+    @GetMapping("/vendite")
+    public ResponseEntity<?> getMieVendite() {
+        Utente me = getMe();
+        return ResponseEntity.ok(operaRepository.findByArtistaIdAndVendutaTrue(me.getId()));
     }
 }

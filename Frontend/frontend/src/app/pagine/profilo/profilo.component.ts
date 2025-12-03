@@ -60,10 +60,12 @@ export class ProfiloComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isArtist = this.authService.isArtist();
     this.caricaProfilo();
+    this.caricaAcquisti(); // Chiamata per tutti gli utenti
 
     if (this.isArtist) {
       this.caricaMieOpere();
-      this.sincronizzaRefreshConOrologio();
+      this.caricaVendite(); // <--- AGGIUNTO da feature/paypal
+      this.sincronizzaRefreshConOrologio(); // <--- AGGIUNTO da HEAD
     }
   }
 
@@ -110,14 +112,33 @@ export class ProfiloComponent implements OnInit, OnDestroy {
       const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
       this.http.get(`http://localhost:8080/api/opere/artista/${email}`, { headers })
-          .subscribe({
-            next: (res: any) => {
-              this.mieOpere = res;
-              this.attivaAscoltoRealTime();
-            },
-            error: (err) => console.error('Errore caricamento opere:', err)
-          });
+        .subscribe({
+          next: (res: any) => {
+            this.mieOpere = res;
+            this.attivaAscoltoRealTime();
+          },
+          error: (err) => console.error('Errore caricamento opere:', err)
+        });
     }
+  }
+
+  // Nuova funzione per caricare le vendite (da feature/paypal)
+  caricaVendite() {
+    this.userService.getVendite().subscribe(res => {
+      console.log("VENDITE SCARICATE:", res);
+      this.vendite = res;
+    });
+  }
+
+  // Funzione per caricare gli acquisti (unificata)
+  caricaAcquisti() {
+    this.userService.getAcquisti().subscribe({
+      next: (res) => {
+        console.log("ACQUISTI SCARICATI:", res);
+        this.acquisti = res;
+      },
+      error: (err) => console.error("Errore acquisti:", err)
+    });
   }
 
   attivaAscoltoRealTime() {
@@ -222,6 +243,9 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ----------------------------------------------------------------
+  // GESTIONE MODAL ASTA (da HEAD)
+  // ----------------------------------------------------------------
   openAstaModal(id: number) {
     this.selectedOperaId = id;
     this.showAstaModal = true;
@@ -235,5 +259,6 @@ export class ProfiloComponent implements OnInit, OnDestroy {
   refreshList() {
     this.closeModal();
     this.caricaMieOpere();
+    this.caricaVendite(); // Potrebbe essersi aggiunta una vendita, quindi aggiorniamo anche questo
   }
 }

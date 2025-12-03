@@ -11,6 +11,8 @@ import { DettaglioOperaComponent } from './pagine/dettaglio-opera/dettaglio-oper
 import { ModificaOperaComponent } from './pagine/artista/modifica-opera/modifica-opera.component';
 import {ProfiloPubblicoComponent} from './pagine/profilo-pubblico/profilo-pubblico.component';
 import {AstaLiveComponent} from "./pagine/asta-live/asta-live.component";
+import {CheckoutComponent} from './pagine/checkout/checkout.component';
+
 
 export const routes: Routes = [
   // --- ROTTE PUBBLICHE (Senza Sidebar/Navbar) ---
@@ -39,6 +41,7 @@ export const routes: Routes = [
       { path: 'test', component: TestConnectionComponent },
       { path: 'profilo', component: ProfiloComponent },
       { path: 'profilo/:id', component: ProfiloPubblicoComponent },
+      { path: 'checkout/:id', component: CheckoutComponent },
     ]
   },
 

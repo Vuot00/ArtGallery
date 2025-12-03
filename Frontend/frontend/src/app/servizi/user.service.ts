@@ -39,12 +39,11 @@ export class UserService {
   // --- TODO: FUTURE IMPLEMENTAZIONI ---
 
   getAcquisti(): Observable<any[]> {
-    // Quando avrai il backend: return this.http.get(...)
-    return of([]); // Ritorna lista vuota per ora
-  }
+    return this.http.get<any[]>(`${this.apiUrl}/acquisti`, this.getHeaders());  }
 
   getVendite(): Observable<any[]> {
-    return of([]); // Ritorna lista vuota per ora
+      return this.http.get<any[]>(`${this.apiUrl}/vendite`, this.getHeaders());
   }
+
 
 }
