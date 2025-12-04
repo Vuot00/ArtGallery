@@ -2,6 +2,7 @@ package com.anagrafica.prova.backend.controller;
 
 import com.anagrafica.prova.backend.model.Opera;
 import com.anagrafica.prova.backend.model.Ordine;
+import com.anagrafica.prova.backend.model.StatoOpera;
 import com.anagrafica.prova.backend.model.Utente;
 import com.anagrafica.prova.backend.repository.OperaRepository;
 import com.anagrafica.prova.backend.repository.OrdineRepository;
@@ -35,8 +36,6 @@ public class PaymentController {
     private UtenteRepository utenteRepository;
     @Autowired
     private EmailService emailService;
-
-    // 1. AVVIA IL PAGAMENTO
     @PostMapping("/create/{idOpera}")
     @Transactional
     public ResponseEntity<?> createOrder(@PathVariable Long idOpera) {
@@ -57,7 +56,6 @@ public class PaymentController {
             purchaseUnits.add(purchaseUnit);
             orderRequest.purchaseUnits(purchaseUnits);
 
-            // Chiamiamo PayPal
             OrdersCreateRequest request = new OrdersCreateRequest().requestBody(orderRequest);
             HttpResponse<Order> response = payPalHttpClient.execute(request);
             String paypalOrderId = response.result().id();
@@ -72,7 +70,7 @@ public class PaymentController {
             ordine.setDataCreazione(LocalDateTime.now());
             ordineRepository.save(ordine);
 
-            // Restituiamo l'ID di PayPal al frontend
+
             return ResponseEntity.ok(Collections.singletonMap("id", paypalOrderId));
 
         } catch (Exception e) {
@@ -80,7 +78,6 @@ public class PaymentController {
         }
     }
 
-    // 2. COMPLETA IL PAGAMENTO (Dopo che l'utente ha pagato nel popup)
     @PostMapping("/capture/{paypalOrderId}")
     @Transactional
     public ResponseEntity<?> captureOrder(@PathVariable String paypalOrderId) {
@@ -94,7 +91,7 @@ public class PaymentController {
                 if (ordine != null) {
                     ordine.setStato("PAGATO");
                     Opera operaVenduta = ordine.getOpera();
-                    operaVenduta.setVenduta(true);
+                    operaVenduta.setStato(StatoOpera.VENDUTA);
                     operaRepository.save(operaVenduta); // Salva lo stato
 
                     ordineRepository.save(ordine);

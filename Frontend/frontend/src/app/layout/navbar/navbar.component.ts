@@ -14,7 +14,7 @@ import {NotificationService} from '../../servizi/notification.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent implements OnInit, OnDestroy { // IMPLEMENTA OnDestroy
+export class NavbarComponent implements OnInit, OnDestroy {
 
   public authService = inject(AuthService);
   private router = inject(Router);

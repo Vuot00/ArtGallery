@@ -1,6 +1,7 @@
 package com.anagrafica.prova.backend.controller;
 
 import com.anagrafica.prova.backend.dto.ChangePasswordRequest;
+import com.anagrafica.prova.backend.model.StatoOpera;
 import com.anagrafica.prova.backend.model.Utente;
 import com.anagrafica.prova.backend.repository.OperaRepository;
 import com.anagrafica.prova.backend.repository.UtenteRepository;
@@ -94,6 +95,5 @@ public class UtenteController {
     @GetMapping("/vendite")
     public ResponseEntity<?> getMieVendite() {
         Utente me = getMe();
-        return ResponseEntity.ok(operaRepository.findByArtistaIdAndVendutaTrue(me.getId()));
-    }
+        return ResponseEntity.ok(operaRepository.findByArtistaIdAndStato(me.getId(), StatoOpera.VENDUTA));    }
 }

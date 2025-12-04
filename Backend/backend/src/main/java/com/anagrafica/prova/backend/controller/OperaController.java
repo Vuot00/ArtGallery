@@ -2,6 +2,7 @@ package com.anagrafica.prova.backend.controller;
 
 import com.anagrafica.prova.backend.model.Immagine;
 import com.anagrafica.prova.backend.model.Opera;
+import com.anagrafica.prova.backend.model.StatoOpera;
 import com.anagrafica.prova.backend.repository.ImmagineRepository;
 import com.anagrafica.prova.backend.repository.OperaRepository;
 import com.anagrafica.prova.backend.model.Utente;
@@ -209,11 +210,10 @@ public class OperaController {
     // RECUPERARER TUTTE LE OPERE (Per la homepage)+ordinarle per ordine di caricamento(dallapiu recente alla piu vecchia)
     @GetMapping
     public ResponseEntity<List<Opera>> getAllOpere() {
-        return ResponseEntity.ok(operaRepository.findByVendutaFalseOrderByDataCaricamentoDesc());
+        return ResponseEntity.ok(operaRepository.findByStatoIsNotOrderByDataCaricamentoDesc(StatoOpera.VENDUTA));
     }
     @GetMapping("/artista/id/{id}")
     public ResponseEntity<?> getOpereByArtistaId(@PathVariable Long id) {
-        // Nota: Assicurati di avere findByArtistaId nel repository o usa findByArtista_Id
         return ResponseEntity.ok(operaRepository.findByArtistaId(id));
     }
 

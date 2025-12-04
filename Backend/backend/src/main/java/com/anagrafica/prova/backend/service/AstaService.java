@@ -14,14 +14,11 @@ public class AstaService {
 
     @Autowired private OperaRepository operaRepository;
     @Autowired private AstaRepository astaRepository;
-
-    // --- NUOVO METODO AGGIUNTO ---
     // Serve al Controller per restituire i dati al Frontend
     public Asta getAstaById(Long id) {
         return astaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asta non trovata con ID: " + id));
     }
-    // -----------------------------
 
     @Transactional
     public Asta avviaAsta(Long idOpera, AstaRequest request) {
@@ -30,12 +27,11 @@ public class AstaService {
         Opera opera = operaRepository.findById(idOpera)
                 .orElseThrow(() -> new RuntimeException("Opera non trovata"));
 
-        // Controlli
         if (opera.getStato() != StatoOpera.DISPONIBILE) {
             throw new RuntimeException("Impossibile avviare asta: l'opera è già in asta, programmata o venduta.");
         }
 
-        // Normalizzazione Date (IMPORTANTE)
+        // Normalizzazione Date
         LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
 
         LocalDateTime dataInizioPulita = request.getDataInizio().withSecond(0).withNano(0);
