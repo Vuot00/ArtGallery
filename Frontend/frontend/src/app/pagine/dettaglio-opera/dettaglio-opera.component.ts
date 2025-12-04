@@ -1,9 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { OperaService } from '../../servizi/opera.service';
-import { interval, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dettaglio-opera',
@@ -12,18 +10,19 @@ import { switchMap } from 'rxjs/operators';
   templateUrl: './dettaglio-opera.component.html',
   styleUrl: './dettaglio-opera.component.scss'
 })
-export class DettaglioOperaComponent implements OnInit, OnDestroy {
+export class DettaglioOperaComponent implements OnInit {
   opera: any = null;
   loading: boolean = true;
   errore: string | null = null;
   immagineSelezionata: string | null = null;
 
-  private pollingSubscription: Subscription | null = null;
+
+  private router = inject(Router);
+
 
   constructor(
-      private route: ActivatedRoute,
-      private operaService: OperaService,
-      private router: Router
+    private route: ActivatedRoute,
+    private operaService: OperaService,
   ) {}
 
   ngOnInit(): void {
@@ -35,12 +34,6 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
     } else {
       this.errore = "ID opera non valido.";
       this.loading = false;
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.pollingSubscription) {
-      this.pollingSubscription.unsubscribe();
     }
   }
 
@@ -56,7 +49,6 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
         }
 
         console.log("Opera caricata:", this.opera);
-        this.avviaPolling(id);
       },
       error: (err) => {
         console.error("Errore nel caricamento opera:", err);
@@ -66,58 +58,33 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
     });
   }
 
-  avviaPolling(id: number) {
-    this.pollingSubscription = interval(3000).pipe(
-        switchMap(() => this.operaService.getOperaById(id))
-    ).subscribe({
-      next: (data) => {
-        this.opera = data;
-        if (this.immagineSelezionata && this.opera.immagini) {
-          const imageExists = this.opera.immagini.some((img: any) => img.url === this.immagineSelezionata);
-          if (!imageExists && this.opera.immagini.length > 0) {
-            this.immagineSelezionata = this.opera.immagini[0].url;
-          }
-        }
-      },
-      error: (err) => {
-        console.error("Errore aggiornamento silenzioso:", err);
-      }
-    });
-  }
-
-  getPrezzoDinamico(): number {
-    if (!this.opera) return 0;
-    if (this.opera.stato === 'PROGRAMMATA' && this.opera.asta) {
-      return this.opera.asta.prezzoPartenza;
-    }
-    if (this.opera.stato === 'IN_ASTA' && this.opera.asta) {
-      return this.opera.asta.prezzoAttuale || this.opera.asta.prezzoPartenza;
-    }
-    return this.opera.prezzo;
-  }
-
   cambiaImmaginePrincipale(urlNuovaImmagine: string) {
     this.immagineSelezionata = urlNuovaImmagine;
   }
 
+  // Funzione helper per ottenere l'URL completo dell'immagine
   getBgImage(nomeFile: string): string {
     return `http://localhost:8080/uploads/${nomeFile}`;
   }
 
   acquistaOpera() {
-    alert("Funzionalità di acquisto in arrivo! Contatta l'artista per maggiori info.");
+    if (this.opera && this.opera.id) {
+      this.router.navigate(['/checkout', this.opera.id]);
+    } else {
+      alert("Impossibile procedere al checkout: dati opera mancanti.");
+    }
   }
 
-  // MODIFICA QUI: Logica migliorata per trovare l'ID dell'asta
   vaiAllAsta() {
-    // Cerchiamo l'ID sia nell'oggetto 'asta' nidificato, sia come proprietà diretta 'astaId'
-    const idAsta = this.opera?.asta?.id || this.opera?.astaId;
-
-    if (idAsta) {
-      this.router.navigate(['/asta', idAsta]);
+    // Reindirizza l'utente alla rotta live dell'asta
+    if (this.opera && this.opera.asta?.id) {
+      this.router.navigate(['/asta', this.opera.asta.id]);
     } else {
-      console.error("ID Asta non trovato nei dati dell'opera:", this.opera);
-      alert("Impossibile trovare l'asta associata a quest'opera.");
+      alert("Asta non ancora attiva.");
     }
+  }
+
+  getPrezzoDinamico(): number {
+    return this.opera.prezzo || 0;
   }
 }

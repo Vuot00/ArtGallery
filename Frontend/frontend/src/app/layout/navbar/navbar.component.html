@@ -1,87 +1,124 @@
 <nav class="navbar">
 
-    <div class="left-section">
-        <button routerLink="/home" class="nav-btn home-btn" title="Vai alla Home">
-            🏠
-        </button>
+  <div class="left-section">
+    <button routerLink="/home" class="nav-btn home-btn" title="Vai alla Home">
+      🏠
+    </button>
 
-      <div class="search-container">
-        <i class="search-icon">🔍</i>
+    <div class="search-container">
+      <i class="search-icon">🔍</i>
 
-        <input
-          type="text"
-          placeholder="Cerca artisti, opere..."
-          class="search-input"
-          [(ngModel)]="testoRicerca"
-          (ngModelChange)="onSearchType($event)"
-          (blur)="showDropdown = false"
-        >
-        <div class="search-dropdown" *ngIf="showDropdown && risultati">
+      <input
+        type="text"
+        placeholder="Cerca artisti, opere..."
+        class="search-input"
+        [(ngModel)]="testoRicerca"
+        (ngModelChange)="onSearchType($event)"
+        (blur)="showDropdown = false"
+      >
+      <div class="search-dropdown" *ngIf="showDropdown && risultati">
 
-          <div *ngIf="risultati.utenti && risultati.utenti.length > 0">
-            <div class="dropdown-header">ARTISTI</div>
-            <div class="result-item" *ngFor="let u of risultati.utenti" (mousedown)="vaiA('/profilo/' + u.id)">
-              <div class="mini-avatar">{{ u.nome.charAt(0) }}</div>
-              <span>{{ u.nome }}</span>
-            </div>
+        <div *ngIf="risultati.utenti && risultati.utenti.length > 0">
+          <div class="dropdown-header">ARTISTI</div>
+          <div class="result-item" *ngFor="let u of risultati.utenti" (mousedown)="vaiA('/profilo/' + u.id)">
+            <div class="mini-avatar">{{ u.nome.charAt(0) }}</div>
+            <span>{{ u.nome }}</span>
           </div>
-
-          <div *ngIf="risultati.opere && risultati.opere.length > 0">
-            <div class="dropdown-header">OPERE</div>
-            <div class="result-item" *ngFor="let o of risultati.opere" (mousedown)="vaiA('/opera/' + o.id)">
-              <img [src]="'http://localhost:8080/uploads/' + o.immagini[0].url" class="mini-img">
-              <div class="item-info">
-                <span class="item-title">{{ o.titolo }}</span>
-                <span class="item-sub">di {{ o.artista?.nome }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="no-results" *ngIf="(!risultati.utenti?.length) && (!risultati.opere?.length)">
-            Nessun risultato trovato.
-          </div>
-
         </div>
+
+        <div *ngIf="risultati.opere && risultati.opere.length > 0">
+          <div class="dropdown-header">OPERE</div>
+          <div class="result-item" *ngFor="let o of risultati.opere" (mousedown)="vaiA('/opera/' + o.id)">
+            <img [src]="'http://localhost:8080/uploads/' + o.immagini[0].url" class="mini-img">
+            <div class="item-info">
+              <span class="item-title">{{ o.titolo }}</span>
+              <span class="item-sub">di {{ o.artista?.nome }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-results" *ngIf="(!risultati.utenti?.length) && (!risultati.opere?.length)">
+          Nessun risultato trovato.
+        </div>
+
       </div>
     </div>
+  </div>
 
   <div class="user-actions">
 
     <button *ngIf="authService.isArtist()" routerLink="/carica-opera" class="upload-btn">
-        <span>➕</span> Carica Opera
+      <span>➕</span> Carica Opera
     </button>
 
     <div class="notification-container">
+
       <button class="icon-btn bell-btn">
         🔔
-        <span class="notification-badge">{{ notificationService.unreadCount$ | async }}</span>
+        <span class="notification-badge">3</span>
       </button>
-    </div>
 
-        <div class="user-profile-container">
-
-            <div class="user-info">
-                <span class="user-name">Ciao, {{ authService.userNameSignal() }}</span>
-                <div class="user-avatar">
-                    {{ username.charAt(0).toUpperCase() }}
-                </div>
-            </div>
-
-            <div class="dropdown-menu">
-                <div class="dropdown-header">
-                    <p class="dd-name">{{ authService.userNameSignal()}}</p>
-                    <p class="dd-role">Utente Art Gallery</p>
-                </div>
-                <hr>
-                <button routerLink="/profilo" class="dropdown-item">
-                    👤 Il mio Profilo
-                </button>
-
-                <button (click)="logout()" class="dropdown-item logout-btn">
-                    🚪 Esci
-                </button>
-            </div>
-
+      <div class="notification-dropdown">
+        <div class="notif-header">
+          <span>Notifiche</span>
+          <button class="mark-read-btn">Segna lette</button>
         </div>
+
+        <div class="notif-list">
+          <div class="notif-item unread">
+            <div class="notif-icon">🎨</div>
+            <div class="notif-content">
+              <p class="notif-text">Mario Rossi ha commentato la tua opera.</p>
+              <span class="notif-time">2 min fa</span>
+            </div>
+          </div>
+
+          <div class="notif-item unread">
+            <div class="notif-icon">❤️</div>
+            <div class="notif-content">
+              <p class="notif-text">A Giulia piace la tua opera "Tramonto".</p>
+              <span class="notif-time">1 ora fa</span>
+            </div>
+          </div>
+
+          <div class="notif-item">
+            <div class="notif-icon">📢</div>
+            <div class="notif-content">
+              <p class="notif-text">Nuova mostra "Rinascimento" a Roma.</p>
+              <span class="notif-time">1 giorno fa</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="notif-footer">
+          <button>Vedi tutte le notifiche</button>
+        </div>
+      </div>
     </div>
+    <div class="user-profile-container">
+
+      <div class="user-info">
+        <span class="user-name">Ciao, {{ authService.userNameSignal() }}</span>
+        <div class="user-avatar">
+          {{ username.charAt(0).toUpperCase() }}
+        </div>
+      </div>
+
+      <div class="dropdown-menu">
+        <div class="dropdown-header">
+          <p class="dd-name">{{ authService.userNameSignal() }}</p>
+          <p class="dd-role">Utente Art Gallery</p>
+        </div>
+        <hr>
+        <button routerLink="/profilo" class="dropdown-item">
+          👤 Il mio Profilo
+        </button>
+
+        <button (click)="logout()" class="dropdown-item logout-btn">
+          🚪 Esci
+        </button>
+      </div>
+
+    </div>
+  </div>
 </nav>

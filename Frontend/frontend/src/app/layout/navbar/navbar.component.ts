@@ -1,31 +1,29 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core'; // AGGIUNTO OnDestroy
+import { Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../servizi/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SearchService } from '../../servizi/search.service';
 import {debounceTime, distinctUntilChanged, of, Subject, switchMap} from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import {NotificationService} from '../../servizi/notification.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [RouterLink, CommonModule,FormsModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent implements OnInit, OnDestroy {
+export class NavbarComponent implements OnInit {
 
-  public authService = inject(AuthService);
+  public authService = inject(AuthService);//messo public per far si che l HTML lo legga
   private router = inject(Router);
   private searchService = inject(SearchService);
-  public notificationService = inject(NotificationService);
 
   username: string = 'Utente';
 
-  // Gestione della ricerca in real time
+  //gestione della ricerca in real time
   testoRicerca: string = '';
-  risultati: any = null;
+  risultati: any = null; // Conterrà { utenti: [], opere: [] }
   showDropdown: boolean = false;
 
   private searchSubject = new Subject<string>();
@@ -35,20 +33,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (nome) {
       this.username = nome;
     }
-
-    // this.notificationService.startPolling();
-  }
-
-// Nel metodo logout() metti in commento anche questa riga
-  logout() {
-    // this.notificationService.stopPolling(); // Mettere in commento
-    this.authService.logout();
-    this.router.navigate(['login']);
-  }
-
-  ngOnDestroy() {
-    // IMPORTANTE: Ferma il polling quando il componente viene distrutto per evitare memory leak.
-    this.notificationService.stopPolling();
+    this.searchSubject.pipe(
+      debounceTime(300), // Aspetta 300ms dopo che l'utente smette di scrivere
+      distinctUntilChanged(), // Evita ricerche uguali consecutive
+      switchMap((query) => {
+        if (!query || query.length < 2) {
+          return of(null); // Se la query è vuota, svuota i risultati
+        }
+        return this.searchService.cercaGlobale(query); // Chiama il backend
+      })
+    ).subscribe(res => {
+      this.risultati = res;
+      this.showDropdown = true;
+    });
   }
 
   onSearchType(query: string) {
@@ -57,12 +54,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.showDropdown = false;
     }
   }
-
   vaiA(path: string) {
-    this.showDropdown = false;
-    this.testoRicerca = '';
+    this.showDropdown = false; // Chiudi il menu
+    this.testoRicerca = '';    // Pulisci l'input
     this.router.navigate([path]);
   }
 
-
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['login']);
+  }
 }
