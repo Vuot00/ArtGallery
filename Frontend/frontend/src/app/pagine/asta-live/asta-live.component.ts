@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy, inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink, Router } from '@angular/router'; // Router aggiunto
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { WebSocketService } from '../../servizi/websocket.service';
 import { ToastService } from '../../servizi/toast.service';
-import { Subscription } from 'rxjs';
+import { Subscription, interval } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-asta-live',
@@ -21,84 +22,143 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
   private wsService = inject(WebSocketService);
   private toast = inject(ToastService);
   private router = inject(Router);
-
   private ngZone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
 
   private wsSubscription: Subscription | null = null;
+  private pollingSubscription: Subscription | null = null;
 
   asta: any = null;
   idAsta!: number;
+  currentUserEmail: string = '';
 
   prezzoCorrente: number = 0;
   offertaUtente: number | null = null;
   countdown: string = 'Caricamento...';
   statoAsta: string = 'ATTESA';
-
   pricePulse: boolean = false;
   timerInterval: any;
 
   ngOnInit() {
     this.idAsta = Number(this.route.snapshot.paramMap.get('id'));
-
-    // Recupera token per controllo
     const token = localStorage.getItem('jwtToken');
+
     if (!token) {
-      this.toast.show("Accesso negato: effettua il login", "error");
+      this.toast.show("Accesso negato", "error");
       this.router.navigate(['/login']);
       return;
     }
 
-    // 1. Carica i dati statici (REST)
-    this.caricaDatiIniziali(token);
+    this.currentUserEmail = this.getUserEmail(token);
+    this.avviaPolling(token);
 
-    // 2. Connetti al WebSocket (STOMP)
-    // Nota: Il service gestisce la connessione interna, qui ci sottoscriviamo solo al topic
     this.wsSubscription = this.wsService.watchAsta(this.idAsta).subscribe((messaggio: any) => {
       this.ngZone.run(() => {
-        console.log('📩 Messaggio WebSocket:', messaggio);
-
-        if (messaggio.tipo === 'CHIUSURA') {
+        if (messaggio.tipo === 'CHIUSURA' || messaggio.tipo === 'VINCITORE') {
           this.gestisciChiusuraAsta(messaggio);
-        } else if (messaggio.importo) {
+        }
+        else if (messaggio.importo) {
           this.aggiornaPrezzo(messaggio.importo);
-          this.toast.show(`Nuova offerta di € ${messaggio.importo}!`, 'info');
+          const chi = messaggio.nomeUtente ? ` da ${messaggio.nomeUtente}` : '';
+
+          if (messaggio.nomeUtente !== this.currentUserEmail) {
+            this.toast.show(`Nuova offerta di € ${messaggio.importo}${chi}!`, 'info');
+          }
         }
         this.cdr.detectChanges();
       });
     });
   }
 
-  caricaDatiIniziali(token: string) {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+  getUserEmail(token: string): string {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = atob(payload);
+      const jsonData = JSON.parse(decoded);
+      return jsonData.sub || '';
+    } catch (e) {
+      console.error("Errore decodifica token", e);
+      return '';
+    }
+  }
 
-    this.http.get<any>(`http://localhost:8080/api/aste/${this.idAsta}`, { headers }).subscribe({
+  private parseDate(dateInput: any): number {
+    if (!dateInput) return 0;
+
+    if (Array.isArray(dateInput)) {
+      const d = new Date(
+          dateInput[0],      // Anno
+          dateInput[1] - 1,  // Mese (JS conta i mesi da 0 a 11)
+          dateInput[2],      // Giorno
+          dateInput[3] || 0, // Ora
+          dateInput[4] || 0, // Minuti
+          dateInput[5] || 0  // Secondi
+      );
+      return d.getTime();
+    }
+
+    return new Date(dateInput).getTime();
+  }
+
+  avviaPolling(token: string) {
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    const url = `http://localhost:8080/api/aste/${this.idAsta}`;
+
+    this.pollingSubscription = interval(3000).pipe(
+        startWith(0),
+        switchMap(() => this.http.get<any>(url, { headers }))
+    ).subscribe({
       next: (data) => {
-        this.asta = data;
-        this.prezzoCorrente = data.prezzoAttuale || data.prezzoPartenza;
-
-        if (data.opera.stato === 'VENDUTA' || data.opera.stato === 'DISPONIBILE') {
-          this.statoAsta = 'CHIUSA';
-          this.countdown = 'Asta Terminata';
-        } else {
-          this.avviaTimer();
-        }
-
-        this.offertaUtente = this.prezzoCorrente + 10;
-        this.cdr.detectChanges();
+        this.gestisciAggiornamentoDati(data);
       },
       error: (err) => {
-        console.error("Errore caricamento dati:", err);
+        if (err.status === 404) {
+          this.gestisciChiusuraAsta({ tipo: 'CHIUSURA', nomeUtente: 'INVENDUTA', importo: this.prezzoCorrente });
+          if (this.pollingSubscription) this.pollingSubscription.unsubscribe();
+          return;
+        }
         if (err.status === 403 || err.status === 401) {
-          this.toast.show("Sessione scaduta. Effettua il login.", "error");
+          this.pollingSubscription?.unsubscribe();
           this.router.navigate(['/login']);
-        } else {
-          this.toast.show("Errore caricamento dati asta", "error");
         }
       }
     });
+  }
+
+  gestisciAggiornamentoDati(data: any) {
+    // Controllo se l'asta è finita
+    if (data.opera.stato === 'VENDUTA' || data.opera.stato === 'DISPONIBILE' || data.opera.stato === 'INVENDUTA') {
+      if (this.statoAsta !== 'CHIUSA') {
+
+        // Verifica se ho vinto tramite polling (fallback)
+        if(data.opera.stato === 'VENDUTA' && data.migliorOfferente?.email === this.currentUserEmail) {
+          this.toast.show("🎉 HAI VINTO! Reindirizzamento al pagamento...", "success");
+          setTimeout(() => {
+            this.router.navigate(['/checkout', data.opera.id]);
+          }, 2000);
+        }
+
+        this.statoAsta = 'CHIUSA';
+        this.countdown = 'Asta Terminata';
+        this.prezzoCorrente = data.prezzoAttuale || data.prezzoPartenza;
+
+        if (this.pollingSubscription) this.pollingSubscription.unsubscribe();
+        if (this.timerInterval) clearInterval(this.timerInterval);
+      }
+      return;
+    }
+
+    this.asta = data;
+    const prezzoServer = data.prezzoAttuale || data.prezzoPartenza;
+
+    if (prezzoServer > this.prezzoCorrente) {
+      this.prezzoCorrente = prezzoServer;
+      this.offertaUtente = this.prezzoCorrente + 10;
+    }
+    if (!this.timerInterval && this.statoAsta !== 'CHIUSA') this.avviaTimer();
+
+    this.aggiornaStatoTimer();
+    this.cdr.detectChanges();
   }
 
   aggiornaPrezzo(nuovoImporto: number) {
@@ -106,26 +166,40 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
     this.offertaUtente = this.prezzoCorrente + 10;
     this.pricePulse = true;
     this.cdr.detectChanges();
-
-    setTimeout(() => {
-      this.pricePulse = false;
-      this.cdr.detectChanges();
-    }, 500);
+    setTimeout(() => { this.pricePulse = false; this.cdr.detectChanges(); }, 500);
   }
 
+  // --- LOGICA CHIUSURA & REDIRECT VINCITORE ---
   gestisciChiusuraAsta(messaggio: any) {
     this.statoAsta = 'CHIUSA';
     this.countdown = 'Asta Terminata';
-    this.prezzoCorrente = messaggio.prezzoFinale;
+    this.prezzoCorrente = messaggio.importo || this.prezzoCorrente;
 
     if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.pollingSubscription) this.pollingSubscription.unsubscribe();
 
-    if (messaggio.statoFinale === 'VENDUTA') {
-      this.toast.show('🏆 Asta conclusa! Opera VENDUTA.', 'success');
-    } else {
+    // Caso 1: Asta deserta
+    if (messaggio.nomeUtente === 'INVENDUTA') {
       this.toast.show('🏁 Asta conclusa senza vincitori.', 'error');
     }
+    // Caso 2: C'è un vincitore
+    else if (messaggio.tipo === 'VINCITORE') {
+      const emailVincitore = messaggio.nomeUtente;
 
+      if (emailVincitore === this.currentUserEmail) {
+        this.toast.show("🎉 COMPLIMENTI! HAI VINTO L'ASTA!", "success");
+        this.toast.show("Reindirizzamento al pagamento in 3 secondi...", "info");
+
+        const idOpera = this.asta?.opera?.id;
+        if (idOpera) {
+          setTimeout(() => {
+            this.router.navigate(['/checkout', idOpera]);
+          }, 3000);
+        }
+      } else {
+        this.toast.show(`🏆 Asta vinta da un altro utente. Prezzo finale: € ${this.prezzoCorrente}`, 'info');
+      }
+    }
     this.cdr.detectChanges();
   }
 
@@ -136,21 +210,36 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
     }
 
     const token = localStorage.getItem('jwtToken');
-    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+
+    // IMPORTANTE: responseType 'text' per evitare errori di parsing JSON
+    const opzioni = {
+      headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }),
+      responseType: 'text' as 'json'
+    };
+
     const body = { idAsta: this.idAsta, importo: this.offertaUtente };
 
-    this.http.post('http://localhost:8080/api/offerte', body, { headers }).subscribe({
-      next: () => {
-        this.toast.show("Offerta inviata con successo!", "success");
-      },
-      error: (err) => {
-        this.toast.show(err.error || "Errore nell'offerta", "error");
-      }
-    });
+    this.http.post('http://localhost:8080/api/aste/offerta', body, opzioni)
+        .subscribe({
+          next: (res: any) => {
+            this.toast.show(res, "success");
+            // Aggiornamento ottimistico
+            if (this.offertaUtente) this.aggiornaPrezzo(this.offertaUtente);
+          },
+          error: (err) => {
+            console.error(err);
+            let msg = "Errore offerta";
+            if(typeof err.error === 'string') msg = err.error;
+            else if(err.error?.message) msg = err.error.message;
+            this.toast.show(msg, "error");
+          }
+        });
   }
 
   avviaTimer() {
     this.aggiornaStatoTimer();
+    if (this.timerInterval) clearInterval(this.timerInterval);
+
     this.timerInterval = setInterval(() => {
       this.aggiornaStatoTimer();
     }, 1000);
@@ -160,17 +249,19 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
     if (!this.asta || this.statoAsta === 'CHIUSA') return;
 
     const now = new Date().getTime();
-    const fine = new Date(this.asta.dataFine).getTime();
-    const inizio = new Date(this.asta.dataInizio).getTime();
+    const fine = this.parseDate(this.asta.dataFine);
+    const inizio = this.parseDate(this.asta.dataInizio);
 
     if (now < inizio) {
-      this.statoAsta = 'ATTESA';
+      if (this.statoAsta !== 'ATTESA') this.statoAsta = 'ATTESA';
       this.countdown = 'L\'asta non è ancora iniziata';
-    } else if (now >= inizio && now < fine) {
-      this.statoAsta = 'APERTA';
+    }
+    else if (now >= inizio && now < fine) {
+      if (this.statoAsta !== 'APERTA') this.statoAsta = 'APERTA';
       const diff = fine - now;
       this.countdown = this.formatTime(diff);
-    } else {
+    }
+    else {
       this.countdown = 'Chiusura in corso...';
     }
   }
@@ -184,8 +275,7 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.timerInterval) clearInterval(this.timerInterval);
-    if (this.wsSubscription) {
-      this.wsSubscription.unsubscribe();
-    }
+    if (this.wsSubscription) this.wsSubscription.unsubscribe();
+    if (this.pollingSubscription) this.pollingSubscription.unsubscribe();
   }
 }

@@ -47,8 +47,20 @@
                 🕐 Preparati, l'asta inizierà a breve.
             </div>
 
-            <div class="status-msg closed" *ngIf="statoAsta === 'CHIUSA'">
-                🏁 L'asta è conclusa. Grazie per aver partecipato.
+            <div class="winner-box" *ngIf="statoAsta === 'CHIUSA' && asta?.migliorOfferente?.email === currentUserEmail">
+                <div class="winner-content">
+                    <h3>🎉 COMPLIMENTI!</h3>
+                    <p>Hai vinto quest'opera!</p>
+                    <button class="btn-paga" [routerLink]="['/checkout', asta.opera.id]">
+                        VAI AL PAGAMENTO 💳
+                    </button>
+                </div>
+            </div>
+
+            <div class="status-msg closed" *ngIf="statoAsta === 'CHIUSA' && asta?.migliorOfferente?.email !== currentUserEmail">
+                🏁 L'asta è conclusa.
+                <span *ngIf="asta?.migliorOfferente">L'opera è stata aggiudicata a {{ asta.migliorOfferente.email }}.</span>
+                <span *ngIf="!asta?.migliorOfferente">Nessun vincitore.</span>
             </div>
 
         </div>

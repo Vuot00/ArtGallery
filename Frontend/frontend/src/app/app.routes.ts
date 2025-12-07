@@ -9,31 +9,26 @@ import { TestConnectionComponent } from './pagine/test-connection/test-connectio
 import { ProfiloComponent } from './pagine/profilo/profilo.component';
 import { DettaglioOperaComponent } from './pagine/dettaglio-opera/dettaglio-opera.component';
 import { ModificaOperaComponent } from './pagine/artista/modifica-opera/modifica-opera.component';
-import {ProfiloPubblicoComponent} from './pagine/profilo-pubblico/profilo-pubblico.component';
-import {AstaLiveComponent} from "./pagine/asta-live/asta-live.component";
-import {CheckoutComponent} from './pagine/checkout/checkout.component';
-
+import { ProfiloPubblicoComponent } from './pagine/profilo-pubblico/profilo-pubblico.component';
+import { AstaLiveComponent } from "./pagine/asta-live/asta-live.component";
+import { CheckoutComponent } from './pagine/checkout/checkout.component';
 
 export const routes: Routes = [
-  // --- ROTTE PUBBLICHE (Senza Sidebar/Navbar) ---
+  // --- ROTTE PUBBLICHE  ---
   { path: 'login', component: LoginComponent },
   { path: 'registrazione', component: RegistrazioneComponent },
-  { path: 'asta/:id', component: AstaLiveComponent }, // :id sarà l'ID dell'ASTA
 
   // --- REDIRECT INIZIALE ---
-  // Se vado su "localhost:4200" vuoto, mi manda al login
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // --- ROTTE PROTETTE (Con Sidebar, Navbar e AuthGuard) ---
+  // --- ROTTE PROTETTE  ---
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [authGuard], // Protegge tutte le pagine qui sotto
+    canActivate: [authGuard], // Protegge tutte le pagine qui sotto e assicura il login
     children: [
-      // Se sono nel layout ma senza path specifico, vado alla home
       { path: '', redirectTo: 'home', pathMatch: 'full' },
 
-      // Pagine dell'applicazione
       { path: 'home', component: HomeComponent },
       { path: 'carica-opera', component: CaricaOperaComponent },
       { path: 'modifica-opera/:id', component: ModificaOperaComponent },
@@ -42,9 +37,9 @@ export const routes: Routes = [
       { path: 'profilo', component: ProfiloComponent },
       { path: 'profilo/:id', component: ProfiloPubblicoComponent },
       { path: 'checkout/:id', component: CheckoutComponent },
+      { path: 'asta/:id', component: AstaLiveComponent },
     ]
   },
 
-  // (Opzionale) Wildcard: se l'utente scrive un URL a caso, torna al login
   { path: '**', redirectTo: 'login' }
 ];
