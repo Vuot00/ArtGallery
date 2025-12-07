@@ -24,7 +24,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSocketMessageBroker
-@Order(Ordered.HIGHEST_PRECEDENCE + 99) // Assicura che questo giri prima della sicurezza standard
+@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Autowired
@@ -38,16 +38,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Aggiungiamo l'endpoint sia con SockJS che senza, per massima compatibilità
+        // Endpoint STANDARD (per Angular/StompJS moderni)
         registry.addEndpoint("/ws-auction")
-                .setAllowedOriginPatterns("*"); // Per client standard
+                .setAllowedOrigins("http://localhost:4200");
 
         registry.addEndpoint("/ws-auction")
-                .setAllowedOriginPatterns("*")
-                .withSockJS(); // Per client SockJS
+                .setAllowedOrigins("http://localhost:4200")
+                .withSockJS();
     }
 
     @Override
@@ -57,14 +56,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-                // Intercettiamo solo il comando di CONNESSIONE
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
-                    // 1. Cerchiamo il token nell'header nativo "Authorization" (standard)
                     String authHeader = accessor.getFirstNativeHeader("Authorization");
 
-                    // 2. SE NON C'È, LO CERCHIAMO NELL'URL (query param "access_token")
-                    // Spring converte i query params in Native Headers automaticamente
                     if (authHeader == null) {
                         String accessToken = accessor.getFirstNativeHeader("access_token");
                         if (accessToken != null) {
@@ -72,23 +67,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         }
                     }
 
-                    // 3. Validazione Token
                     if (authHeader != null && authHeader.startsWith("Bearer ")) {
                         String jwt = authHeader.substring(7);
 
-                        // Usiamo il tuo JwtService per validare
                         if (jwtService.validateToken(jwt)) {
-                            // Estraiamo l'username
                             String userEmail = jwtService.getUsernameFromToken(jwt);
 
-                            // Carichiamo i dettagli utente completi (ruoli, ecc.)
                             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-                            // Creiamo l'oggetto di autenticazione
                             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                                     userDetails, null, userDetails.getAuthorities());
 
-                            // Impostiamo l'utente nella sessione WebSocket
                             accessor.setUser(authToken);
 
                             System.out.println("✅ WebSocket Autenticato per: " + userEmail);
