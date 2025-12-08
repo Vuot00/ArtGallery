@@ -26,4 +26,18 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public  void sendOrderConfirmationToVenditore(Ordine ordine, String venditoreEmail) {
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setTo(venditoreEmail);
+        message.setSubject("✅ Acquisto Opera: " + ordine.getOpera().getTitolo());
+        message.setText("Ciao " + ordine.getOpera().getArtista().getNome() + ",\n\n"
+                + "Hai ricevuto un acquisto per l'opera '" + ordine.getOpera().getTitolo()
+                + "' per €" + ordine.getImporto() + ".\n\n"
+                + "Stato Ordine: PAGATO. Riceverai i dettagli della spedizione a breve.\n\n"
+                + "Grazie per aver acquistato su ArtGallery!");
+
+        mailSender.send(message);
+    }
 }

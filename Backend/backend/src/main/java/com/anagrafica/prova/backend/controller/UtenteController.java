@@ -80,7 +80,7 @@ public class UtenteController {
         return utenteRepository.findById(id)
                 .map(u -> {
                     u.setPassword(null); // Nascondi password
-                    u.setRoles(null);    // Nascondi ruoli tecnici
+                   // u.setRoles(null);    // Nascondi ruoli tecnici
                     return ResponseEntity.ok(u);
                 })
                 .orElse(ResponseEntity.notFound().build());

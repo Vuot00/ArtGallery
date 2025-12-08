@@ -99,9 +99,13 @@ public class PaymentController {
 
                     ordineRepository.save(ordine);
                     emailService.sendOrderConfirmation(ordine, ordine.getAcquirente().getEmail());
+                    emailService.sendOrderConfirmationToVenditore(ordine, operaVenduta.getArtista().getEmail());
 
                     String msgAcquirente = "Hai acquistato con successo l'opera: " + operaVenduta.getTitolo();
                     notificaService.creaNotifica(ordine.getAcquirente(), msgAcquirente);
+
+                    String msgVenditore = "Hai ricevuto un acquisto per l'opera: " + operaVenduta.getTitolo();
+                    notificaService.creaNotifica(operaVenduta.getArtista(), msgVenditore);
 
                     return ResponseEntity.ok("Pagamento completato.");
                 }
@@ -109,6 +113,31 @@ public class PaymentController {
             return ResponseEntity.badRequest().body("Pagamento non completato.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Errore cattura: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/cancel/{paypalOrderId}")
+    @Transactional
+    public ResponseEntity<?> cancelOrder(@PathVariable String paypalOrderId) {
+        try {
+            Ordine ordine = ordineRepository.findByPaypalOrderId(paypalOrderId);
+
+            if (ordine != null) {
+                ordine.setStato("ANNULLATO");
+                ordineRepository.save(ordine);
+
+                Opera opera = ordine.getOpera();
+                if (opera != null) {
+                    opera.setStato(StatoOpera.DISPONIBILE);
+                    operaRepository.save(opera);
+                }
+
+                return ResponseEntity.ok("Ordine annullato e opera sbloccata.");
+            }
+            return ResponseEntity.badRequest().body("Ordine non trovato.");
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Errore annullamento: " + e.getMessage());
         }
     }
 }
