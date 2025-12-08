@@ -45,8 +45,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .csrf(csrf -> csrf.disable())
-
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -59,7 +57,6 @@ public class SecurityConfig {
                         // Permette Login e Registrazione
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // Permette l'endpoint di test
                         .requestMatchers("/api/test").permitAll()
 
                         .requestMatchers("/uploads/**").permitAll()
@@ -67,6 +64,8 @@ public class SecurityConfig {
                         // Permette agli utenti loggati di VEDERE le opere
                         .requestMatchers(HttpMethod.GET,"/api/opere/**").permitAll()
 
+                        //Permettiamo l'handshake del WebSockt e senza questo, Spring blocca la connessione prima che possiamo leggere il token dall'URL
+                        .requestMatchers("/ws-auction/**").permitAll()
 
                         // TUTTO IL RESTO RICHIEDE LOGIN
                         .anyRequest().authenticated()

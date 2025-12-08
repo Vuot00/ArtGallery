@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.anagrafica.prova.backend.service.EmailService;
+import com.anagrafica.prova.backend.service.NotificaService;
 
 @RestController
 @RequestMapping("/api/pagamenti")
@@ -36,6 +37,8 @@ public class PaymentController {
     private UtenteRepository utenteRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private NotificaService notificaService;
     @PostMapping("/create/{idOpera}")
     @Transactional
     public ResponseEntity<?> createOrder(@PathVariable Long idOpera) {
@@ -96,6 +99,10 @@ public class PaymentController {
 
                     ordineRepository.save(ordine);
                     emailService.sendOrderConfirmation(ordine, ordine.getAcquirente().getEmail());
+
+                    String msgAcquirente = "Hai acquistato con successo l'opera: " + operaVenduta.getTitolo();
+                    notificaService.creaNotifica(ordine.getAcquirente(), msgAcquirente);
+
                     return ResponseEntity.ok("Pagamento completato.");
                 }
             }

@@ -87,9 +87,6 @@ public class JwtService {
                 .compact(); // Costruisce la stringa
     }
 
-    // --- Metodi futuri ---
-    // Questi ci serviranno più avanti per proteggere le API,
-    // per ora possiamo lasciarli qui pronti.
 
     // Estrae l'email (subject) dal token
     public String getUsernameFromToken(String token) {

@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,47 +26,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
+        // 1. Se non c'è header valido, passa oltre
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            String jwt = authHeader.substring(7);
-            String userEmail = jwtService.getUsernameFromToken(jwt);
+            final String jwt = authHeader.substring(7);
+
+            if (jwt == null || jwt.trim().isEmpty() || !jwt.contains(".")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 3. Validazione standard
+            final String userEmail = jwtService.getUsernameFromToken(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(userEmail);
 
-                // SE IL TOKEN E' VALIDO
                 if (jwtService.validateToken(jwt)) {
-
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
-
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                    System.out.println("--> DEBUG: Utente " + userEmail + " autenticato con successo!");
-                } else {
-                    System.out.println("--> DEBUG: Token scaduto o non valido.");
                 }
             }
         } catch (Exception e) {
-            System.out.println("--> DEBUG: Errore nel filtro JWT: " + e.getMessage());
+            // Ignoriamo errori di parsing del token per non intasare i log.
+            // Se il token non è valido, l'utente semplicemente non sarà autenticato.
         }
 
         filterChain.doFilter(request, response);
