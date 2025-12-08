@@ -46,9 +46,7 @@ public class Opera {
         this.artista = artista;
     }
 
-    // --- MODIFICA FONDAMENTALE ---
-    // 1. Rinominato in 'asta' per matchare il frontend (opera.asta.id)
-    // 2. Usato JsonIgnoreProperties invece di JsonIgnore per inviare i dati senza loop
+
     @OneToOne(mappedBy = "opera")
     @JsonIgnoreProperties("opera")
     private Asta asta;

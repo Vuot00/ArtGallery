@@ -1,20 +1,27 @@
 package com.anagrafica.prova.backend.service;
 
 import com.anagrafica.prova.backend.dto.AstaRequest;
+import com.anagrafica.prova.backend.dto.OffertaRequest;
+import com.anagrafica.prova.backend.dto.OffertaWebSocketDto;
 import com.anagrafica.prova.backend.model.*;
 import com.anagrafica.prova.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AstaService {
 
     @Autowired private OperaRepository operaRepository;
     @Autowired private AstaRepository astaRepository;
-    // Serve al Controller per restituire i dati al Frontend
+    @Autowired private UtenteRepository utenteRepository;
+    @Autowired private SimpMessagingTemplate messagingTemplate;
+
     public Asta getAstaById(Long id) {
         return astaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asta non trovata con ID: " + id));
@@ -22,46 +29,36 @@ public class AstaService {
 
     @Transactional
     public Asta avviaAsta(Long idOpera, AstaRequest request) {
-
-        // Recupera l'opera
         Opera opera = operaRepository.findById(idOpera)
                 .orElseThrow(() -> new RuntimeException("Opera non trovata"));
 
         if (opera.getStato() != StatoOpera.DISPONIBILE) {
-            throw new RuntimeException("Impossibile avviare asta: l'opera è già in asta, programmata o venduta.");
+            throw new RuntimeException("Impossibile avviare asta: l'opera non è disponibile.");
         }
 
         // Normalizzazione Date
         LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
-
         LocalDateTime dataInizioPulita = request.getDataInizio().withSecond(0).withNano(0);
         LocalDateTime dataFinePulita = request.getDataFine().withSecond(0).withNano(0);
 
-        // Controllo validità date
         if (dataFinePulita.isBefore(dataInizioPulita)) {
             throw new RuntimeException("La data di fine non può essere precedente alla data di inizio.");
         }
 
-        // Crea l'oggetto Asta
         Asta nuovaAsta = new Asta();
         nuovaAsta.setOpera(opera);
         nuovaAsta.setPrezzoPartenza(request.getPrezzoPartenza());
         nuovaAsta.setPrezzoAttuale(request.getPrezzoPartenza());
-
-        // Impostiamo le date "pulite"
         nuovaAsta.setDataInizio(dataInizioPulita);
         nuovaAsta.setDataFine(dataFinePulita);
+        nuovaAsta.setMigliorOfferente(null);
 
-        // LOGICA DECISIONALE DELLO STATO
         if (dataInizioPulita.isAfter(now)) {
-            System.out.println("⏳ Asta programmata per il futuro: " + dataInizioPulita);
             opera.setStato(StatoOpera.PROGRAMMATA);
         } else {
-            System.out.println("🚀 Asta avviata immediatamente.");
             opera.setStato(StatoOpera.IN_ASTA);
         }
 
-        // Salva tutto
         operaRepository.save(opera);
         return astaRepository.save(nuovaAsta);
     }
@@ -73,23 +70,102 @@ public class AstaService {
 
         Opera opera = asta.getOpera();
 
-        // Controllo di sicurezza: possiamo annullare solo se è ancora in fase di programmazione
         if (opera.getStato() != StatoOpera.PROGRAMMATA) {
             throw new RuntimeException("Impossibile annullare: l'asta è già avviata o conclusa.");
         }
 
-        // Ripristina lo stato dell'opera a DISPONIBILE
         opera.setStato(StatoOpera.DISPONIBILE);
+        opera.setAsta(null); 
 
-
-        opera.setAsta(null);
-
-        // Salviamo l'opera "pulita"
         operaRepository.save(opera);
-
-        // Eliminiamo fisicamente l'asta dal DB
         astaRepository.delete(asta);
 
-        System.out.println("🗑️ Asta programmata " + idAsta + " annullata. Opera tornata DISPONIBILE.");
+        System.out.println("🗑️ Asta " + idAsta + " annullata.");
+    }
+
+    // --- GESTIONE OFFERTE ---
+    @Transactional
+    public Asta piazzaOfferta(String emailUtente, OffertaRequest request) {
+        Asta asta = astaRepository.findById(request.getIdAsta())
+                .orElseThrow(() -> new RuntimeException("Asta non trovata"));
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(asta.getDataInizio()) || now.isAfter(asta.getDataFine())) {
+            throw new RuntimeException("L'asta non è attiva in questo momento.");
+        }
+
+        Double prezzoDaBattere = (asta.getPrezzoAttuale() != null) ? asta.getPrezzoAttuale() : asta.getPrezzoPartenza();
+
+        if (request.getImporto() <= prezzoDaBattere) {
+            throw new RuntimeException("L'offerta deve essere superiore a € " + prezzoDaBattere);
+        }
+
+        Utente utente = utenteRepository.findByEmail(emailUtente)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        asta.setPrezzoAttuale(request.getImporto());
+        asta.setMigliorOfferente(utente);
+        astaRepository.save(asta);
+
+        Opera opera = asta.getOpera();
+        opera.setPrezzo(request.getImporto());
+        operaRepository.save(opera);
+
+        try {
+            OffertaWebSocketDto msg = new OffertaWebSocketDto(
+                    "OFFERTA",
+                    asta.getPrezzoAttuale(),
+                    utente.getNome() // o utente.getEmail()
+            );
+            messagingTemplate.convertAndSend("/topic/aste/" + asta.getId(), msg);
+        } catch (Exception e) {
+            System.err.println("Errore invio WebSocket: " + e.getMessage());
+        }
+
+        return asta;
+    }
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void controllaAsteScadute() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Asta> asteTutte = astaRepository.findAll();
+
+        for (Asta asta : asteTutte) {
+            if (asta.getDataFine().isBefore(now) && asta.getOpera().getStato() == StatoOpera.IN_ASTA) {
+
+                System.out.println("🏁 Chiusura automatica asta ID: " + asta.getId());
+                Opera opera = asta.getOpera();
+
+                if (asta.getMigliorOfferente() != null) {
+                    opera.setStato(StatoOpera.VENDUTA);
+                    opera.setPrezzo(asta.getPrezzoAttuale());
+
+                    operaRepository.save(opera);
+
+                    try {
+                        String emailVincitore = asta.getMigliorOfferente().getEmail();
+
+                        var msg = new OffertaWebSocketDto("VINCITORE", asta.getPrezzoAttuale(), emailVincitore);
+
+                        messagingTemplate.convertAndSend("/topic/aste/" + asta.getId(), msg);
+                    } catch (Exception e) {
+                        System.err.println("Errore notifica WS: " + e.getMessage());
+                    }
+                }
+                else {
+                    System.out.println("🗑️ Asta deserta.");
+                    opera.setStato(StatoOpera.DISPONIBILE);
+                    operaRepository.save(opera);
+
+                    try {
+                        var msg = new OffertaWebSocketDto("CHIUSURA", 0.0, "INVENDUTA");
+                        messagingTemplate.convertAndSend("/topic/aste/" + asta.getId(), msg);
+                    } catch (Exception e) { }
+
+                    astaRepository.delete(asta);
+                }
+            }
+        }
     }
 }

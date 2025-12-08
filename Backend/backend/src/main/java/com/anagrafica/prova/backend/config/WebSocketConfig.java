@@ -36,11 +36,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-auction").setAllowedOriginPatterns("*");
         registry.addEndpoint("/ws-auction").setAllowedOriginPatterns("*").withSockJS();
+
     }
 
     @Override
@@ -55,6 +55,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     String authHeader = accessor.getFirstNativeHeader("Authorization");
 
                     // Fallback access_token
+
                     if (authHeader == null) {
                         String accessToken = accessor.getFirstNativeHeader("access_token");
                         if (accessToken != null && !accessToken.isEmpty()) {
@@ -84,6 +85,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         } catch (Exception e) {
                             System.out.println("❌ WS Auth Failed");
                             return null;
+
                         }
                     }
                 }
