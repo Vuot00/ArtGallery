@@ -28,10 +28,11 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, loginRequest)
       .pipe(
         tap(response => {
-          const token = response.token;
+          // MODIFICA: Cerchiamo il token sia come 'token' che come 'accessToken' per sicurezza
+          const token = response.token || response.accessToken;
 
           if (token) {
-            // salviamo il token nel browser
+            // Salviamo il token nella chiave 'jwtToken'
             localStorage.setItem('jwtToken', token);
 
             this.aggiornaNomeDaToken();
@@ -41,6 +42,7 @@ export class AuthService {
         })
       );
   }
+
   updateNameManual(nuovoNome: string) {
     this.userNameSignal.set(nuovoNome);
   }
@@ -74,6 +76,16 @@ export class AuthService {
     } catch(Error) {
       return null;
     }
+  }
+
+  getToken(): string | null {
+    const token = localStorage.getItem('jwtToken');
+
+    if (token && token !== 'null' && token !== 'undefined') {
+      return token;
+    }
+
+    return null;
   }
 
   //  Controlla se l'utente è ARTISTA

@@ -1,85 +1,80 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Client, Message } from '@stomp/stompjs';
 import { BehaviorSubject, Observable, filter, switchMap } from 'rxjs';
+import { AuthService } from './auth.service';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class WebSocketService {
-    private client: Client;
-    // BehaviorSubject tiene traccia se siamo connessi o no
-    private connectionStatus = new BehaviorSubject<boolean>(false);
+  private client: Client;
+  private connectionStatus = new BehaviorSubject<boolean>(false);
+  private authService = inject(AuthService);
 
-    constructor() {
-        // 1. Recupera il token
-        const token = localStorage.getItem('jwtToken');
+  constructor() {
+    console.log("🔌 Inizializzazione Servizio WebSocket...");
 
-        // 2. Costruisci l'URL dinamico.
-        // Se il token non c'è, usiamo l'URL base (il server risponderà 403, ma evitiamo crash client)
-        const baseUrl = 'ws://localhost:8080/ws-auction';
-        const brokerUrl = token ? `${baseUrl}?access_token=${token}` : baseUrl;
+    this.client = new Client({
+      // Mettiamo l'URL base senza token qui
+      brokerURL: 'ws://localhost:8080/ws-auction',
+      reconnectDelay: 5000,
 
-        console.log("🔌 Configurazione WebSocket con Token...");
+      // Questa funzione viene eseguita OGNI VOLTA che il socket prova a connettersi.
+      // Quindi prenderà sempre il token aggiornato (o null se sloggato).
+      beforeConnect: () => {
+        const token = this.authService.getToken();
 
-        this.client = new Client({
-            brokerURL: brokerUrl,
-            reconnectDelay: 5000, // Riprova ogni 5s se cade la linea
-            // debug: (str) => console.log(str), // Decommenta per vedere log dettagliati STOMP
-        });
-
-        this.client.onConnect = (frame) => {
-            console.log('🔗 WebSocket STOMP Connesso!');
-            this.connectionStatus.next(true);
-        };
-
-        this.client.onStompError = (frame) => {
-            console.error('Broker error: ' + frame.headers['message']);
-            console.error('Details: ' + frame.body);
-        };
-
-        this.client.onWebSocketClose = () => {
-            console.log('❌ WebSocket Disconnesso');
-            this.connectionStatus.next(false);
-        };
-
-        // 3. Attiva la connessione solo se abbiamo un token (o prova comunque se vuoi gestire l'errore)
         if (token) {
-            this.client.activate();
+          console.log("🔑 WebSocket: Aggiungo token fresco alla connessione.");
+          // Modifichiamo l'URL al volo aggiungendo il token
+          this.client.brokerURL = `ws://localhost:8080/ws-auction?access_token=${token}`;
         } else {
-            console.warn("⚠️ WebSocket: Nessun token trovato. Connessione non avviata.");
+          console.warn("⚠️ WebSocket: Nessun token trovato prima della connessione.");
         }
-    }
+      },
+    });
 
-    /**
-     * Helper interno: aspetta che la connessione sia TRUE prima di procedere
-     */
-    private waitForConnection(): Observable<boolean> {
-        return this.connectionStatus.asObservable().pipe(
-            filter(isConnected => isConnected === true)
-        );
-    }
+    this.client.onConnect = (frame) => {
+      console.log('🔗 WebSocket STOMP Connesso!');
+      this.connectionStatus.next(true);
+    };
 
-    /**
-     * Si iscrive al canale di una specifica asta.
-     */
-    watchAsta(idAsta: number): Observable<any> {
-        return this.waitForConnection().pipe(
-            switchMap(() => {
-                return new Observable<any>(observer => {
-                    console.log(`📡 Sottoscrizione al topic: /topic/aste/${idAsta}`);
+    this.client.onStompError = (frame) => {
+      console.error('Broker error: ' + frame.headers['message']);
+      console.error('Details: ' + frame.body);
+    };
 
-                    const subscription = this.client.subscribe(`/topic/aste/${idAsta}`, (message: Message) => {
-                        if (message.body) {
-                            observer.next(JSON.parse(message.body));
-                        }
-                    });
+    this.client.onWebSocketClose = () => {
+      console.log('❌ WebSocket Disconnesso');
+      this.connectionStatus.next(false);
+    };
 
-                    // Cleanup: quando il componente fa unsubscribe, stacchiamo solo questo topic
-                    return () => {
-                        subscription.unsubscribe();
-                    };
-                });
-            })
-        );
-    }
+    this.client.activate();
+  }
+
+  private waitForConnection(): Observable<boolean> {
+    return this.connectionStatus.asObservable().pipe(
+      filter(isConnected => isConnected === true)
+    );
+  }
+
+  watchAsta(idAsta: number): Observable<any> {
+    return this.waitForConnection().pipe(
+      switchMap(() => {
+        return new Observable<any>(observer => {
+          console.log(`📡 Sottoscrizione al topic: /topic/aste/${idAsta}`);
+
+          const subscription = this.client.subscribe(`/topic/aste/${idAsta}`, (message: Message) => {
+            if (message.body) {
+              observer.next(JSON.parse(message.body));
+            }
+          });
+
+          return () => {
+            subscription.unsubscribe();
+          };
+        });
+      })
+    );
+  }
 }

@@ -55,43 +55,39 @@
 
       <button class="icon-btn bell-btn">
         🔔
-        <span class="notification-badge">3</span>
+        <span class="notification-badge"
+              *ngIf="(notificationService.unreadCount$ | async) as count"
+              [hidden]="count === 0">
+          {{ count }}
+        </span>
       </button>
 
       <div class="notification-dropdown">
         <div class="notif-header">
           <span>Notifiche</span>
-          <button class="mark-read-btn">Segna lette</button>
+          <button class="mark-read-btn" (click)="segnaLette()">Segna tutte lette</button>
         </div>
 
         <div class="notif-list">
-          <div class="notif-item unread">
-            <div class="notif-icon">🎨</div>
+
+          <div class="notif-item"
+               *ngFor="let n of (notificationService.notifiche$ | async)"
+               [class.unread]="!n.letta">
+
+            <div class="notif-icon">
+              📢
+            </div>
+
             <div class="notif-content">
-              <p class="notif-text">Mario Rossi ha commentato la tua opera.</p>
-              <span class="notif-time">2 min fa</span>
+              <p class="notif-text">{{ n.messaggio }}</p>
+              <span class="notif-time">{{ n.dataCreazione | date:'short' }}</span>
             </div>
           </div>
 
-          <div class="notif-item unread">
-            <div class="notif-icon">❤️</div>
-            <div class="notif-content">
-              <p class="notif-text">A Giulia piace la tua opera "Tramonto".</p>
-              <span class="notif-time">1 ora fa</span>
-            </div>
+          <div class="notif-item" *ngIf="(notificationService.notifiche$ | async)?.length === 0">
+            <p class="notif-text" style="padding: 10px; color: #999;">Nessuna notifica.</p>
           </div>
 
-          <div class="notif-item">
-            <div class="notif-icon">📢</div>
-            <div class="notif-content">
-              <p class="notif-text">Nuova mostra "Rinascimento" a Roma.</p>
-              <span class="notif-time">1 giorno fa</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="notif-footer">
-          <button>Vedi tutte le notifiche</button>
         </div>
       </div>
     </div>

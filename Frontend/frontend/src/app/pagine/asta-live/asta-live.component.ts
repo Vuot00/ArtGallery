@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy, inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink, Router } from '@angular/router'; // Router aggiunto
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http'; // HttpHeaders non serve più!
 import { WebSocketService } from '../../servizi/websocket.service';
 import { ToastService } from '../../servizi/toast.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../servizi/auth.service';
 
 @Component({
   selector: 'app-asta-live',
@@ -24,6 +25,7 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
 
   private ngZone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
+  private authService = inject(AuthService);
 
   private wsSubscription: Subscription | null = null;
 
@@ -41,19 +43,18 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.idAsta = Number(this.route.snapshot.paramMap.get('id'));
 
-    // Recupera token per controllo
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
+    // Controllo rapido: se non sei loggato, via al login
+    if (!this.authService.isLoggedIn()) {
       this.toast.show("Accesso negato: effettua il login", "error");
       this.router.navigate(['/login']);
       return;
     }
 
     // 1. Carica i dati statici (REST)
-    this.caricaDatiIniziali(token);
+    this.caricaDatiIniziali();
 
     // 2. Connetti al WebSocket (STOMP)
-    // Nota: Il service gestisce la connessione interna, qui ci sottoscriviamo solo al topic
+    // Il WebSocketService usa già il token internamente grazie alla tua modifica 'beforeConnect'
     this.wsSubscription = this.wsService.watchAsta(this.idAsta).subscribe((messaggio: any) => {
       this.ngZone.run(() => {
         console.log('📩 Messaggio WebSocket:', messaggio);
@@ -69,12 +70,10 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
     });
   }
 
-  caricaDatiIniziali(token: string) {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+  caricaDatiIniziali() {
+    // L'AuthInterceptor aggiungerà il token automaticamente
 
-    this.http.get<any>(`http://localhost:8080/api/aste/${this.idAsta}`, { headers }).subscribe({
+    this.http.get<any>(`http://localhost:8080/api/aste/${this.idAsta}`).subscribe({
       next: (data) => {
         this.asta = data;
         this.prezzoCorrente = data.prezzoAttuale || data.prezzoPartenza;
@@ -91,8 +90,9 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error("Errore caricamento dati:", err);
+
         if (err.status === 403 || err.status === 401) {
-          this.toast.show("Sessione scaduta. Effettua il login.", "error");
+          this.toast.show("Sessione scaduta.", "error");
           this.router.navigate(['/login']);
         } else {
           this.toast.show("Errore caricamento dati asta", "error");
@@ -104,6 +104,8 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
   aggiornaPrezzo(nuovoImporto: number) {
     this.prezzoCorrente = nuovoImporto;
     this.offertaUtente = this.prezzoCorrente + 10;
+
+    // Effetto visivo pulsante
     this.pricePulse = true;
     this.cdr.detectChanges();
 
@@ -135,16 +137,16 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const token = localStorage.getItem('jwtToken');
-    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
     const body = { idAsta: this.idAsta, importo: this.offertaUtente };
 
-    this.http.post('http://localhost:8080/api/offerte', body, { headers }).subscribe({
+    this.http.post('http://localhost:8080/api/offerte', body).subscribe({
       next: () => {
         this.toast.show("Offerta inviata con successo!", "success");
       },
       error: (err) => {
-        this.toast.show(err.error || "Errore nell'offerta", "error");
+        // Gestione errori specifica del backend (es. "Offerta troppo bassa")
+        const msg = err.error ? err.error : "Errore nell'offerta";
+        this.toast.show(msg, "error");
       }
     });
   }

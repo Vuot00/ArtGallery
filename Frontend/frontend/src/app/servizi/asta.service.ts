@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {AuthService} from './auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -8,15 +9,15 @@ import { Observable } from 'rxjs';
 export class AstaService {
 
     private http = inject(HttpClient);
-    // Nota: punta al nuovo controller "aste"
     private apiUrl = 'http://localhost:8080/api/aste';
+    private authService = inject(AuthService);
 
 
     avviaAsta(idOpera: number, datiAsta: { prezzoPartenza: number, dataInizio: string, dataFine: string }): Observable<any> {
         const url = `${this.apiUrl}/avvia/${idOpera}`;
 
         // Recuperiamo il token per l'autenticazione
-        const token = localStorage.getItem('jwtToken');
+        const token = this.authService.getToken();
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });
@@ -28,7 +29,7 @@ export class AstaService {
     annullaAsta(idAsta: number): Observable<any> {
         const url = `${this.apiUrl}/${idAsta}/annulla`;
 
-        const token = localStorage.getItem('jwtToken');
+        const token = this.authService.getToken();
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });

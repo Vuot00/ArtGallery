@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {AuthService} from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,10 @@ export class SearchService {
 
   private apiUrl = 'http://localhost:8080/api/search';
 
+  private authService = inject(AuthService);
+
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('jwtToken');
+    const token = this.authService.getToken();
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });

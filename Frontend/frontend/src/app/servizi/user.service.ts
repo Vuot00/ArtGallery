@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs'; // 'of' serve per i dati finti
+import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,11 +9,13 @@ import { Observable, of } from 'rxjs'; // 'of' serve per i dati finti
 export class UserService {
 
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
+
   private apiUrl = 'http://localhost:8080/api/utente';
 
-  // Helper per il token
+  // Questo metodo ora prende il token pulito dal servizio, evitando errori
   private getHeaders() {
-    const token = localStorage.getItem('jwtToken');
+    const token = this.authService.getToken();
     return {
       headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` })
     };
@@ -31,19 +34,14 @@ export class UserService {
   }
 
   getProfiloPubblico(id: number): Observable<any> {
-    const token = localStorage.getItem('jwtToken');
-    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-    return this.http.get(`${this.apiUrl}/${id}`, { headers });
+    return this.http.get(`${this.apiUrl}/${id}`, this.getHeaders());
   }
-
-  // --- TODO: FUTURE IMPLEMENTAZIONI ---
 
   getAcquisti(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/acquisti`, this.getHeaders());  }
-
-  getVendite(): Observable<any[]> {
-      return this.http.get<any[]>(`${this.apiUrl}/vendite`, this.getHeaders());
+    return this.http.get<any[]>(`${this.apiUrl}/acquisti`, this.getHeaders());
   }
 
-
+  getVendite(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/vendite`, this.getHeaders());
+  }
 }

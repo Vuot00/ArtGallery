@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, interval, startWith, switchMap, map, Subscription, tap } from 'rxjs';
-import { AuthService } from './auth.service'; // Assicurati che il percorso sia corretto
+import { BehaviorSubject, Observable, interval, startWith, switchMap, map, catchError, of } from 'rxjs';
+import { AuthService } from './auth.service';
+
+export interface Notifica {
+  id: number;
+  messaggio: string;
+  dataCreazione: string;
+  letta: boolean;
+}
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -10,32 +17,39 @@ export class NotificationService {
   private apiUrl = 'http://localhost:8080/api/notifiche';
   private authService = inject(AuthService);
 
-  // Subject reattivo che contiene il conteggio attuale
-  private unreadCountSubject = new BehaviorSubject<number>(0);
-  unreadCount$ = this.unreadCountSubject.asObservable();
+  private notificheSubject = new BehaviorSubject<Notifica[]>([]);
+  notifiche$ = this.notificheSubject.asObservable();
 
-  private pollingSubscription: Subscription | null = null;
+  unreadCount$ = this.notifiche$.pipe(
+    map(list => list.filter(n => !n.letta).length)
+  );
 
-  // Metodo per avviare il polling (chiamato una volta dal Navbar)
+  private pollingSubscription: any = null;
+
   startPolling() {
-    // Evita di avviare polling multipli
     if (this.pollingSubscription) {
-      console.warn("Polling notifiche già attivo.");
       return;
     }
 
-    console.log("🔔 Avvio Polling Notifiche.");
-
-    this.pollingSubscription = interval(30000).pipe(
+    this.pollingSubscription = interval(5000).pipe(
       startWith(0),
-      switchMap(() => this.getUnreadCountFromBackend())
-    ).subscribe(count => {
-      this.unreadCountSubject.next(count);
-    }, error => {
-      // Se c'è un errore (es. 403 se il token scade) smettiamo di pollare
-      console.error("Errore nel polling notifiche:", error);
-      this.stopPolling();
-      // Opzionale: gestire il logout o il re-login qui
+      switchMap(() => {
+        const token = this.authService.getToken();
+
+        // Controllo di sicurezza: se il token non è valido, salta la chiamata
+        if (!token || token === 'null' || !token.includes('.')) {
+          return of(null);
+        }
+        return this.fetchNotifications();
+      })
+    ).subscribe({
+      next: () => {
+        // Le notifiche vengono aggiornate dentro fetchNotifications
+      },
+      error: (err) => {
+        console.error("Errore polling notifiche:", err);
+        this.stopPolling();
+      }
     });
   }
 
@@ -43,26 +57,38 @@ export class NotificationService {
     if (this.pollingSubscription) {
       this.pollingSubscription.unsubscribe();
       this.pollingSubscription = null;
-      this.unreadCountSubject.next(0); // Resetta il conteggio
-      console.log("🛑 Polling Notifiche interrotto.");
     }
   }
 
-  private getUnreadCountFromBackend(): Observable<number> {
-    const token = localStorage.getItem('jwtToken');
+  fetchNotifications(): Observable<any> {
+    const token = this.authService.getToken();
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+    if (!token || token === 'null' || token === 'undefined') {
+      return of([]);
+    }
 
-    return this.http.get<any>(this.apiUrl + '/count', { headers: headers }).pipe(
-      map(response => response.count)
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+
+    return this.http.get<Notifica[]>(this.apiUrl, { headers }).pipe(
+      map(data => {
+        this.notificheSubject.next(data);
+        return data;
+      }),
+      catchError(err => {
+        console.error('Errore recupero notifiche:', err);
+        return of([]);
+      })
     );
   }
 
-  markAsRead() {
-    // Implementazione logica lato server per marcare come letto
-    // Per ora, solo resetta il contatore locale
-    this.unreadCountSubject.next(0);
+  markAllAsRead() {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+
+    this.http.post(this.apiUrl + '/leggi-tutte', {}, { headers }).subscribe(() => {
+      const current = this.notificheSubject.value;
+      const updated = current.map(n => ({ ...n, letta: true }));
+      this.notificheSubject.next(updated);
+    });
   }
 }

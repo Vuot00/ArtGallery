@@ -11,7 +11,7 @@ import { UserService } from '../../servizi/user.service';
 import { ToastService } from '../../servizi/toast.service';
 import { OperaService } from '../../servizi/opera.service';
 import { WebSocketService } from '../../servizi/websocket.service';
-import { AstaService } from '../../servizi/asta.service'; // <--- 1. IMPORT NECESSARIO
+import { AstaService } from '../../servizi/asta.service';
 
 // Components
 import { AvviaAstaComponent } from '../artista/avvia-asta/avvia-asta.component';
@@ -28,12 +28,12 @@ export class ProfiloComponent implements OnInit, OnDestroy {
   // Dependency Injection
   private userService = inject(UserService);
   public authService = inject(AuthService);
-  private http = inject(HttpClient);
+  private http = inject(HttpClient); // (Ci serve solo se facciamo chiamate custom, ma meglio spostarle nei service)
   private router = inject(Router);
   private toastService = inject(ToastService);
   private operaService = inject(OperaService);
   private webSocketService = inject(WebSocketService);
-  private astaService = inject(AstaService); // <--- 2. INIEZIONE SERVICE
+  private astaService = inject(AstaService);
 
   // Stato UI
   activeTab: any = 'dati';
@@ -60,12 +60,12 @@ export class ProfiloComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isArtist = this.authService.isArtist();
     this.caricaProfilo();
-    this.caricaAcquisti(); // Chiamata per tutti gli utenti
+    this.caricaAcquisti();
 
     if (this.isArtist) {
       this.caricaMieOpere();
-      this.caricaVendite(); // <--- AGGIUNTO da feature/paypal
-      this.sincronizzaRefreshConOrologio(); // <--- AGGIUNTO da HEAD
+      this.caricaVendite();
+      this.sincronizzaRefreshConOrologio();
     }
   }
 
@@ -84,10 +84,10 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     const msAlProssimoMinuto = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
     const delay = msAlProssimoMinuto + 100;
 
-    console.log(`⏳ Prossimo refresh schedulato tra ${delay} ms`);
+    // console.log(`⏳ Prossimo refresh schedulato tra ${delay} ms`);
 
     this.timerRefreshId = setTimeout(() => {
-      console.log('⏰ Scoccare del minuto! Eseguo refresh fallback.');
+      // console.log('⏰ Scoccare del minuto! Eseguo refresh fallback.');
       this.caricaMieOpere();
       this.sincronizzaRefreshConOrologio();
     }, delay);
@@ -106,11 +106,12 @@ export class ProfiloComponent implements OnInit, OnDestroy {
 
   caricaMieOpere() {
     const email = this.authService.getEmail();
-    const token = localStorage.getItem('jwtToken');
+    const token = this.authService.getToken();
 
     if (email && token) {
       const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-
+      // Nota: Idealmente dovremmo spostare questa chiamata dentro OperaService come `getOpereByEmail`
+      // ma per ora correggiamo solo il token qui per farlo funzionare.
       this.http.get(`http://localhost:8080/api/opere/artista/${email}`, { headers })
         .subscribe({
           next: (res: any) => {
@@ -122,19 +123,15 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Nuova funzione per caricare le vendite (da feature/paypal)
   caricaVendite() {
     this.userService.getVendite().subscribe(res => {
-      console.log("VENDITE SCARICATE:", res);
       this.vendite = res;
     });
   }
 
-  // Funzione per caricare gli acquisti (unificata)
   caricaAcquisti() {
     this.userService.getAcquisti().subscribe({
       next: (res) => {
-        console.log("ACQUISTI SCARICATI:", res);
         this.acquisti = res;
       },
       error: (err) => console.error("Errore acquisti:", err)
@@ -147,12 +144,10 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     this.mieOpere.forEach(opera => {
       const idAsta = opera.asta?.id;
 
-      // Ascoltiamo sia se è IN_ASTA sia se è PROGRAMMATA
       if ((opera.stato === 'IN_ASTA' || opera.stato === 'PROGRAMMATA') && idAsta) {
 
         const sub = this.webSocketService.watchAsta(idAsta).subscribe((messaggio: any) => {
 
-          // CASO 1: CHIUSURA ASTA
           if (messaggio.tipo === 'CHIUSURA') {
             console.log(`⚡ Asta Chiusa: ${messaggio.statoFinale}`);
             opera.stato = messaggio.statoFinale;
@@ -160,7 +155,6 @@ export class ProfiloComponent implements OnInit, OnDestroy {
             this.toastService.show(`Asta conclusa: ${opera.titolo}`, 'info');
           }
 
-          // CASO 2: APERTURA ASTA (Da Programmata a In Asta)
           if (messaggio.tipo === 'APERTURA') {
             console.log(`🟢 Asta Aperta!`);
             opera.stato = 'IN_ASTA';
@@ -194,10 +188,8 @@ export class ProfiloComponent implements OnInit, OnDestroy {
       this.astaService.annullaAsta(idAsta).subscribe({
         next: () => {
           this.toastService.show("Programmazione annullata con successo!", "success");
-
           opera.stato = 'DISPONIBILE';
           opera.asta = null;
-
         },
         error: (err) => {
           console.error(err);
@@ -234,17 +226,18 @@ export class ProfiloComponent implements OnInit, OnDestroy {
       this.toastService.show('Le password non coincidono!', 'error');
       return;
     }
-    this.http.post('http://localhost:8080/api/utente/me/password', this.passData).subscribe({
+
+    this.userService.changePassword(this.passData).subscribe({
       next: () => {
         this.toastService.show('Password cambiata!', 'success');
-        this.authService.logout();
+        this.authService.logout(); // Logout di sicurezza
       },
       error: () => this.toastService.show('Errore cambio password', 'error'),
     });
   }
 
   // ----------------------------------------------------------------
-  // GESTIONE MODAL ASTA (da HEAD)
+  // GESTIONE MODAL ASTA
   // ----------------------------------------------------------------
   openAstaModal(id: number) {
     this.selectedOperaId = id;
@@ -259,6 +252,6 @@ export class ProfiloComponent implements OnInit, OnDestroy {
   refreshList() {
     this.closeModal();
     this.caricaMieOpere();
-    this.caricaVendite(); // Potrebbe essersi aggiunta una vendita, quindi aggiorniamo anche questo
+    this.caricaVendite();
   }
 }

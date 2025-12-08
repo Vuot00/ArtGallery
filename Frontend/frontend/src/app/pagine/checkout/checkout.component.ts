@@ -2,13 +2,14 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { IPayPalConfig, ICreateOrderRequest, NgxPayPalModule } from 'ngx-paypal';
+import { IPayPalConfig, NgxPayPalModule } from 'ngx-paypal';
 import { ToastService } from '../../servizi/toast.service';
+import { AuthService } from '../../servizi/auth.service';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, NgxPayPalModule], // <--- Importa NgxPayPalModule
+  imports: [CommonModule, NgxPayPalModule],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss'
 })
@@ -18,7 +19,7 @@ export class CheckoutComponent implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private toastService = inject(ToastService);
-
+  private authService = inject(AuthService);
   public payPalConfig?: IPayPalConfig;
 
   // Dati dell'opera che stiamo comprando
@@ -26,19 +27,14 @@ export class CheckoutComponent implements OnInit {
   idOpera!: number;
 
   ngOnInit(): void {
-    // 1. Recupera l'ID dell'opera dall'URL
     this.idOpera = Number(this.route.snapshot.paramMap.get('id'));
-
-    // 2. Scarica i dettagli dell'opera (per mostrare prezzo e titolo)
     this.caricaDettagliOpera();
   }
 
   caricaDettagliOpera() {
-    // (Usa il tuo OperaService o http diretto per brevità)
     this.http.get(`http://localhost:8080/api/opere/${this.idOpera}`).subscribe({
       next: (res: any) => {
         this.opera = res;
-        // 3. Solo quando abbiamo l'opera (e il prezzo), inizializziamo PayPal
         this.initConfig();
       },
       error: () => this.toastService.show("Errore caricamento opera", "error")
@@ -46,32 +42,40 @@ export class CheckoutComponent implements OnInit {
   }
 
   private initConfig(): void {
-    const token = localStorage.getItem('jwtToken');
+    const token = this.authService.getToken();
+
+    // Creiamo gli header manuali (necessari per il blocco 'fetch' di PayPal sotto)
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
     this.payPalConfig = {
       currency: 'EUR',
       clientId: 'AXcPgepTxPSfzaB14MMFT6SqByOWh3Dm6wUuUhzTh81iMWwZRKE-P23vyoHvIJd2nz8kW2FZUqQLGKwU',
 
-      // A. CREAZIONE ORDINE (Lato Server)
+      // CREAZIONE ORDINE (Lato Server)
       createOrderOnServer: (data) => {
+        // NOTA: 'fetch' non usa gli Interceptor di Angular, quindi QUI
+        // dobbiamo passare l'header manualmente.
         return fetch(`http://localhost:8080/api/pagamenti/create/${this.idOpera}`, {
           method: 'post',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: {
+            'Authorization': `Bearer ${token}` // Usiamo il token pulito
+          }
         })
           .then((res) => res.json())
-          .then((order) => order.id); // Ritorna l'ID di PayPal generato dal tuo backend
+          .then((order) => order.id);
       },
 
-      // B. CATTURA PAGAMENTO (Lato Server)
+      // CATTURA PAGAMENTO (Lato Server)
       onApprove: (data, actions) => {
         console.log('Transazione approvata da PayPal. Catturo...');
 
+        // Qui usiamo HttpClient, ma passiamo comunque headers per sicurezza
+        // dato che siamo dentro una callback esterna
         this.http.post(`http://localhost:8080/api/pagamenti/capture/${data.orderID}`, {}, { headers, responseType: 'text' })
           .subscribe({
             next: (res) => {
               this.toastService.show("Pagamento completato! L'opera è tua.", "success");
-              this.router.navigate(['/profilo']); // Vai agli acquisti
+              this.router.navigate(['/profilo']);
             },
             error: (err) => {
               this.toastService.show("Errore nella cattura del pagamento", "error");
