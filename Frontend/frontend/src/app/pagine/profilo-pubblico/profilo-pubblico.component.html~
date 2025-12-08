@@ -7,7 +7,7 @@
     <div class="info">
       <h1>{{ artista.nome }}</h1>
       <p>{{ artista.email }}</p>
-
+      
       <span class="badge-artista" *ngIf="hasRole(artista, 'ROLE_ARTISTA')">
         🎨 Artista Verificato
     </span>

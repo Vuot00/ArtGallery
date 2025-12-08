@@ -49,4 +49,11 @@ export class ProfiloPubblicoComponent implements OnInit {
       next: (res) => this.opere = res
     });
   }
+  hasRole(utente: any, ruoloCercato: string): boolean {
+    if (!utente || !utente.roles) {
+      return false;
+    }
+    return utente.roles.some((r: any) => r.nome === ruoloCercato);
+  }
+
 }

@@ -44,38 +44,32 @@ export class CheckoutComponent implements OnInit {
   private initConfig(): void {
     const token = this.authService.getToken();
 
-    // Creiamo gli header manuali (necessari per il blocco 'fetch' di PayPal sotto)
+    // Creiamo gli header manuali
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
     this.payPalConfig = {
       currency: 'EUR',
       clientId: 'AXcPgepTxPSfzaB14MMFT6SqByOWh3Dm6wUuUhzTh81iMWwZRKE-P23vyoHvIJd2nz8kW2FZUqQLGKwU',
 
-      // CREAZIONE ORDINE (Lato Server)
       createOrderOnServer: (data) => {
-        // NOTA: 'fetch' non usa gli Interceptor di Angular, quindi QUI
-        // dobbiamo passare l'header manualmente.
         return fetch(`http://localhost:8080/api/pagamenti/create/${this.idOpera}`, {
           method: 'post',
           headers: {
-            'Authorization': `Bearer ${token}` // Usiamo il token pulito
+            'Authorization': `Bearer ${token}`
           }
         })
           .then((res) => res.json())
           .then((order) => order.id);
       },
 
-      // CATTURA PAGAMENTO (Lato Server)
       onApprove: (data, actions) => {
-        console.log('Transazione approvata da PayPal. Catturo...');
+        console.log('Transazione approvata. Catturo...');
 
-        // Qui usiamo HttpClient, ma passiamo comunque headers per sicurezza
-        // dato che siamo dentro una callback esterna
         this.http.post(`http://localhost:8080/api/pagamenti/capture/${data.orderID}`, {}, { headers, responseType: 'text' })
           .subscribe({
             next: (res) => {
               this.toastService.show("Pagamento completato! L'opera è tua.", "success");
-              this.router.navigate(['/profilo']);
+              this.router.navigate(['/profilo']); // O dove preferisci
             },
             error: (err) => {
               this.toastService.show("Errore nella cattura del pagamento", "error");
@@ -84,17 +78,29 @@ export class CheckoutComponent implements OnInit {
       },
 
       onCancel: (data, actions) => {
-        console.log('Pagamento annullato');
-        this.toastService.show("Hai annullato il pagamento", "info");
+        console.log('L\'utente ha chiuso la finestra di PayPal:', data);
+
+        this.http.post(`http://localhost:8080/api/pagamenti/cancel/${data.orderID}`, {}, { headers, responseType: 'text' })
+          .subscribe({
+            next: (res) => {
+              console.log("Opera sbloccata nel backend.");
+              this.toastService.show("Pagamento annullato, l'opera è di nuovo disponibile.", "info");
+
+              // this.router.navigate(['/home']);
+            },
+            error: (err) => {
+              console.error("Impossibile sbloccare l'opera", err);
+            }
+          });
       },
 
       onError: err => {
         console.log('Errore Tecnico PayPal', err);
-        this.toastService.show("Errore tecnico PayPal", "error");
+        this.toastService.show("Errore tecnico nel caricamento di PayPal", "error");
       },
 
       onClick: (data, actions) => {
-        console.log('Bottone cliccato');
+        console.log('Apertura popup PayPal...');
       }
     };
   }

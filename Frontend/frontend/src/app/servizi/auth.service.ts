@@ -106,4 +106,12 @@ export class AuthService {
   getUsername(): string {
     return this.userNameSignal();
   }
+
+  getId(): number {
+    const tokenPayload = this.getDecodedToken();
+    if (tokenPayload && tokenPayload.id) {
+      return tokenPayload.id;
+    }
+    return 0;
+  }
 }

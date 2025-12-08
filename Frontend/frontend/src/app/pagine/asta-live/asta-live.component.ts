@@ -169,7 +169,7 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
 
   aggiornaPrezzo(nuovoImporto: number) {
     this.prezzoCorrente = nuovoImporto;
-    this.offertaUtente = this.prezzoCorrente + 10;
+    this.offertaUtente = this.prezzoCorrente;
 
     // Effetto visivo pulsante
     this.pricePulse = true;

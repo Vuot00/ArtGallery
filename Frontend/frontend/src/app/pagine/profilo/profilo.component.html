@@ -152,7 +152,7 @@
     <div class="mini-grid">
       <ng-container *ngFor="let ordine of acquisti">
 
-        <div class="mini-card" *ngIf="ordine.opera?.stato === 'VENDUTA'">
+        <div class="mini-card" *ngIf="ordine.opera?.stato === 'VENDUTA' && ordine.stato === 'PAGATO'">
 
           <img
             [src]="'http://localhost:8080/uploads/' + (ordine.opera?.immagini && ordine.opera?.immagini[0]?.url)"
