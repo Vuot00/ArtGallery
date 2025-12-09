@@ -62,6 +62,18 @@ export class AstaLiveComponent implements OnInit, OnDestroy {
           this.gestisciChiusuraAsta(messaggio);
         }
         else if (messaggio.importo) {
+
+          // Se il messaggio contiene una nuova data di fine (Anti-Sniping)
+          if (messaggio.nuovaDataFine) {
+            // Aggiorniamo la data dell'oggetto asta locale
+            if (this.asta) {
+              this.asta.dataFine = messaggio.nuovaDataFine;
+              // Ricalcoliamo subito il countdown per mostrare il salto temporale all'utente
+              this.aggiornaStatoTimer();
+              this.toast.show("Tempo esteso per nuova offerta!", "error");
+            }
+          }
+
           this.aggiornaPrezzo(messaggio.importo);
           const chi = messaggio.nomeUtente ? ` da ${messaggio.nomeUtente}` : '';
 
