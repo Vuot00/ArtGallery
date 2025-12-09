@@ -33,16 +33,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker("/topic"); // comunicazioni in uscita (server ==> client)
+        config.setApplicationDestinationPrefixes("/app"); // comunicazioni in entrata (client ==> server)
     }
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-auction").setAllowedOriginPatterns("*");
-        registry.addEndpoint("/ws-auction").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/ws-auction").setAllowedOriginPatterns("*"); // è l'url usato per effettuare l'hanshake e trasformare la connessione in websocket
+        registry.addEndpoint("/ws-auction").setAllowedOriginPatterns("*").withSockJS(); // nel caso in cui il browser del client sia vecchio o abbia un firewall aziendale
 
     }
 
+    /**
+     * è la parte fondamentale della classe e usiamo questo interceptor una volta aperto il websocket
+     * poichè in questo tipo di comunicazione non c'è modo di effettuare controlli sui pacchetti STOMP inviati
+     * l'interceptor si assicura di prendere il pacchetto da inviare, estrae il token e verifica se è scaduto o meno
+     * una volta autenticato sappiamo che quella specifica connessione appartiene all'utente X, così possiamo risalire
+     * alle azioni fatte da un utente
+     */
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {

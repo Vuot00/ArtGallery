@@ -41,11 +41,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                /**
+                 * csrf(...).disable(): Disabiliti la protezione CSRF (Cross-Site Request Forgery).
+                 *
+                 * Teoria: Il CSRF serve per le sessioni basate su cookie (stateful). Usiamo i Token JWT
+                 * (stateless), quindi il CSRF non serve e anzi, darebbe fastidio.
+                 *
+                 * formLogin(...).disable(): Disabilitiamo la pagina di login predefinita di Spring.
+                 *
+                 * httpBasic(...).disable(): Disabilitiamo l'autenticazione base.
+                 */
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
+                /**
+                 * Diciamo al server di non ricordare mai l'utente così che ogni operazione richieda
+                 * l'autenticazione tramite token jwt
+                 */
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -61,8 +75,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/uploads/**").permitAll()
 
-                        // Permette agli utenti loggati di VEDERE le opere
-                        .requestMatchers(HttpMethod.GET,"/api/opere/**").permitAll()
+                        //.requestMatchers(HttpMethod.GET,"/api/opere/**").permitAll()
 
                         //Permettiamo l'handshake del WebSockt e senza questo, Spring blocca la connessione prima che possiamo leggere il token dall'URL
                         .requestMatchers("/ws-auction/**").permitAll()
@@ -71,6 +84,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                // usiamo il nostro filtro prima del filtro standard di spring
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authenticationProvider(authenticationProvider());
@@ -87,16 +101,19 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    // controlla la correttezza dei dati dell'utente
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    // codifica le password per non salvarle in chiaro nel db
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // dicamo al backend di fidarsi delle richiesti provenienti dal frontend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

@@ -85,7 +85,7 @@ public class OperaController {
         try {
             Opera opera = operaRepository.findById(id).orElseThrow(() -> new RuntimeException("Opera non trovata"));
 
-
+            // anche in aggiorna ed elimina si assicura che eventuali modifiche siano permesse solo al proprietario dell'opera
             String emailCorrente = SecurityContextHolder.getContext().getAuthentication().getName();
             if (!opera.getArtista().getEmail().equals(emailCorrente)) {
                 return ResponseEntity.status(403).body("Non autorizzato");

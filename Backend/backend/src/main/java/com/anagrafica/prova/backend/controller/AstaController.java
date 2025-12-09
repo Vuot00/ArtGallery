@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/aste")
+@RestController // gestisce le richieste REST
+@RequestMapping("/api/aste") // tutto quello che inizia con questo indirizzo ne rispondo io
 public class AstaController {
 
     @Autowired private AstaService astaService;
@@ -48,6 +48,11 @@ public class AstaController {
         }
     }
 
+    /**
+     * non uso il JSON per sapere chi è l'utente, ho già validato il token quindi posso estrarre la mail direttamente
+     * dal contesto di sicurezza del server (uso il jwt token che lo popola automaticamente all'inizio della chiamata),
+     * sono sicuro che l'utente che sta piazzando un offerta è loggato
+     */
     @PostMapping("/offerta")
     public ResponseEntity<?> faiOfferta(@RequestBody OffertaRequest request) {
         try {
