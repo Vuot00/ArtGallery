@@ -15,6 +15,11 @@ public class Asta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Version
+    private Long version; //serve per gestire la race condition se due utenti fanno un'offerta nello stesso momento
+
+
     private LocalDateTime dataInizio;
     private LocalDateTime dataFine;
 

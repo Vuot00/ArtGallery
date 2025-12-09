@@ -103,6 +103,12 @@ public class AstaService {
         Utente utente = utenteRepository.findByEmail(emailUtente)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
+        if (now.isAfter(asta.getDataFine().minusMinutes(5))) {
+            // Estendi di 5 minuti
+            asta.setDataFine(asta.getDataFine().plusMinutes(5));
+            System.out.println("Anti-Sniping attivato! Nuova scadenza: " + asta.getDataFine());
+        }
+
         asta.setPrezzoAttuale(request.getImporto());
         asta.setMigliorOfferente(utente);
         astaRepository.save(asta);
@@ -115,7 +121,8 @@ public class AstaService {
             OffertaWebSocketDto msg = new OffertaWebSocketDto(
                     "OFFERTA",
                     asta.getPrezzoAttuale(),
-                    utente.getNome() // o utente.getEmail()
+                    utente.getNome(), // o utente.getEmail()
+                    asta.getDataFine()
             );
             messagingTemplate.convertAndSend("/topic/aste/" + asta.getId(), msg);
         } catch (Exception e) {
@@ -146,7 +153,7 @@ public class AstaService {
                     try {
                         String emailVincitore = asta.getMigliorOfferente().getEmail();
 
-                        var msg = new OffertaWebSocketDto("VINCITORE", asta.getPrezzoAttuale(), emailVincitore);
+                        var msg = new OffertaWebSocketDto("VINCITORE", asta.getPrezzoAttuale(), emailVincitore, null);
 
                         messagingTemplate.convertAndSend("/topic/aste/" + asta.getId(), msg);
                     } catch (Exception e) {
@@ -159,7 +166,7 @@ public class AstaService {
                     operaRepository.save(opera);
 
                     try {
-                        var msg = new OffertaWebSocketDto("CHIUSURA", 0.0, "INVENDUTA");
+                        var msg = new OffertaWebSocketDto("CHIUSURA", 0.0, "INVENDUTA", null);
                         messagingTemplate.convertAndSend("/topic/aste/" + asta.getId(), msg);
                     } catch (Exception e) { }
 
