@@ -35,7 +35,9 @@ export class AvviaAstaComponent {
       return;
     }
 
-    // Controllo validità date lato frontend (UX)
+    /* Controllo validità date lato frontend (UX), serve per dare feedback immediato all'utente, ma comunque
+    viene fatto un controllo anche da parte del backend per sicurezza
+     */
     if (new Date(this.form.dataFine) <= new Date(this.form.dataInizio)) {
       this.toastService.show("La data di fine deve essere successiva all'inizio.", "error");
       return;
@@ -62,3 +64,12 @@ export class AvviaAstaComponent {
     this.close.emit();
   }
 }
+
+
+/**
+ * È il componente che gestisce il form di creazione di un'asta. Riceve in Input l'ID dell'opera
+ * da mettere all'asta. Quando l'utente conferma, esegue una validazione preliminare delle date
+ * lato client e poi invoca AstaService per chiamare l'API REST. Usa gli Output (EventEmitter) per
+ * notificare al componente padre l'esito dell'operazione (chiusura modale o successo dell'avvio),
+ * permettendo al frontend di aggiornarsi in modo reattivo.
+ */

@@ -31,7 +31,7 @@ export class ModificaOperaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
+    // recuperiamo l'opera da modificare tramite l'id e mostro tutti i dati da poter modificare
     this.idOpera = Number(this.route.snapshot.paramMap.get('id'));
 
     this.operaService.getOperaById(this.idOpera).subscribe({
@@ -47,7 +47,7 @@ export class ModificaOperaComponent implements OnInit {
   }
 
   salvaModifiche() {
-    const datiDaInviare = {
+    const datiDaInviare = { // è un dto semplice per salvare i nuovi dati
       titolo: this.datiOpera.titolo,
       descrizione: this.datiOpera.descrizione,
       prezzo: this.datiOpera.prezzo
@@ -66,6 +66,7 @@ export class ModificaOperaComponent implements OnInit {
   }
 
   eliminaImmagine(idImg: number) {
+    // ci assicuriamo che nell'eliminazione delle immagini non vengano rimosse tutte (opera senza immagini)
     if (this.datiOpera.immagini && this.datiOpera.immagini.length <= 1) {
       this.toastService.show("Impossibile eliminare: L'opera deve avere almeno una foto!", "error");
       return;
@@ -83,6 +84,7 @@ export class ModificaOperaComponent implements OnInit {
     });
   }
 
+  // ogni nuova immagine caricata viene "pushata" e mostrata all'utente
   uploadNuovaFoto(event: any) {
     const file = event.target.files[0];
     if (file) {

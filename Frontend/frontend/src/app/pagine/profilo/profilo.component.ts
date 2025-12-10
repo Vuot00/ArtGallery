@@ -57,6 +57,8 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     confermaPassword: ''
   };
 
+  // carichiamo 2 cose diverse in base al ruolo, un artista vede mie opere acquisti ecc, mentre un
+  // collezionista solo le opere acquistate
   ngOnInit() {
     this.isArtist = this.authService.isArtist();
     this.caricaProfilo();
@@ -81,6 +83,8 @@ export class ProfiloComponent implements OnInit, OnDestroy {
   // ----------------------------------------------------------------
   sincronizzaRefreshConOrologio() {
     const now = new Date();
+    // calcolo quanto manca al prossimo minuto per evitare disallineamenti con l'orario
+    // ed evito un polling inutile
     const msAlProssimoMinuto = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
     const delay = msAlProssimoMinuto + 100;
 
@@ -138,6 +142,7 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     });
   }
 
+  // crea un canale websocket per la gestione di più aste dello stesso artista
   attivaAscoltoRealTime() {
     this.chiudiConnessioniWebSocket();
 
@@ -230,7 +235,8 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     this.userService.changePassword(this.passData).subscribe({
       next: () => {
         this.toastService.show('Password cambiata!', 'success');
-        this.authService.logout(); // Logout di sicurezza
+        this.authService.logout(); // Logout di sicurezza, lo costringiamo a riautenticarsi per firmare
+        // il token con la nuova password
       },
       error: () => this.toastService.show('Errore cambio password', 'error'),
     });
@@ -249,6 +255,8 @@ export class ProfiloComponent implements OnInit, OnDestroy {
     this.selectedOperaId = null;
   }
 
+  // mostra i cambiamenti effettuati sull'opera, se avviamo l'asta poi non devo vedere ancora il bottone
+  // avvia asta
   refreshList() {
     this.closeModal();
     this.caricaMieOpere();

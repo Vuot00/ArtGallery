@@ -65,6 +65,11 @@ export class NotificationService {
 
     if (!token || token === 'null' || token === 'undefined') {
       return of([]);
+      /**
+       Questo è RxJS. Invece di restituire null o lanciare errore, restituisce un Observable
+       che emette una lista vuota. Questo permette a chi sta ascoltando (il subscribe) di ricevere
+       un valore valido (array vuoto) e non rompersi.
+       */
     }
 
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
@@ -81,6 +86,7 @@ export class NotificationService {
     );
   }
 
+  // è come se impostassi manualmente il valore true per il valore letta
   markAllAsRead() {
     const token = this.authService.getToken();
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });

@@ -52,12 +52,14 @@ export class WebSocketService {
     this.client.activate();
   }
 
+  // mantiene in sospeso tutte le richieste finchè il weboscket non è connesso
   private waitForConnection(): Observable<boolean> {
     return this.connectionStatus.asObservable().pipe(
       filter(isConnected => isConnected === true)
     );
   }
 
+  // ricevo aggiornamenti sull'asta finchè non viene fatto unsubscribe
   watchAsta(idAsta: number): Observable<any> {
     return this.waitForConnection().pipe(
       switchMap(() => {

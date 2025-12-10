@@ -72,6 +72,7 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // essendoci più immagini per un'opera la prima dell'array viene impostata come copertina
   cambiaImmaginePrincipale(urlNuovaImmagine: string) {
     this.immagineSelezionata = urlNuovaImmagine;
   }
@@ -80,6 +81,8 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
     return `http://localhost:8080/uploads/${nomeFile}`;
   }
 
+  // acquista opera e vai all'asta fungono da bivio per l'acquisto di un'opera, se in asta reinderizza
+  // all'asta se acquisto diretto va al checkout
   acquistaOpera() {
     if (this.opera && this.opera.id) {
       this.router.navigate(['/checkout', this.opera.id]);
@@ -96,6 +99,7 @@ export class DettaglioOperaComponent implements OnInit, OnDestroy {
     }
   }
 
+  // serve per far vedere l'ultima offerta dell'asta anche nella pagina dei dettagli dell'opera
   getPrezzoDinamico(): number {
     if (this.opera?.asta?.prezzoAttuale) {
       return this.opera.asta.prezzoAttuale;

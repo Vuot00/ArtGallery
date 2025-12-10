@@ -28,7 +28,7 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, loginRequest)
       .pipe(
         tap(response => {
-          // MODIFICA: Cerchiamo il token sia come 'token' che come 'accessToken' per sicurezza
+          // Cerchiamo il token sia come 'token' che come 'accessToken' per sicurezza
           const token = response.token || response.accessToken;
 
           if (token) {

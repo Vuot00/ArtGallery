@@ -33,6 +33,7 @@ export class CaricaOperaComponent {
   previewUrls: string[] = [];
 
 
+  // serve per gestire le immagini e le preview
   onFileSelected(event: any) {
     if (event.target.files) {
       const files = Array.from(event.target.files) as File[];
@@ -77,6 +78,7 @@ export class CaricaOperaComponent {
     });
   }
 
+  // se l'artista vuole caricare subito un'altra opera vengono puliti tutti i campi per compilarli nuovamente
   resetForm() {
     this.showSuccessModal = false; // Chiudi popup
 

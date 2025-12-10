@@ -16,7 +16,8 @@ export class AstaService {
     avviaAsta(idOpera: number, datiAsta: { prezzoPartenza: number, dataInizio: string, dataFine: string }): Observable<any> {
         const url = `${this.apiUrl}/avvia/${idOpera}`;
 
-        // Recuperiamo il token per l'autenticazione
+        // Recuperiamo il token per l'autenticazione per costruire l'header altrimenti le chiamate verrebbero
+        // bloccate
         const token = this.authService.getToken();
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`

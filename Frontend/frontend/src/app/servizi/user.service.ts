@@ -13,7 +13,7 @@ export class UserService {
 
   private apiUrl = 'http://localhost:8080/api/utente';
 
-  // Questo metodo ora prende il token pulito dal servizio, evitando errori
+  // Questo metodo prende il token pulito dal servizio
   private getHeaders() {
     const token = this.authService.getToken();
     return {

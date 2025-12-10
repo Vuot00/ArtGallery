@@ -24,6 +24,7 @@ export class OperaService {
     return this.http.get<Opera[]>(this.apiUrl, { headers: headers });
   }
 
+  // creiamo un payload multipart, unico modo per inviare testo e immagini in un'unica richiesta HTTP
   caricaOpera(dati: any, files: File[]): Observable<any> {
     const formData = new FormData();
     formData.append('titolo', dati.titolo);
@@ -34,13 +35,13 @@ export class OperaService {
       formData.append('files', file);
     }
 
-    // CORRETTO: Usa authService
     const token = this.authService.getToken();
     const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
     return this.http.post(this.apiUrl, formData, {
       headers: headers,
-      responseType: 'text'
+      responseType: 'text' // qui in elimina, carica e modifica imposto text per dire ad angular di non aspettarsi
+      // un JSON ma una stringa di testo
     });
   }
 
@@ -74,7 +75,8 @@ export class OperaService {
     const url = `${this.apiUrl}/${id}`;
 
     const token = this.authService.getToken();
-    const headers = new HttpHeaders({
+    const headers = new HttpHeaders({ // ho bisogno dell'header perchè faccio un'operazione di put
+      // stessa cosa sopra per delete
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
@@ -83,7 +85,7 @@ export class OperaService {
   }
 
   getOperaById(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
+    return this.http.get(`${this.apiUrl}/${id}`); // non mi serve il token faccio solo una get
   }
 
   getOpereByArtistaId(id: number): Observable<any> {
