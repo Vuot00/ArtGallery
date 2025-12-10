@@ -13,3 +13,8 @@ public interface ImmagineRepository extends JpaRepository<Immagine, Long> {
     @Query("UPDATE Immagine i SET i.opera = NULL WHERE i.opera.id = :idOpera")
     void sganciaImmaginiDaOpera(Long idOpera);
 }
+
+/**
+ * serviva per mantenere le immagini associate ad un'opera quando l'oggetto Opera veniva cancellato
+ * non lo usiamo più, eliminata l'opera eliminiamo tutto
+ */

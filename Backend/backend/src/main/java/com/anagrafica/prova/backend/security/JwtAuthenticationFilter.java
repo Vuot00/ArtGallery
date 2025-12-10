@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        // 1. Se non c'è header valido, passa oltre
+        // Se non c'è header valido, passa oltre
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // 3. Validazione standard
+            // Validazione standard
             final String userEmail = jwtService.getUsernameFromToken(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {

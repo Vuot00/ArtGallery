@@ -14,6 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * La logica è centralizzata nella classe AstaService. Gestiamo il ciclo di vita dell'asta tramite metodi
+ * transazionali (@Transactional) per garantire l'integrità dei dati tra le entità Asta e Opera.
+ * Per le offerte, il sistema esegue validazioni temporali ed economiche server-side. Abbiamo implementato
+ * un meccanismo di Anti-Sniping che estende la durata dell'asta se l'offerta arriva negli ultimi 5 minuti.
+ * Infine, l'aggiornamento dei client avviene in Push tramite WebSocket subito dopo il commit su DB,
+ * mentre la chiusura formale delle aste è gestita da un task asincrono schedulato (@Scheduled) che gira
+ * ogni minuto per processare scadenze e assegnazioni.
+ */
+
 @Service
 public class AstaService {
 

@@ -12,3 +12,9 @@ public class JwtResponse {
         this.token = accessToken;
     }
 }
+
+/**
+ * funziona come lasciapassare iniziale quando viene effettuata l'autenticazione
+ * serve per passare le informazioni necessarie per configurare correttamente gli header
+ * Authorization
+ */
